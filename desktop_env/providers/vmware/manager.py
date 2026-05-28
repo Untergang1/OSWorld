@@ -390,6 +390,12 @@ class VMwareVMManager(VMManager):
             os.makedirs(vms_dir, exist_ok=True)
             vm_names = os.listdir(vms_dir)
             for vm_name in vm_names:
+                vm_full_path = os.path.join(vms_dir, vm_name)
+
+                # Only VM directories are managed here; downloaded images are files.
+                if not os.path.isdir(vm_full_path):
+                    continue
+
                 # skip the downloaded .zip file
                 if vm_name == DOWNLOADED_FILE_NAME:
                     continue
@@ -402,23 +408,25 @@ class VMwareVMManager(VMManager):
                     if vm_name + ".vmx" in vm_path:
                         flag = False
                 if flag:
-                    shutil.rmtree(os.path.join(vms_dir, vm_name))
+                    shutil.rmtree(vm_full_path)
 
-    def list_free_vms(self, lock_needed=True):
+    def list_free_vms(self, lock_needed=True, os_type=None):
         if lock_needed:
             with self.lock:
-                return self._list_free_vms()
+                return self._list_free_vms(os_type=os_type)
         else:
-            return self._list_free_vms()
+            return self._list_free_vms(os_type=os_type)
 
-    def _list_free_vms(self):
+    def _list_free_vms(self, os_type=None):
         with self.lock:  # Lock when reading the registry
             free_vms = []
             with open(self.registry_path, 'r') as file:
                 lines = file.readlines()
                 for line in lines:
                     vm_path, pid_str = line.strip().split('|')
-                    if pid_str == "free":
+                    vm_name = os.path.basename(os.path.dirname(vm_path)).lower()
+                    matches_os_type = os_type is None or vm_name.startswith(os_type.lower())
+                    if pid_str == "free" and matches_os_type:
                         free_vms.append((vm_path, pid_str))
             return free_vms
 
@@ -432,7 +440,7 @@ class VMwareVMManager(VMManager):
 
         allocation_needed = False
         with self.lock:
-            free_vms_paths = self._list_free_vms()
+            free_vms_paths = self._list_free_vms(os_type=os_type)
             if len(free_vms_paths) == 0:
                 # No free virtual machine available, generate a new one
                 allocation_needed = True
