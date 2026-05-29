@@ -1,0 +1,78 @@
+{
+  "id": "2ad9387a-65d8-4e33-ad5b-7580065a27ca",
+  "snapshot": "chrome",
+  "instruction": "Can you make a new folder for me on the bookmarks bar in my internet browser? Let's call it 'Favorites.'",
+  "source": "https://www.youtube.com/watch?v=IN-Eq_UripQ",
+  "config": [
+    {
+      "type": "launch",
+      "parameters": {
+        "command": [
+          "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+          "--remote-debugging-port=9222",
+          "--remote-debugging-address=0.0.0.0",
+          "--no-first-run",
+          "--disable-features=ChromeWhatsNewUI"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/",
+  "related_apps": [
+    "chrome"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "launch",
+        "parameters": {
+          "command": [
+            "taskkill",
+            "/IM",
+            "chrome.exe",
+            "/F",
+            "/T"
+          ]
+        }
+      },
+      {
+        "type": "launch",
+        "parameters": {
+          "command": [
+            "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "--remote-debugging-port=9222",
+            "--remote-debugging-address=0.0.0.0",
+            "--no-first-run",
+            "--disable-features=ChromeWhatsNewUI"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 3
+        }
+      }
+    ],
+    "func": "is_expected_bookmarks",
+    "result": {
+      "type": "bookmarks"
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "type": "bookmark_bar_folders_names",
+        "names": [
+          "Favorites"
+        ]
+      }
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low",
+  "windows_migration": {
+    "source": "evaluation_examples/examples/chrome",
+    "strategy": "easy_local_chrome_subset"
+  }
+}

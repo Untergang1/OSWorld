@@ -1,0 +1,75 @@
+{
+  "id": "030eeff7-b492-4218-b312-701ec99ee0cc",
+  "snapshot": "chrome",
+  "instruction": "Can you enable the 'Do Not Track' feature in Chrome to enhance my online privacy?",
+  "source": "https://www.surreycc.gov.uk/website/cookies/do-not-track",
+  "config": [
+    {
+      "type": "launch",
+      "parameters": {
+        "command": [
+          "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+          "--remote-debugging-port=9222",
+          "--remote-debugging-address=0.0.0.0",
+          "--no-first-run",
+          "--disable-features=ChromeWhatsNewUI"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/",
+  "related_apps": [
+    "chrome"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "launch",
+        "parameters": {
+          "command": [
+            "taskkill",
+            "/IM",
+            "chrome.exe",
+            "/F",
+            "/T"
+          ]
+        }
+      },
+      {
+        "type": "launch",
+        "parameters": {
+          "command": [
+            "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "--remote-debugging-port=9222",
+            "--remote-debugging-address=0.0.0.0",
+            "--no-first-run",
+            "--disable-features=ChromeWhatsNewUI"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 3
+        }
+      }
+    ],
+    "func": "exact_match",
+    "result": {
+      "type": "enable_do_not_track"
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "expected": "true"
+      }
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low",
+  "windows_migration": {
+    "source": "evaluation_examples/examples/chrome",
+    "strategy": "easy_local_chrome_subset"
+  }
+}

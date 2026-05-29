@@ -1,0 +1,75 @@
+{
+  "id": "99146c54-4f37-4ab8-9327-5f3291665e1e",
+  "snapshot": "chrome",
+  "instruction": "Please help me set Chrome to delete my browsing data automatically every time I close the browser.",
+  "source": "https://www.youtube.com/watch?v=v0kxqB7Xa6I",
+  "config": [
+    {
+      "type": "launch",
+      "parameters": {
+        "command": [
+          "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+          "--remote-debugging-port=9222",
+          "--remote-debugging-address=0.0.0.0",
+          "--no-first-run",
+          "--disable-features=ChromeWhatsNewUI"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/",
+  "related_apps": [
+    "chrome"
+  ],
+  "evaluator": {
+    "postconfig": [
+      {
+        "type": "launch",
+        "parameters": {
+          "command": [
+            "taskkill",
+            "/IM",
+            "chrome.exe",
+            "/F",
+            "/T"
+          ]
+        }
+      },
+      {
+        "type": "launch",
+        "parameters": {
+          "command": [
+            "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "--remote-debugging-port=9222",
+            "--remote-debugging-address=0.0.0.0",
+            "--no-first-run",
+            "--disable-features=ChromeWhatsNewUI"
+          ]
+        }
+      },
+      {
+        "type": "sleep",
+        "parameters": {
+          "seconds": 3
+        }
+      }
+    ],
+    "func": "exact_match",
+    "result": {
+      "type": "data_delete_automacally"
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "expected": "true"
+      }
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low",
+  "windows_migration": {
+    "source": "evaluation_examples/examples/chrome",
+    "strategy": "easy_local_chrome_subset"
+  }
+}

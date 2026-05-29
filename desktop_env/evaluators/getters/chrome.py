@@ -979,6 +979,56 @@ def get_open_tabs_info(env, config: Dict[str, str]):
     return []
 
 
+def _get_active_url_from_windows_address_bar(env, config):
+    """
+    Windows accessibility trees do not expose Chrome's address bar with the
+    Ubuntu AT-SPI selector below, so read the focused address via the clipboard.
+    """
+    command = r"""
+import time
+import pyautogui
+
+pyautogui.hotkey("ctrl", "l")
+time.sleep(0.2)
+pyautogui.hotkey("ctrl", "c")
+time.sleep(0.2)
+
+text = ""
+try:
+    import tkinter as tk
+    root = tk.Tk()
+    root.withdraw()
+    try:
+        text = root.clipboard_get()
+    finally:
+        root.destroy()
+except Exception:
+    try:
+        import pyperclip
+        text = pyperclip.paste()
+    except Exception:
+        text = ""
+
+print(text)
+"""
+    result = env.controller.execute_python_command(command)
+    if not result:
+        logger.error("Failed to read Chrome address bar on Windows: no command result")
+        return None
+
+    active_tab_url = (result.get("output") or "").strip()
+    if not active_tab_url:
+        logger.error("Failed to read Chrome address bar on Windows: empty clipboard")
+        return None
+
+    goto_prefix = config.get("goto_prefix", "https://")
+    if goto_prefix and not re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*://", active_tab_url):
+        active_tab_url = f"{goto_prefix}{active_tab_url}"
+
+    print(f"Active tab url now: {active_tab_url}")
+    return active_tab_url
+
+
 def get_active_url_from_accessTree(env, config):
     """
         Playwright cannot get the url of active tab directly, 
@@ -999,6 +1049,9 @@ def get_active_url_from_accessTree(env, config):
         Return
             url: str
     """
+    if env.vm_platform == 'Windows':
+        return _get_active_url_from_windows_address_bar(env, config)
+
     # Ensure the controller and its method are accessible and return a valid result
     if hasattr(env, 'controller') and callable(getattr(env.controller, 'get_accessibility_tree', None)):
         accessibility_tree = env.controller.get_accessibility_tree()

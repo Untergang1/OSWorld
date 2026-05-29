@@ -4,6 +4,7 @@ import random
 from typing import Any, Dict, Optional
 import time
 import traceback
+import uuid
 import requests
 
 from desktop_env.actions import KEYBOARD_KEYS
@@ -20,6 +21,7 @@ class PythonController:
         self.pkgs_prefix = pkgs_prefix  # fixme: this is a hacky way to execute python commands. fix it and combine it with installation of packages
         self.retry_times = 3
         self.retry_interval = 5
+        self._run_python_available: Optional[bool] = None
 
     @staticmethod
     def _is_valid_image_response(content_type: str, data: Optional[bytes]) -> bool:
@@ -38,6 +40,55 @@ class PythonController:
         if content_type and ("image/png" in content_type or "image/jpeg" in content_type or "image/jpg" in content_type):
             return True
         return False
+
+    @staticmethod
+    def _safe_response_json(response: requests.Response) -> Optional[Dict[str, Any]]:
+        try:
+            parsed = response.json()
+        except ValueError:
+            return None
+        return parsed if isinstance(parsed, dict) else None
+
+    @staticmethod
+    def _error_from_response(response: requests.Response, message: str) -> Dict[str, Any]:
+        parsed = PythonController._safe_response_json(response)
+        if parsed:
+            error = parsed.get("error") or parsed.get("message") or response.text
+            output = parsed.get("output")
+        else:
+            error = response.text[:1000]
+            output = None
+        return {
+            "status": "error",
+            "message": message,
+            "output": output,
+            "error": f"HTTP {response.status_code}: {error}",
+            "return_code": -1,
+            "returncode": -1,
+        }
+
+    @staticmethod
+    def _normalize_python_result(result: Dict[str, Any]) -> Dict[str, Any]:
+        return_code = result.get("return_code", result.get("returncode", 0 if result.get("status") == "success" else -1))
+        output = result.get("output") or ""
+        error = result.get("error") or ""
+        message = result.get("message")
+        if message is None:
+            message = output
+            if error:
+                message += ("\n" + error) if message else error
+        status = "success" if result.get("status") == "success" and return_code == 0 else result.get("status", "error")
+        if return_code not in (0, None):
+            status = "error"
+        return {
+            "status": status,
+            "message": message,
+            "need_more": result.get("need_more", False),
+            "output": output,
+            "error": error,
+            "return_code": return_code,
+            "returncode": return_code,
+        }
 
     def get_screenshot(self) -> Optional[bytes]:
         """
@@ -161,11 +212,120 @@ class PythonController:
 
         logger.error("Failed to execute command.")
         return None
+
+    def _execute_python_inline(self, script: str, timeout: int = 120) -> Dict[str, Any]:
+        payload = json.dumps({"command": ["python", "-c", script], "shell": False})
+        response = requests.post(
+            self.http_server + "/execute",
+            headers={'Content-Type': 'application/json'},
+            data=payload,
+            timeout=timeout,
+        )
+        if response.status_code != 200:
+            return self._error_from_response(response, "Failed to execute Python via /execute.")
+
+        parsed = self._safe_response_json(response)
+        if parsed is None:
+            return self._error_from_response(response, "Invalid JSON response from /execute.")
+        return self._normalize_python_result(parsed)
+
+    def _get_remote_temp_dir(self) -> Optional[str]:
+        try:
+            result = self._execute_python_inline("import tempfile; print(tempfile.gettempdir())", timeout=30)
+        except Exception as e:
+            logger.warning("Failed to get remote temp directory: %s", e)
+            return None
+
+        if result.get("status") != "success":
+            logger.warning("Failed to get remote temp directory: %s", result.get("error") or result.get("message"))
+            return None
+        temp_dir = (result.get("output") or "").strip()
+        return temp_dir or None
+
+    def _run_python_script_file_fallback(self, script: str) -> Dict[str, Any]:
+        temp_dir = self._get_remote_temp_dir()
+        if not temp_dir:
+            return {
+                "status": "error",
+                "message": "Failed to execute command.",
+                "output": "",
+                "error": "Could not determine remote temp directory for script upload fallback.",
+                "return_code": -1,
+                "returncode": -1,
+            }
+
+        separator = "\\" if "\\" in temp_dir else "/"
+        remote_path = temp_dir.rstrip("\\/") + separator + f"osworld_python_exec_{uuid.uuid4().hex}.py"
+        filename = remote_path.replace("\\", "/").split("/")[-1]
+
+        try:
+            response = requests.post(
+                self.http_server + "/setup/upload",
+                data={"file_path": remote_path},
+                files={"file_data": (filename, script.encode("utf-8"))},
+                timeout=600,
+            )
+            if response.status_code != 200:
+                return self._error_from_response(response, "Failed to upload Python script for fallback execution.")
+
+            payload = json.dumps({"command": ["python", remote_path], "shell": False})
+            response = requests.post(
+                self.http_server + "/execute",
+                headers={'Content-Type': 'application/json'},
+                data=payload,
+                timeout=120,
+            )
+            if response.status_code != 200:
+                return self._error_from_response(response, "Failed to execute uploaded Python script.")
+
+            parsed = self._safe_response_json(response)
+            if parsed is None:
+                return self._error_from_response(response, "Invalid JSON response from uploaded Python script execution.")
+            return self._normalize_python_result(parsed)
+        except requests.exceptions.RequestException as e:
+            return {
+                "status": "error",
+                "message": "Failed to execute command.",
+                "output": "",
+                "error": f"Uploaded Python script fallback request failed: {e}",
+                "return_code": -1,
+                "returncode": -1,
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": "Failed to execute command.",
+                "output": "",
+                "error": f"Uploaded Python script fallback failed: {e}",
+                "return_code": -1,
+                "returncode": -1,
+            }
+        finally:
+            cleanup_script = f"import os; p = {remote_path!r}; os.remove(p) if os.path.exists(p) else None"
+            try:
+                self._execute_python_inline(cleanup_script, timeout=30)
+            except Exception as e:
+                logger.warning("Failed to clean up remote Python script %s: %s", remote_path, e)
+
+    def _run_python_script_execute_fallback(self, script: str) -> Dict[str, Any]:
+        # Avoid Windows command-line length limits by uploading larger scripts.
+        if len(script) <= 24000:
+            try:
+                return self._execute_python_inline(script)
+            except OSError as e:
+                logger.warning("Inline Python fallback failed, trying uploaded script fallback: %s", e)
+            except requests.exceptions.RequestException as e:
+                logger.warning("Inline Python fallback request failed, trying uploaded script fallback: %s", e)
+
+        return self._run_python_script_file_fallback(script)
     
     def run_python_script(self, script: str) -> Optional[Dict[str, Any]]:
         """
         Executes a python script on the server.
         """
+        if self._run_python_available is False:
+            return self._run_python_script_execute_fallback(script)
+
         payload = json.dumps({"code": script})
 
         for _ in range(self.retry_times):
@@ -173,9 +333,17 @@ class PythonController:
                 response = requests.post(self.http_server + "/run_python", headers={'Content-Type': 'application/json'},
                                          data=payload, timeout=90)
                 if response.status_code == 200:
-                    return response.json()
+                    self._run_python_available = True
+                    parsed = self._safe_response_json(response)
+                    if parsed is None:
+                        return self._error_from_response(response, "Invalid JSON response from /run_python.")
+                    return self._normalize_python_result(parsed)
+                elif response.status_code == 404:
+                    logger.info("/run_python is unavailable on this VM server; falling back to /execute.")
+                    self._run_python_available = False
+                    return self._run_python_script_execute_fallback(script)
                 else:
-                    return {"status": "error", "message": "Failed to execute command.", "output": None, "error": response.json()["error"]}
+                    return self._error_from_response(response, "Failed to execute command.")
             except requests.exceptions.ReadTimeout:
                 break
             except Exception:
@@ -184,7 +352,14 @@ class PythonController:
             time.sleep(self.retry_interval)
 
         logger.error("Failed to execute command.")
-        return {"status": "error", "message": "Failed to execute command.", "output": "", "error": "Retry limit reached."}
+        return {
+            "status": "error",
+            "message": "Failed to execute command.",
+            "output": "",
+            "error": "Retry limit reached.",
+            "return_code": -1,
+            "returncode": -1,
+        }
     
     def run_bash_script(self, script: str, timeout: int = 30, working_dir: Optional[str] = None) -> Optional[Dict[str, Any]]:
         """
