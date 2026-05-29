@@ -1,0 +1,52 @@
+{
+  "id": "5a5bab04-155d-49fb-899a-f715aa2c0bb1",
+  "snapshot": "omnic",
+  "instruction": "In OMNIC, open absorb.spa, apply an automatic baseline correction, and export the corrected spectrum as absorb_baseline_corrected.csv in C:\\Users\\User\\OMNIC_data\\Output.",
+  "source": "https://knowledge1.thermofisher.com/Molecular_Spectroscopy/Molecular_Spectroscopy_Software/OMNIC_Family/OMNIC_Suite_Software/OMNIC_Suite_Operator_Manuals/269-3593_Getting_Started_with_OMNIC_Software",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "powershell",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-Command",
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\OMNIC_data\\Output' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\OMNIC_data\\Output\\absorb_baseline_corrected.csv' -Force -ErrorAction SilentlyContinue"
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "c:\\Users\\User\\OMNIC_data\\absorb.spa"
+      }
+    }
+  ],
+  "trajectory": "trajectories/",
+  "related_apps": [
+    "omnic"
+  ],
+  "evaluator": {
+    "func": "check_omnic_export_table",
+    "result": {
+      "type": "vm_file",
+      "path": "c:\\Users\\User\\OMNIC_data\\Output\\absorb_baseline_corrected.csv",
+      "dest": "absorb_baseline_corrected.csv"
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "extension": ".csv",
+        "min_bytes": 1000,
+        "min_numeric_rows": 100,
+        "min_wavenumber": 700,
+        "max_wavenumber": 3000
+      }
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

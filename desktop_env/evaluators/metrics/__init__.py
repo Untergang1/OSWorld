@@ -104,6 +104,14 @@ from .gimp import (
 )
 from .libreoffice import check_libre_locale
 from .others import compare_epub, check_mp3_meta
+from .omnic import (
+    check_omnic_export_table,
+    check_omnic_file_metadata,
+    check_omnic_image_export,
+    check_omnic_pdf_text,
+    check_omnic_peak_table,
+    check_omnic_text_contains
+)
 from .pdf import check_pdf_pages
 from .slides import (
     check_presenter_console_disable,
