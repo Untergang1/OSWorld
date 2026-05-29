@@ -1,7 +1,7 @@
 {
   "id": "2cd83e34-e5f0-4454-8a4e-ad444dd94ea4",
   "snapshot": "omnic",
-  "instruction": "In OMNIC, open absorb.spa, normalize or scale it so the main intensity is normalized, then export the result as absorb_normalized.csv in C:\\Users\\User\\OMNIC_data\\Output.",
+  "instruction": "In OMNIC, the absorb.spa spectrum is already open. Normalize or scale it so the main intensity is normalized, then export the result as absorb_normalized.csv in C:\\Users\\User\\OMNIC_data\\Output.",
   "source": "https://knowledge1.thermofisher.com/Molecular_Spectroscopy/Molecular_Spectroscopy_Software/OMNIC_Family/OMNIC_Suite_Software/OMNIC_Suite_Operator_Manuals/269-3593_Getting_Started_with_OMNIC_Software",
   "config": [
     {

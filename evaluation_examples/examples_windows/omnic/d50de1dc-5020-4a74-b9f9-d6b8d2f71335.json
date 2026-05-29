@@ -1,7 +1,7 @@
 {
   "id": "d50de1dc-5020-4a74-b9f9-d6b8d2f71335",
   "snapshot": "omnic",
-  "instruction": "In OMNIC, open absorb.spa and save a copy of the spectrum as absorb_review.spa in C:\\Users\\User\\OMNIC_data\\Output.",
+  "instruction": "In OMNIC, the absorb.spa spectrum is already open. Save a copy of the spectrum as absorb_review.spa in C:\\Users\\User\\OMNIC_data\\Output.",
   "source": "https://knowledge1.thermofisher.com/Molecular_Spectroscopy/Molecular_Spectroscopy_Software/OMNIC_Family/OMNIC_Suite_Software/OMNIC_Suite_Operator_Manuals/269-3593_Getting_Started_with_OMNIC_Software",
   "config": [
     {
