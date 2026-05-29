@@ -65,19 +65,77 @@ def start_uiagent_execution(service, task: str, task_config: dict | None = None)
     )
 
 
-def poll_uiagent_execution(service, store, task_id: str, timeout: float, poll: float, stream: bool = True) -> dict:
+def _status_snapshot(current: dict) -> dict:
+    return {
+        "status": current.get("status"),
+        "stage": current.get("current_stage"),
+        "error": current.get("error"),
+        "current_step": current.get("current_step"),
+        "total_steps": current.get("total_steps"),
+    }
+
+
+def _format_progress_line(snapshot: dict) -> str:
+    status = snapshot.get("status") or "unknown"
+    stage = snapshot.get("stage") or "unknown"
+    current_step = snapshot.get("current_step")
+    total_steps = snapshot.get("total_steps")
+    step_text = ""
+    if current_step not in (None, "") or total_steps not in (None, ""):
+        step_text = f" step={current_step or 0}/{total_steps or 0}"
+    error = snapshot.get("error")
+    error_text = f" error={error}" if error else ""
+    return f"Progress: status={status} stage={stage}{step_text}{error_text}"
+
+
+def _print_start_summary(task_id: str, log_dir: str | None) -> None:
+    print(f"Started UIAgent task {task_id}")
+    if log_dir:
+        print(f"Log: {log_dir}")
+
+
+def _write_final_record(current: dict) -> str | None:
+    log_dir = str(current.get("log_dir") or "").strip()
+    if not log_dir:
+        return None
+    result_path = Path(log_dir) / "uiagent_run_result.json"
+    result_path.parent.mkdir(parents=True, exist_ok=True)
+    result_path.write_text(json.dumps(current, ensure_ascii=False, indent=2), encoding="utf-8")
+    return str(result_path)
+
+
+def _print_final_summary(current: dict, result_path: str | None = None) -> None:
+    print(f"Finished: {current.get('status') or 'unknown'}")
+    if current.get("error"):
+        print(f"Error: {current.get('error')}")
+    if current.get("log_dir"):
+        print(f"Log: {current.get('log_dir')}")
+    if result_path:
+        print(f"Result: {result_path}")
+
+
+def poll_uiagent_execution(
+    service,
+    store,
+    task_id: str,
+    timeout: float,
+    poll: float,
+    stream: bool = True,
+    verbose: bool = False,
+) -> dict:
     deadline = time.time() + timeout
     last_current = {}
+    last_status_line = None
     while time.time() < deadline:
         current = store.get_task("execution_tasks", task_id) or {}
         last_current = current
-        status_line = {
-            "status": current.get("status"),
-            "stage": current.get("current_stage"),
-            "error": current.get("error"),
-        }
+        status_line = _status_snapshot(current)
         if stream:
-            print(json.dumps(status_line, ensure_ascii=False))
+            if verbose:
+                print(json.dumps(status_line, ensure_ascii=False))
+            elif status_line != last_status_line:
+                print(_format_progress_line(status_line))
+                last_status_line = dict(status_line)
         if current.get("status") in {"succeeded", "failed", "stopped"}:
             return current
         time.sleep(poll)
@@ -101,6 +159,7 @@ def run_uiagent_task(
     timeout: float = 1800.0,
     poll: float = 2.0,
     stream: bool = True,
+    verbose: bool = False,
 ) -> dict:
     configure_osworld_environment(osworld_root, vmx, snapshot_name, os_type, ready_timeout)
     ExecutionService, store = import_uiagent_services(uiagent_root)
@@ -108,8 +167,11 @@ def run_uiagent_task(
     task_record = start_uiagent_execution(service, task, task_config)
     task_id = task_record["task_id"]
     if stream:
-        print(json.dumps({"task_id": task_id, "log_dir": task_record.get("log_dir")}, ensure_ascii=False))
-    final_record = poll_uiagent_execution(service, store, task_id, timeout, poll, stream=stream)
+        if verbose:
+            print(json.dumps({"task_id": task_id, "log_dir": task_record.get("log_dir")}, ensure_ascii=False))
+        else:
+            _print_start_summary(task_id, task_record.get("log_dir"))
+    final_record = poll_uiagent_execution(service, store, task_id, timeout, poll, stream=stream, verbose=verbose)
     final_record.setdefault("task_id", task_id)
     final_record.setdefault("log_dir", task_record.get("log_dir"))
     return final_record
@@ -147,6 +209,7 @@ def main() -> int:
     parser.add_argument("--timeout", type=float, default=1800.0)
     parser.add_argument("--ready-timeout", type=float, default=None, help="Seconds to wait for the OSWorld screenshot endpoint before failing.")
     parser.add_argument("--task-config", default="", help="Optional JSON file with an OSWorld task_config.")
+    parser.add_argument("--verbose", action="store_true", help="Print detailed JSON status updates and final task record.")
     args = parser.parse_args()
 
     task_config = None
@@ -178,8 +241,17 @@ def main() -> int:
         timeout=args.timeout,
         poll=args.poll,
         stream=True,
+        verbose=args.verbose,
     )
-    print(json.dumps(current, ensure_ascii=False, indent=2))
+    result_path = None
+    try:
+        result_path = _write_final_record(current)
+    except Exception as exc:
+        print(f"Warning: failed to write final result into UIAgent log: {exc}")
+    if args.verbose:
+        print(json.dumps(current, ensure_ascii=False, indent=2))
+    else:
+        _print_final_summary(current, result_path)
     if current.get("error") == "uiagent_run.py timeout":
         return 2
     return 0 if current.get("status") == "succeeded" else 1
