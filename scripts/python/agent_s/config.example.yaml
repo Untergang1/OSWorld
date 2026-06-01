@@ -1,0 +1,18 @@
+# Copy this file to scripts/python/agent_s/config.yaml for local defaults.
+# Do not put API keys or task selection options in the local config.
+
+provider_name: vmware
+path_to_vm: 'C:\Users\unter\OSWorld\vmware_vm_data\Ubuntu0\Ubuntu0.vmx'
+os_type: Ubuntu
+headless: true
+max_steps: 15
+result_dir: results_s3_qwen_smoke
+
+model_provider: qwen
+model: qwen3.6-plus
+model_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+model_temperature: 0.0
+
+ground_provider: vllm
+ground_url: http://192.168.40.57:18000/v1
+ground_model: ui-tars-1.5-7b-local

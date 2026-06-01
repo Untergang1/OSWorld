@@ -3,13 +3,19 @@ import os
 import asyncio
 import argparse
 import concurrent.futures
+import sys
+from pathlib import Path
 from typing import List, Tuple, Optional
 from dotenv import load_dotenv
 from tqdm.asyncio import tqdm_asyncio
 
 load_dotenv()
 
-from utils import (
+PROJECT_ROOT = Path(__file__).resolve().parents[4]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from scripts.python.agent_s.bbon.utils import (
     get_new_tasks_classification,
     evaluate_comparative_results,
     load_task_instruction,

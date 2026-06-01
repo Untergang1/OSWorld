@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import argparse
 import json
@@ -6,15 +6,15 @@ import os
 import sys
 import time
 import traceback
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from uiagent_run import run_uiagent_task
+from scripts.python.uiagent.run_task import run_uiagent_task
 
 
 def _load_json(path: Path) -> Dict[str, Any]:
@@ -29,11 +29,23 @@ def _write_json(path: Path, data: Dict[str, Any]) -> None:
         handle.write("\n")
 
 
+def _jsonable_args(args: argparse.Namespace) -> Dict[str, Any]:
+    data: Dict[str, Any] = {}
+    for key, value in vars(args).items():
+        data[key] = str(value) if isinstance(value, Path) else value
+    return data
+
+
 def _append_jsonl(path: Path, data: Dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8", newline="\n") as handle:
         handle.write(json.dumps(data, ensure_ascii=False))
         handle.write("\n")
+
+
+def _make_run_id(domain: str) -> str:
+    safe_domain = "".join(ch if ch.isalnum() or ch in {"-", "_", "."} else "-" for ch in domain)
+    return f"{datetime.now().strftime('%Y%m%d@%H%M%S')}_uiagent_{safe_domain}"
 
 
 def _iter_examples(meta: Dict[str, List[str]], domain: str, ids: Optional[set[str]]) -> Iterable[tuple[str, str]]:
@@ -50,6 +62,10 @@ def _load_example(examples_dir: Path, domain: str, example_id: str) -> Dict[str,
     if not path.exists():
         raise FileNotFoundError(path)
     return _load_json(path)
+
+
+def _task_snapshot(args: argparse.Namespace, example: Dict[str, Any]) -> str:
+    return args.snapshot_name or example.get("snapshot") or "init_state"
 
 
 def evaluate_current_vm(
@@ -116,6 +132,7 @@ def run_one(
     uiagent_record: Dict[str, Any] = {}
     score: Optional[float] = None
     error: Optional[str] = None
+    snapshot_name = _task_snapshot(args, example)
 
     try:
         if not args.evaluate_existing:
@@ -124,7 +141,7 @@ def run_one(
                 uiagent_root=args.uiagent_root,
                 osworld_root=str(args.osworld_root),
                 vmx=str(args.vmx),
-                snapshot_name=args.snapshot_name,
+                snapshot_name=snapshot_name,
                 os_type=args.os_type,
                 ready_timeout=args.ready_timeout,
                 task_config=example,
@@ -139,7 +156,7 @@ def run_one(
                 example,
                 path_to_vm=str(args.vmx),
                 provider_name=args.provider_name,
-                snapshot_name=args.snapshot_name,
+                snapshot_name=snapshot_name,
                 os_type=args.os_type,
                 screen_width=args.screen_width,
                 screen_height=args.screen_height,
@@ -155,6 +172,7 @@ def run_one(
     row = {
         "domain": domain,
         "id": example_id,
+        "snapshot": snapshot_name,
         "uiagent_status": uiagent_record.get("status"),
         "uiagent_error": uiagent_record.get("error"),
         "score": score,
@@ -178,7 +196,7 @@ def main() -> int:
     parser.add_argument("--uiagent-root", default="", help="Optional UIAgent source root; omit if UIAgent is pip-installed.")
     parser.add_argument("--osworld-root", type=Path, default=PROJECT_ROOT)
     parser.add_argument("--vmx", type=Path, default=PROJECT_ROOT / "vmware_vm_data" / "Windows0" / "Windows0.vmx")
-    parser.add_argument("--snapshot-name", "--snapshot_name", dest="snapshot_name", default="init_state")
+    parser.add_argument("--snapshot-name", "--snapshot_name", dest="snapshot_name", default=None)
     parser.add_argument("--os-type", "--os_type", dest="os_type", default="Windows")
     parser.add_argument("--provider-name", default="vmware")
     parser.add_argument("--examples-dir", type=Path, default=PROJECT_ROOT / "evaluation_examples" / "examples_windows")
@@ -186,7 +204,8 @@ def main() -> int:
     parser.add_argument("--domain", default="chrome")
     parser.add_argument("--ids", default="", help="Comma-separated task ids to run.")
     parser.add_argument("--limit", type=int, default=0, help="Run only the first N selected examples.")
-    parser.add_argument("--result-dir", type=Path, default=PROJECT_ROOT / "results_uiagent_chrome_windows_easy")
+    parser.add_argument("--result-dir", type=Path, default=PROJECT_ROOT / "results" / "uiagent")
+    parser.add_argument("--run-id", default="", help="Optional run id under --result-dir.")
     parser.add_argument("--timeout-per-task", type=float, default=1800.0)
     parser.add_argument("--poll", type=float, default=2.0)
     parser.add_argument("--ready-timeout", type=float, default=None)
@@ -201,12 +220,16 @@ def main() -> int:
     args = parser.parse_args()
 
     os.environ["OSWORLD_ROOT"] = str(args.osworld_root)
+    args.run_id = args.run_id or _make_run_id(args.domain)
+    args.result_dir = args.result_dir / args.run_id
+
     meta = _load_json(args.meta)
     selected = list(_iter_examples(meta, args.domain, _parse_ids(args.ids)))
     if args.limit > 0:
         selected = selected[: args.limit]
 
     args.result_dir.mkdir(parents=True, exist_ok=True)
+    _write_json(args.result_dir / "args.json", _jsonable_args(args))
     summary_path = args.result_dir / "summary.jsonl"
     print(f"Selected tasks: {len(selected)}")
     print(f"Summary: {summary_path}")

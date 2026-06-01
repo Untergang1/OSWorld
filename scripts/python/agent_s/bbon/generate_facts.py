@@ -2,11 +2,17 @@ import os
 import json
 import asyncio
 import argparse
+import sys
+from pathlib import Path
 from typing import List, Optional
 from dotenv import load_dotenv
 
+PROJECT_ROOT = Path(__file__).resolve().parents[4]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from gui_agents.s3.bbon.behavior_narrator import BehaviorNarrator
-from utils import get_new_tasks_classification
+from scripts.python.agent_s.bbon.utils import get_new_tasks_classification
 
 load_dotenv()
 

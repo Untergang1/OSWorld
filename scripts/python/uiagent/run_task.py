@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import argparse
 import json
@@ -6,6 +6,8 @@ import os
 import sys
 import time
 from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 
 def _insert_uiagent_path(path: str) -> None:
@@ -140,9 +142,9 @@ def poll_uiagent_execution(
             return current
         time.sleep(poll)
 
-    service.stop_execution(task_id, reason="uiagent_run.py timeout")
+    service.stop_execution(task_id, reason="UIAgent OSWorld run timeout")
     timed_out = dict(last_current)
-    timed_out.update({"status": "stopped", "error": "uiagent_run.py timeout", "task_id": task_id})
+    timed_out.update({"status": "stopped", "error": "UIAgent OSWorld run timeout", "task_id": task_id})
     return timed_out
 
 
@@ -150,8 +152,8 @@ def run_uiagent_task(
     task: str,
     *,
     uiagent_root: str = "",
-    osworld_root: str = r"C:\Users\unter\OSWorld",
-    vmx: str = r"C:\Users\unter\OSWorld\vmware_vm_data\Windows0\Windows0.vmx",
+    osworld_root: str = str(PROJECT_ROOT),
+    vmx: str = str(PROJECT_ROOT / "vmware_vm_data" / "Windows0" / "Windows0.vmx"),
     snapshot_name: str = "init_state",
     os_type: str = "Windows",
     ready_timeout: float | None = None,
@@ -189,8 +191,8 @@ def main() -> int:
         default="",
         help="Optional UIAgent source root. Leave empty when UIAgent was installed with `pip install -e .`.",
     )
-    parser.add_argument("--osworld-root", default=r"C:\Users\unter\OSWorld")
-    parser.add_argument("--vmx", default=r"C:\Users\unter\OSWorld\vmware_vm_data\Windows0\Windows0.vmx")
+    parser.add_argument("--osworld-root", default=str(PROJECT_ROOT))
+    parser.add_argument("--vmx", default=str(PROJECT_ROOT / "vmware_vm_data" / "Windows0" / "Windows0.vmx"))
     parser.add_argument(
         "--snapshot-name",
         "--snapshot_name",
@@ -252,7 +254,7 @@ def main() -> int:
         print(json.dumps(current, ensure_ascii=False, indent=2))
     else:
         _print_final_summary(current, result_path)
-    if current.get("error") == "uiagent_run.py timeout":
+    if current.get("error") == "UIAgent OSWorld run timeout":
         return 2
     return 0 if current.get("status") == "succeeded" else 1
 
