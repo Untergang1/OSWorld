@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import importlib
+import importlib.util
 import json
 import os
 import sys
@@ -12,22 +14,79 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 
-def _insert_uiagent_path(path: str) -> None:
-    if not path:
-        return
+def _prepend_python_path(path: str | Path) -> None:
     root = str(Path(path).expanduser().resolve())
-    if root not in sys.path:
-        sys.path.insert(0, root)
+    if not root:
+        return
+    sys.path[:] = [entry for entry in sys.path if str(Path(entry or ".").resolve()) != root]
+    sys.path.insert(0, root)
+
+
+def _is_uiagent_root(path: Path) -> bool:
+    return (
+        (path / "services" / "execution_service.py").exists()
+        and (path / "backend" / "osworld_windows").exists()
+    )
 
 
 def _insert_source_root_if_present() -> None:
     script_path = Path(__file__).resolve()
     for parent in script_path.parents:
-        has_execution_service = (parent / "services" / "execution_service.py").exists()
-        has_osworld_backend = (parent / "backend" / "osworld_windows").exists()
-        if has_execution_service and has_osworld_backend:
-            _insert_uiagent_path(str(parent))
+        if _is_uiagent_root(parent):
+            _prepend_python_path(parent)
             return
+
+
+def _resolve_uiagent_root(explicit_root: str = "") -> Path | None:
+    if explicit_root:
+        root = Path(explicit_root).expanduser().resolve()
+        if not _is_uiagent_root(root):
+            raise FileNotFoundError(f"--uiagent-root does not look like a UIAgent checkout: {root}")
+        return root
+
+    _insert_source_root_if_present()
+    spec = importlib.util.find_spec("services.execution_service")
+    if not spec or not spec.origin:
+        return None
+    root = Path(spec.origin).resolve().parents[1]
+    return root if _is_uiagent_root(root) else None
+
+
+def _same_path(left: str | None, right: Path) -> bool:
+    if not left:
+        return False
+    try:
+        return Path(left).resolve() == right.resolve()
+    except OSError:
+        return False
+
+
+def _ensure_uiagent_config(uiagent_root: Path | None) -> None:
+    expected_config = uiagent_root / "config.py" if uiagent_root else None
+    if uiagent_root:
+        _prepend_python_path(uiagent_root)
+
+    loaded_config = sys.modules.get("config")
+    loaded_path = getattr(loaded_config, "__file__", None)
+    if expected_config and loaded_config is not None and not _same_path(loaded_path, expected_config):
+        del sys.modules["config"]
+
+    config_module = importlib.import_module("config")
+    config_path = getattr(config_module, "__file__", None)
+    if expected_config and not _same_path(config_path, expected_config):
+        raise RuntimeError(
+            "UIAgent config resolution failed: expected "
+            f"{expected_config}, but imported {config_path or '<unknown>'}. "
+            "Pass --uiagent-root C:\\Users\\unter\\UIAgent or reinstall UIAgent in editable mode."
+        )
+
+    missing = [name for name in ("LLM_BASE_URL", "LLM_MODEL") if not hasattr(config_module, name)]
+    if missing:
+        raise RuntimeError(
+            "UIAgent config is missing required LLM setting(s): "
+            f"{', '.join(missing)}. Loaded config: {config_path or '<unknown>'}. "
+            "Check UIAgent config.py or pass --uiagent-root C:\\Users\\unter\\UIAgent."
+        )
 
 
 def configure_uiagent_osworld_environment(
@@ -46,8 +105,8 @@ def configure_uiagent_osworld_environment(
 
 
 def import_uiagent_services(uiagent_root: str = ""):
-    _insert_source_root_if_present()
-    _insert_uiagent_path(uiagent_root)
+    resolved_uiagent_root = _resolve_uiagent_root(uiagent_root)
+    _ensure_uiagent_config(resolved_uiagent_root)
 
     from backend.osworld_windows import client as osworld_client
     from services.execution_service import ExecutionService
