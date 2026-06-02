@@ -76,8 +76,13 @@ Agent-S results are written under `results/agent_s/<run_id>/...`. Agent-S logs d
 
 ### UIAgent Batch Evaluation
 
+OSWorld owns the shared `DesktopEnv`, VM startup, snapshot restore, and per-task
+`reset()`. UIAgent runs inline in the OSWorld process and only talks to the
+prepared controller.
+
 ```powershell
 python scripts/python/uiagent/eval_windows.py `
+  --uiagent-root C:\Users\unter\UIAgent `
   --examples-dir evaluation_examples\examples_windows `
   --meta evaluation_examples\test_omnic_windows.json `
   --domain omnic `
@@ -88,6 +93,7 @@ python scripts/python/uiagent/eval_windows.py `
 
 ```powershell
 python scripts/python/uiagent/run_task.py `
+  --uiagent-root C:\Users\unter\UIAgent `
   --task-config evaluation_examples\examples_windows\omnic\ec69d8d4-68d4-4ec2-99f0-3282132924e6.json `
   --vmx vmware_vm_data\Windows0\Windows0.vmx `
   --os-type Windows

@@ -71,6 +71,7 @@ def _task_snapshot(args: argparse.Namespace, example: Dict[str, Any]) -> str:
 def evaluate_current_vm(
     example: Dict[str, Any],
     *,
+    env: Any,
     path_to_vm: str,
     provider_name: str,
     snapshot_name: str,
@@ -80,30 +81,15 @@ def evaluate_current_vm(
     headless: bool,
     close_after_eval: bool,
 ) -> float:
-    from desktop_env.desktop_env import DesktopEnv
-
-    env = DesktopEnv(
-        provider_name=provider_name,
-        path_to_vm=path_to_vm,
-        snapshot_name=snapshot_name,
-        action_space="pyautogui",
-        screen_size=(screen_width, screen_height),
-        headless=headless,
-        require_a11y_tree=False,
-        os_type=os_type,
-        enable_proxy=False,
-    )
-    try:
-        env._set_task_info(example)
-        env.setup_controller.reset_cache_dir(env.cache_dir)
-        return float(env.evaluate())
-    finally:
-        if close_after_eval:
-            env.close()
+    del path_to_vm, provider_name, snapshot_name, os_type, screen_width, screen_height, headless, close_after_eval
+    env._set_task_info(example)
+    env.setup_controller.reset_cache_dir(env.cache_dir)
+    return float(env.evaluate())
 
 
 def run_one(
     args: argparse.Namespace,
+    env: Any,
     domain: str,
     example_id: str,
     summary_path: Path,
@@ -148,12 +134,18 @@ def run_one(
                 timeout=args.timeout_per_task,
                 poll=args.poll,
                 stream=args.stream_uiagent,
+                env=env,
+                provider_name=args.provider_name,
+                screen_width=args.screen_width,
+                screen_height=args.screen_height,
+                headless=args.headless,
             )
             _write_json(example_dir / "uiagent_task.json", uiagent_record)
 
         if not args.no_evaluate:
             score = evaluate_current_vm(
                 example,
+                env=env,
                 path_to_vm=str(args.vmx),
                 provider_name=args.provider_name,
                 snapshot_name=snapshot_name,
@@ -161,7 +153,7 @@ def run_one(
                 screen_width=args.screen_width,
                 screen_height=args.screen_height,
                 headless=args.headless,
-                close_after_eval=args.stop_after_eval,
+                close_after_eval=False,
             )
             result_path.write_text(f"{score}\n", encoding="utf-8")
     except Exception as exc:
@@ -215,7 +207,7 @@ def main() -> int:
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--no-evaluate", action="store_true", help="Run UIAgent only; do not call OSWorld evaluator.")
     parser.add_argument("--evaluate-existing", action="store_true", help="Skip UIAgent and evaluate the current VM state.")
-    parser.add_argument("--stop-after-eval", action="store_true", help="Stop the VM after each evaluation.")
+    parser.add_argument("--stop-after-eval", action="store_true", help="Stop the shared VM after the evaluation run.")
     parser.add_argument("--stream-uiagent", action="store_true", help="Print UIAgent polling status for each task.")
     args = parser.parse_args()
 
@@ -234,7 +226,26 @@ def main() -> int:
     print(f"Selected tasks: {len(selected)}")
     print(f"Summary: {summary_path}")
 
-    rows = [run_one(args, domain, example_id, summary_path) for domain, example_id in selected]
+    from desktop_env.desktop_env import DesktopEnv
+
+    initial_snapshot = args.snapshot_name or "init_state"
+    env = DesktopEnv(
+        provider_name=args.provider_name,
+        path_to_vm=str(args.vmx),
+        snapshot_name=initial_snapshot,
+        action_space="pyautogui",
+        screen_size=(args.screen_width, args.screen_height),
+        headless=args.headless,
+        require_a11y_tree=False,
+        require_terminal=False,
+        os_type=args.os_type,
+        enable_proxy=False,
+    )
+    try:
+        rows = [run_one(args, env, domain, example_id, summary_path) for domain, example_id in selected]
+    finally:
+        if args.stop_after_eval:
+            env.close()
     scored_rows = [row for row in rows if row.get("score") is not None]
     if scored_rows:
         average = sum(float(row["score"]) for row in scored_rows) / len(scored_rows)

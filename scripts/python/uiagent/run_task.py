@@ -1,11 +1,11 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import argparse
 import json
 import os
 import sys
-import time
 from pathlib import Path
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
@@ -28,17 +28,16 @@ def _insert_source_root_if_present() -> None:
             return
 
 
-def configure_osworld_environment(
+def configure_uiagent_osworld_environment(
     osworld_root: str,
-    vmx: str,
-    snapshot_name: str,
+    env: Any,
     os_type: str = "Windows",
     ready_timeout: float | None = None,
 ) -> None:
     os.environ["DESKTOP_BACKEND"] = "osworld_windows"
     os.environ["OSWORLD_ROOT"] = osworld_root
-    os.environ["OSWORLD_PATH_TO_VM"] = vmx
-    os.environ["OSWORLD_SNAPSHOT_NAME"] = snapshot_name
+    os.environ["OSWORLD_VM_IP"] = str(env.vm_ip)
+    os.environ["OSWORLD_SERVER_PORT"] = str(getattr(env, "server_port", 5000))
     os.environ["OSWORLD_OS_TYPE"] = os_type
     if ready_timeout is not None:
         os.environ["OSWORLD_READY_TIMEOUT"] = str(ready_timeout)
@@ -48,52 +47,57 @@ def import_uiagent_services(uiagent_root: str = ""):
     _insert_source_root_if_present()
     _insert_uiagent_path(uiagent_root)
 
+    from backend.osworld_windows import client as osworld_client
     from services.execution_service import ExecutionService
     from services.support.task_store import store
 
-    return ExecutionService, store
+    return ExecutionService, store, osworld_client
 
 
-def start_uiagent_execution(service, task: str, task_config: dict | None = None) -> dict:
+def create_desktop_env(
+    *,
+    provider_name: str,
+    vmx: str,
+    snapshot_name: str,
+    os_type: str,
+    screen_width: int,
+    screen_height: int,
+    headless: bool,
+):
+    from desktop_env.desktop_env import DesktopEnv
+
+    return DesktopEnv(
+        provider_name=provider_name,
+        path_to_vm=vmx,
+        snapshot_name=snapshot_name,
+        action_space="pyautogui",
+        screen_size=(screen_width, screen_height),
+        headless=headless,
+        require_a11y_tree=False,
+        require_terminal=False,
+        os_type=os_type,
+        enable_proxy=False,
+    )
+
+
+def reset_osworld_env(env: Any, snapshot_name: str, task_config: dict | None) -> dict:
+    env.snapshot_name = snapshot_name
+    if hasattr(env, "is_environment_used"):
+        env.is_environment_used = True
+    return env.reset(task_config=task_config)
+
+
+def start_uiagent_execution(service: Any, task: str, task_config: dict | None = None) -> dict:
     task_parameters = {}
     if task_config:
         task_parameters["osworld_task_config"] = task_config
 
-    return service.start_execution(
+    return service.run_execution_inline(
         task=task,
         device="osworld-windows",
         task_parameters=task_parameters,
         learn_routine_on_success=True,
     )
-
-
-def _status_snapshot(current: dict) -> dict:
-    return {
-        "status": current.get("status"),
-        "stage": current.get("current_stage"),
-        "error": current.get("error"),
-        "current_step": current.get("current_step"),
-        "total_steps": current.get("total_steps"),
-    }
-
-
-def _format_progress_line(snapshot: dict) -> str:
-    status = snapshot.get("status") or "unknown"
-    stage = snapshot.get("stage") or "unknown"
-    current_step = snapshot.get("current_step")
-    total_steps = snapshot.get("total_steps")
-    step_text = ""
-    if current_step not in (None, "") or total_steps not in (None, ""):
-        step_text = f" step={current_step or 0}/{total_steps or 0}"
-    error = snapshot.get("error")
-    error_text = f" error={error}" if error else ""
-    return f"Progress: status={status} stage={stage}{step_text}{error_text}"
-
-
-def _print_start_summary(task_id: str, log_dir: str | None) -> None:
-    print(f"Started UIAgent task {task_id}")
-    if log_dir:
-        print(f"Log: {log_dir}")
 
 
 def _write_final_record(current: dict) -> str | None:
@@ -116,38 +120,6 @@ def _print_final_summary(current: dict, result_path: str | None = None) -> None:
         print(f"Result: {result_path}")
 
 
-def poll_uiagent_execution(
-    service,
-    store,
-    task_id: str,
-    timeout: float,
-    poll: float,
-    stream: bool = True,
-    verbose: bool = False,
-) -> dict:
-    deadline = time.time() + timeout
-    last_current = {}
-    last_status_line = None
-    while time.time() < deadline:
-        current = store.get_task("execution_tasks", task_id) or {}
-        last_current = current
-        status_line = _status_snapshot(current)
-        if stream:
-            if verbose:
-                print(json.dumps(status_line, ensure_ascii=False))
-            elif status_line != last_status_line:
-                print(_format_progress_line(status_line))
-                last_status_line = dict(status_line)
-        if current.get("status") in {"succeeded", "failed", "stopped"}:
-            return current
-        time.sleep(poll)
-
-    service.stop_execution(task_id, reason="UIAgent OSWorld run timeout")
-    timed_out = dict(last_current)
-    timed_out.update({"status": "stopped", "error": "UIAgent OSWorld run timeout", "task_id": task_id})
-    return timed_out
-
-
 def run_uiagent_task(
     task: str,
     *,
@@ -162,25 +134,49 @@ def run_uiagent_task(
     poll: float = 2.0,
     stream: bool = True,
     verbose: bool = False,
+    env: Any = None,
+    provider_name: str = "vmware",
+    screen_width: int = 1920,
+    screen_height: int = 1080,
+    headless: bool = False,
 ) -> dict:
-    configure_osworld_environment(osworld_root, vmx, snapshot_name, os_type, ready_timeout)
-    ExecutionService, store = import_uiagent_services(uiagent_root)
-    service = ExecutionService()
-    task_record = start_uiagent_execution(service, task, task_config)
-    task_id = task_record["task_id"]
-    if stream:
+    del timeout, poll  # Inline mode runs in-process; controller limits and API timeouts govern duration.
+    owns_env = env is None
+    if env is None:
+        env = create_desktop_env(
+            provider_name=provider_name,
+            vmx=vmx,
+            snapshot_name=snapshot_name,
+            os_type=os_type,
+            screen_width=screen_width,
+            screen_height=screen_height,
+            headless=headless,
+        )
+
+    previous_snapshot = getattr(env, "snapshot_name", None)
+    try:
+        if stream:
+            print(f"Resetting OSWorld VM to snapshot {snapshot_name}...")
+        reset_osworld_env(env, snapshot_name, task_config)
+        configure_uiagent_osworld_environment(osworld_root, env, os_type, ready_timeout)
+        ExecutionService, _store, osworld_client = import_uiagent_services(uiagent_root)
+        osworld_client.reset_connection()
+        service = ExecutionService()
+        if stream:
+            print("Running UIAgent inline against the OSWorld-managed VM...")
+        final_record = start_uiagent_execution(service, task, task_config)
         if verbose:
-            print(json.dumps({"task_id": task_id, "log_dir": task_record.get("log_dir")}, ensure_ascii=False))
-        else:
-            _print_start_summary(task_id, task_record.get("log_dir"))
-    final_record = poll_uiagent_execution(service, store, task_id, timeout, poll, stream=stream, verbose=verbose)
-    final_record.setdefault("task_id", task_id)
-    final_record.setdefault("log_dir", task_record.get("log_dir"))
-    return final_record
+            print(json.dumps(final_record, ensure_ascii=False, indent=2))
+        return final_record
+    finally:
+        if previous_snapshot is not None:
+            env.snapshot_name = previous_snapshot
+        if owns_env and os.environ.get("OSWORLD_CLOSE_ENV_AFTER_UIAGENT", "").strip().casefold() in {"1", "true", "yes", "on"}:
+            env.close()
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run UIAgent against the OSWorld Windows VM.")
+    parser = argparse.ArgumentParser(description="Run UIAgent against an OSWorld-managed Windows VM.")
     parser.add_argument(
         "task",
         nargs="?",
@@ -193,6 +189,7 @@ def main() -> int:
     )
     parser.add_argument("--osworld-root", default=str(PROJECT_ROOT))
     parser.add_argument("--vmx", default=str(PROJECT_ROOT / "vmware_vm_data" / "Windows0" / "Windows0.vmx"))
+    parser.add_argument("--provider-name", default="vmware")
     parser.add_argument(
         "--snapshot-name",
         "--snapshot_name",
@@ -205,13 +202,16 @@ def main() -> int:
         "--os_type",
         dest="os_type",
         default="Windows",
-        help="OS type passed to the OSWorld backend.",
+        help="OS type passed to the OSWorld environment.",
     )
-    parser.add_argument("--poll", type=float, default=2.0)
-    parser.add_argument("--timeout", type=float, default=1800.0)
+    parser.add_argument("--screen-width", type=int, default=1920)
+    parser.add_argument("--screen-height", type=int, default=1080)
+    parser.add_argument("--headless", action="store_true")
+    parser.add_argument("--poll", type=float, default=2.0, help="Accepted for compatibility; inline mode does not poll.")
+    parser.add_argument("--timeout", type=float, default=1800.0, help="Accepted for compatibility; inline mode is not hard-killed.")
     parser.add_argument("--ready-timeout", type=float, default=None, help="Seconds to wait for the OSWorld screenshot endpoint before failing.")
     parser.add_argument("--task-config", default="", help="Optional JSON file with an OSWorld task_config.")
-    parser.add_argument("--verbose", action="store_true", help="Print detailed JSON status updates and final task record.")
+    parser.add_argument("--verbose", action="store_true", help="Print detailed final task record.")
     args = parser.parse_args()
 
     task_config = None
@@ -244,18 +244,18 @@ def main() -> int:
         poll=args.poll,
         stream=True,
         verbose=args.verbose,
+        provider_name=args.provider_name,
+        screen_width=args.screen_width,
+        screen_height=args.screen_height,
+        headless=args.headless,
     )
     result_path = None
     try:
         result_path = _write_final_record(current)
     except Exception as exc:
         print(f"Warning: failed to write final result into UIAgent log: {exc}")
-    if args.verbose:
-        print(json.dumps(current, ensure_ascii=False, indent=2))
-    else:
+    if not args.verbose:
         _print_final_summary(current, result_path)
-    if current.get("error") == "UIAgent OSWorld run timeout":
-        return 2
     return 0 if current.get("status") == "succeeded" else 1
 
 
