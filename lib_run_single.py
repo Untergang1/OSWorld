@@ -91,7 +91,7 @@ def run_single_example_gpt54(
         agent.reset()
 
     env.reset(task_config=example)
-    time.sleep(60)  # Wait for the environment to be ready
+    time.sleep(getattr(args, "wait_after_reset", 60))  # Wait for the environment to be ready
     obs = env._get_obs()  # Get the initial observation
 
     with open(os.path.join(example_result_dir, "step_0.png"), "wb") as _f:
