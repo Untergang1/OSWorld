@@ -102,6 +102,7 @@ logger.setLevel(log_level)
 
 datetime_str = datetime.datetime.now().strftime("%Y%m%d@%H%M%S")
 
+os.makedirs("logs", exist_ok=True)
 file_handler = logging.FileHandler(os.path.join("logs", f"normal-{datetime_str}.log"), encoding="utf-8")
 debug_handler = logging.FileHandler(os.path.join("logs", f"debug-{datetime_str}.log"), encoding="utf-8")
 stdout_handler = logging.StreamHandler(sys.stdout)
