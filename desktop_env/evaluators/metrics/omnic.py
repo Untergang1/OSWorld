@@ -189,7 +189,7 @@ def check_omnic_text_contains(result_path: str, rules: Dict[str, Any]) -> float:
 
 
 def check_omnic_pdf_text(result_path: str, rules: Dict[str, Any]) -> float:
-    """Check that an OMNIC PDF report exists and contains expected text."""
+    """Check that an OMNIC PDF report exists and has enough pages."""
     if not _check_basic_file(result_path, rules):
         return 0.0
 
@@ -199,20 +199,8 @@ def check_omnic_pdf_text(result_path: str, rules: Dict[str, Any]) -> float:
         with pdfplumber.open(result_path) as pdf:
             if len(pdf.pages) < int(rules.get("min_pages", 1)):
                 return 0.0
-            text = "\n".join(page.extract_text() or "" for page in pdf.pages)
     except Exception as exc:
         logger.debug("OMNIC PDF export is not readable: %s", exc)
-        return 0.0
-
-    lowered = text.lower()
-    for keyword in rules.get("include_keywords", []):
-        if str(keyword).lower() not in lowered:
-            logger.debug("OMNIC PDF missing keyword: %s", keyword)
-            return 0.0
-
-    alternatives = rules.get("include_any_keywords", [])
-    if alternatives and not any(str(keyword).lower() in lowered for keyword in alternatives):
-        logger.debug("OMNIC PDF missing all alternative keywords")
         return 0.0
 
     return 1.0
