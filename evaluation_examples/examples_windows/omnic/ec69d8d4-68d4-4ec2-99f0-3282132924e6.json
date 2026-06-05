@@ -1,7 +1,7 @@
 {
   "id": "ec69d8d4-68d4-4ec2-99f0-3282132924e6",
   "snapshot": "omnic",
-  "instruction": "In OMNIC, the absorb.spa spectrum is already open. Export the spectrum data as absorb_export.csv in C:\\Users\\User\\OMNIC_data\\Output. Keep the spectral X/Y data in the export.",
+  "instruction": "In OMNIC, the absorb.spa spectrum is already open. Export the spectrum data as absorb_export.csv in C:\\Users\\User\\Desktop. Keep the spectral X/Y data in the export.",
   "source": "https://knowledge1.thermofisher.com/Molecular_Spectroscopy/Molecular_Spectroscopy_Software/OMNIC_Family/OMNIC_Suite_Software/OMNIC_Suite_Operator_Manuals/269-3593_Getting_Started_with_OMNIC_Software",
   "config": [
     {
@@ -13,7 +13,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-Command",
-          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\OMNIC_data\\Output' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\OMNIC_data\\Output\\absorb_export.csv' -Force -ErrorAction SilentlyContinue"
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\Desktop' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\Desktop\\absorb_export.csv' -Force -ErrorAction SilentlyContinue"
         ]
       }
     },
@@ -32,7 +32,7 @@
     "func": "check_omnic_export_table",
     "result": {
       "type": "vm_file",
-      "path": "c:\\Users\\User\\OMNIC_data\\Output\\absorb_export.csv",
+      "path": "c:\\Users\\User\\Desktop\\absorb_export.csv",
       "dest": "absorb_export.csv"
     },
     "expected": {

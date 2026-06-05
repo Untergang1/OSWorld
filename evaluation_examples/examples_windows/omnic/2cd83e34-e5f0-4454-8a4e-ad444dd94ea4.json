@@ -1,7 +1,7 @@
 {
   "id": "2cd83e34-e5f0-4454-8a4e-ad444dd94ea4",
   "snapshot": "omnic",
-  "instruction": "In OMNIC, the absorb.spa spectrum is already open. Normalize or scale it so the main intensity is normalized, then export the result as absorb_normalized.csv in C:\\Users\\User\\OMNIC_data\\Output.",
+  "instruction": "In OMNIC, the absorb.spa spectrum is already open. Normalize or scale it so the main intensity is normalized, then export the result as absorb_normalized.csv in C:\\Users\\User\\Desktop.",
   "source": "https://knowledge1.thermofisher.com/Molecular_Spectroscopy/Molecular_Spectroscopy_Software/OMNIC_Family/OMNIC_Suite_Software/OMNIC_Suite_Operator_Manuals/269-3593_Getting_Started_with_OMNIC_Software",
   "config": [
     {
@@ -13,7 +13,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-Command",
-          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\OMNIC_data\\Output' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\OMNIC_data\\Output\\absorb_normalized.csv' -Force -ErrorAction SilentlyContinue"
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\Desktop' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\Desktop\\absorb_normalized.csv' -Force -ErrorAction SilentlyContinue"
         ]
       }
     },
@@ -32,7 +32,7 @@
     "func": "check_omnic_export_table",
     "result": {
       "type": "vm_file",
-      "path": "c:\\Users\\User\\OMNIC_data\\Output\\absorb_normalized.csv",
+      "path": "c:\\Users\\User\\Desktop\\absorb_normalized.csv",
       "dest": "absorb_normalized.csv"
     },
     "expected": {

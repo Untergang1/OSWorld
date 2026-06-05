@@ -1,7 +1,7 @@
 {
   "id": "cff918ac-b876-4737-9c15-dc471445978a",
   "snapshot": "omnic",
-  "instruction": "In OMNIC, the absorb.spa spectrum is already open. Export the displayed spectrum plot as absorb_plot.png in C:\\Users\\User\\OMNIC_data\\Output.",
+  "instruction": "In OMNIC, the absorb.spa spectrum is already open. Export the displayed spectrum plot as absorb_plot.png in C:\\Users\\User\\Desktop.",
   "source": "https://knowledge1.thermofisher.com/Molecular_Spectroscopy/Molecular_Spectroscopy_Software/OMNIC_Family/OMNIC_Suite_Software/OMNIC_Suite_Operator_Manuals/269-3593_Getting_Started_with_OMNIC_Software",
   "config": [
     {
@@ -13,7 +13,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-Command",
-          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\OMNIC_data\\Output' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\OMNIC_data\\Output\\absorb_plot.png' -Force -ErrorAction SilentlyContinue"
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\Desktop' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\Desktop\\absorb_plot.png' -Force -ErrorAction SilentlyContinue"
         ]
       }
     },
@@ -32,7 +32,7 @@
     "func": "check_omnic_image_export",
     "result": {
       "type": "vm_file",
-      "path": "c:\\Users\\User\\OMNIC_data\\Output\\absorb_plot.png",
+      "path": "c:\\Users\\User\\Desktop\\absorb_plot.png",
       "dest": "absorb_plot.png"
     },
     "expected": {
