@@ -104,6 +104,16 @@ def _finalize_args(args: argparse.Namespace) -> argparse.Namespace:
     return args
 
 
+def _resolve_agent_platform(args: argparse.Namespace) -> str:
+    if args.platform:
+        return args.platform.lower()
+    if str(args.os_type).lower().startswith("win"):
+        return "windows"
+    if str(args.os_type).lower() in {"darwin", "macos", "mac"}:
+        return "darwin"
+    return "linux"
+
+
 def distribute_tasks(test_all_meta: dict) -> list:
     all_tasks = []
     for domain, examples in test_all_meta.items():
@@ -356,8 +366,9 @@ def run_env_tasks(
     # Index run_configs by run_idx for fast lookup
     rc_by_idx = {rc.run_idx: rc for rc in run_configs}
     try:
-        # Use IMAGE_ID_MAP for AWS provider to get snapshot_name
-        snapshot_name = None
+        # Use IMAGE_ID_MAP for AWS provider to get snapshot_name; local providers can
+        # use an explicit snapshot such as the Windows OMNIC "omnic" snapshot.
+        snapshot_name = getattr(shared_args, "snapshot_name", None)
         region = getattr(shared_args, "region", None)
         if shared_args.provider_name == "aws" and region is not None:
             try:
@@ -381,6 +392,7 @@ def run_env_tasks(
             rc.args.observation_type in ["a11y_tree", "screenshot_a11y_tree", "som"]
             for rc in run_configs
         )
+        agent_platform = _resolve_agent_platform(shared_args)
 
         env = DesktopEnv(
             path_to_vm=shared_args.path_to_vm,
@@ -390,7 +402,7 @@ def run_env_tasks(
             snapshot_name=snapshot_name,
             screen_size=(shared_args.screen_width, shared_args.screen_height),
             headless=shared_args.headless,
-            os_type="Ubuntu",
+            os_type=shared_args.os_type,
             require_a11y_tree=any_needs_a11y,
             enable_proxy=True,
             client_password=getattr(shared_args, "client_password", ""),
@@ -408,7 +420,7 @@ def run_env_tasks(
 
             grounding_agent = OSWorldACI(
                 env=env,
-                platform="linux",
+                platform=agent_platform,
                 engine_params_for_generation=rc.engine_params,
                 engine_params_for_grounding=rc.engine_params_for_grounding,
                 engine_params_for_searcher=rc.engine_params_for_searcher,
@@ -422,7 +434,7 @@ def run_env_tasks(
             agent = Agent(
                 rc.engine_params,
                 grounding_agent,
-                platform="linux",
+                platform=agent_platform,
                 action_space="pyautogui",
                 observation_type=a.observation_type,
                 with_reflection=a.with_reflection,
@@ -442,7 +454,7 @@ def run_env_tasks(
 
             verifier = None
             if a.use_verifier:
-                verifier = VerifierAgent(rc.engine_params, platform="linux")
+                verifier = VerifierAgent(rc.engine_params, platform=agent_platform)
 
             agent_cache[run_idx] = (agent, verifier, None)
             logger.info(
@@ -466,7 +478,9 @@ def run_env_tasks(
             try:
                 config_file = os.path.join(
                     shared_args.test_config_base_dir,
-                    f"examples/{domain}/{example_id}.json",
+                    shared_args.examples_subdir,
+                    domain,
+                    f"{example_id}.json",
                 )
                 with open(config_file, "r", encoding="utf-8") as f:
                     example = json.load(f)
@@ -579,13 +593,29 @@ def config() -> argparse.Namespace:
         "--client_password", type=str, default="", help="Client password"
     )
     parser.add_argument("--path_to_vm", type=str, default=None)
+    parser.add_argument("--os_type", type=str, default="Ubuntu")
+    parser.add_argument(
+        "--platform",
+        type=str,
+        default=None,
+        choices=["linux", "windows", "darwin"],
+        help="Agent platform prompt/action mode. Defaults from --os_type.",
+    )
+    parser.add_argument(
+        "--snapshot_name",
+        type=str,
+        default=None,
+        help="Snapshot to restore for local providers when task JSON has no snapshot.",
+    )
     parser.add_argument("--screen_width", type=int, default=1920)
     parser.add_argument("--screen_height", type=int, default=1080)
     parser.add_argument("--sleep_after_execution", type=float, default=1.0)
+    parser.add_argument("--wait_after_reset", type=float, default=60.0)
     parser.add_argument("--domain", type=str, default="all")
     parser.add_argument(
         "--test_config_base_dir", type=str, default="evaluation_examples"
     )
+    parser.add_argument("--examples_subdir", type=str, default="examples")
     parser.add_argument("--max_trajectory_length", type=int, default=8)
 
     parser.add_argument("--model_provider", type=str, default="openai")
