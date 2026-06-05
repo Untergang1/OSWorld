@@ -55,6 +55,9 @@ logger.addHandler(file_handler)
 
 logger = logging.getLogger("desktopenv.agent")
 
+DEFAULT_GROUNDING_WIDTH = 1000
+DEFAULT_GROUNDING_HEIGHT = 1000
+
 # Global variables for signal handling
 active_environments = []
 processes = []
@@ -100,6 +103,23 @@ def _finalize_args(args: argparse.Namespace) -> argparse.Namespace:
 
     if args.provider_name == "aws" and not args.client_password:
         args.client_password = "osworld-public-evaluation"
+
+    has_grounding_width = args.grounding_width is not None
+    has_grounding_height = args.grounding_height is not None
+    if has_grounding_width != has_grounding_height:
+        raise ValueError(
+            "--grounding_width and --grounding_height must be provided together."
+        )
+    if has_grounding_width and (
+        args.grounding_width <= 0 or args.grounding_height <= 0
+    ):
+        raise ValueError("--grounding_width and --grounding_height must be positive.")
+    if args.resize_width is not None and args.resize_width <= 0:
+        raise ValueError("--resize_width must be positive when provided.")
+    if has_grounding_width and args.resize_width is not None:
+        logger.warning(
+            "--resize_width is ignored by VLAAGUI when grounding dimensions are set."
+        )
 
     return args
 
@@ -219,12 +239,16 @@ def _build_engine_params(args: argparse.Namespace) -> tuple:
             "api_key": args.endpoint_api_key,
         }
     else:
-        grounding_height = args.grounding_height
-        grounding_width = args.grounding_width
-        if grounding_width is None:
-            grounding_width = args.screen_width
-        if grounding_height is None:
-            grounding_height = args.screen_height * grounding_width / args.screen_width
+        grounding_width = (
+            args.grounding_width
+            if args.grounding_width is not None
+            else DEFAULT_GROUNDING_WIDTH
+        )
+        grounding_height = (
+            args.grounding_height
+            if args.grounding_height is not None
+            else DEFAULT_GROUNDING_HEIGHT
+        )
 
         engine_params_for_grounding = {
             "engine_type": args.grounding_model_provider,

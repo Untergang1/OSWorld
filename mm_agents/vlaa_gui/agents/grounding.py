@@ -23,6 +23,8 @@ import logging
 
 logger = logging.getLogger("desktopenv.agent")
 
+DEFAULT_GROUNDING_SIZE = (1000, 1000)
+
 
 class ACI:
     def __init__(self):
@@ -205,6 +207,15 @@ class OSWorldACI(ACI):
         self.width = width
         self.height = height
         self.resize_width = resize_width
+        if self.resize_width is not None and {
+            "grounding_width",
+            "grounding_height",
+        }.issubset(self.engine_params_for_grounding):
+            logger.warning(
+                "Ignoring resize_width=%s because grounding_width/grounding_height "
+                "define the VLAAGUI grounding coordinate space.",
+                self.resize_width,
+            )
         # Maintain state for save_to_knowledge
         self.notes = []
         # Screenshot used during ACI execution
@@ -235,6 +246,7 @@ class OSWorldACI(ACI):
         self.current_task_instruction = None
         self._code_agent_constraint_fail_count = 0
         self.enable_zoom_grounding = False
+        self.last_coordinate_debug: Dict[str, Any] = {}
 
         self.observation_type = observation_type
 
@@ -246,14 +258,81 @@ class OSWorldACI(ACI):
                 int(self.engine_params_for_grounding["grounding_width"]),
                 int(self.engine_params_for_grounding["grounding_height"]),
             )
-        return (1000, 1000)
+        return DEFAULT_GROUNDING_SIZE
+
+    def _get_screenshot_size(self, obs: Optional[Dict] = None) -> Tuple[int, int]:
+        obs = obs or self.obs or {}
+        screenshot = obs.get("screenshot")
+        if screenshot:
+            try:
+                with Image.open(BytesIO(screenshot)) as img:
+                    return img.size
+            except Exception as e:
+                logger.warning("Failed to read screenshot size: %s", e)
+        return (int(self.width), int(self.height))
+
+    def _resize_screenshot_for_grounding(
+        self, obs: Dict
+    ) -> Tuple[bytes, Tuple[int, int], Tuple[int, int]]:
+        screenshot_bytes = obs["screenshot"]
+        screenshot_size = self._get_screenshot_size(obs)
+        grounding_size = self._get_grounding_coordinate_space()
+        if screenshot_size == grounding_size:
+            return screenshot_bytes, screenshot_size, grounding_size
+        return (
+            resize_screenshot(screenshot_bytes, grounding_size),
+            screenshot_size,
+            grounding_size,
+        )
+
+    @staticmethod
+    def _scale_and_clamp_coordinates(
+        coordinates: List[int] | Tuple[int, int],
+        source_size: Tuple[int, int],
+        target_size: Tuple[int, int],
+    ) -> List[int]:
+        source_w, source_h = source_size
+        target_w, target_h = target_size
+        if source_w <= 0 or source_h <= 0 or target_w <= 0 or target_h <= 0:
+            raise ValueError(
+                f"Invalid coordinate mapping sizes: {source_size} -> {target_size}"
+            )
+
+        x = round(coordinates[0] * target_w / source_w)
+        y = round(coordinates[1] * target_h / source_h)
+        return [
+            max(0, min(x, target_w - 1)),
+            max(0, min(y, target_h - 1)),
+        ]
+
+    def _record_coordinate_mapping(
+        self, grounding_coords: List[int], exec_coords: List[int]
+    ) -> None:
+        debug = self.last_coordinate_debug or {}
+        debug.setdefault("screenshot_size", list(self._get_screenshot_size()))
+        debug.setdefault("grounding_size", list(self._get_grounding_coordinate_space()))
+        debug.setdefault("mappings", []).append(
+            {
+                "grounding_coords": list(grounding_coords),
+                "exec_coords": list(exec_coords),
+            }
+        )
+        self.last_coordinate_debug = debug
 
     def _parse_xy_from_grounding_response(
         self, response: str
     ) -> Optional[Tuple[int, int]]:
         if not response:
             return None
-        numericals = re.findall(r"-?\d+", response)
+        point_match = re.search(
+            r"<point>\s*\(?\s*(-?\d+)\s*[, ]\s*(-?\d+)\s*\)?\s*</point>",
+            response,
+        )
+        numericals = (
+            [point_match.group(1), point_match.group(2)]
+            if point_match
+            else re.findall(r"-?\d+", response)
+        )
         if len(numericals) < 2:
             return None
         coord_w, coord_h = self._get_grounding_coordinate_space()
@@ -271,7 +350,8 @@ class OSWorldACI(ACI):
         coord_w, coord_h = self._get_grounding_coordinate_space()
         prompt = (
             f"{prompt_prefix}"
-            # f"The image uses a coordinate system from (0, 0) at the top-left to ({coord_w}, {coord_h}) at the bottom-right.\n"
+            f"The image uses a coordinate system from (0, 0) at the top-left "
+            f"to ({coord_w}, {coord_h}) at the bottom-right.\n"
             f"Query: {ref_expr}\n"
             "Output only the coordinate of one point in your response.\n"
         )
@@ -298,16 +378,10 @@ class OSWorldACI(ACI):
 
         response = response if isinstance(response, str) else str(response)
 
-        # parsed = self._parse_xy_from_grounding_response(response)
-        # if parsed is None:
-        #     raise RuntimeError(f"Unable to parse grounding coordinates: {response}")
-        # return parsed
-        point_match = re.search(r"<point>\s*(\d+)\s+(\d+)\s*</point>", response)
-        if point_match:
-            return [int(point_match.group(1)), int(point_match.group(2))]
-        numericals = re.findall(r"\d+", response)
-        assert len(numericals) >= 2
-        return [int(numericals[0]), int(numericals[1])]
+        parsed = self._parse_xy_from_grounding_response(response)
+        if parsed is None:
+            raise RuntimeError(f"Unable to parse grounding coordinates: {response}")
+        return [parsed[0], parsed[1]]
 
     def _crop_centered_and_resize(
         self,
@@ -356,14 +430,15 @@ class OSWorldACI(ACI):
 
     # Given the state and worker's referring expression, use the grounding model to generate (x,y)
     def generate_coords(self, ref_expr: str, obs: Dict) -> List[int]:
-        if self.resize_width is not None:
-            resize_height = int(self.resize_width / self.width * self.height)
-            new_size = (self.resize_width, resize_height)
-            screenshot_bytes = resize_screenshot(obs["screenshot"], new_size)
-        else:
-            screenshot_bytes = obs["screenshot"]
-
+        screenshot_bytes, screenshot_size, grounding_size = (
+            self._resize_screenshot_for_grounding(obs)
+        )
         coord_w, coord_h = self._get_grounding_coordinate_space()
+        self.last_coordinate_debug = {
+            "screenshot_size": list(screenshot_size),
+            "grounding_size": list(grounding_size),
+            "mappings": [],
+        }
 
         # Pass 1: coarse prediction on full image
         print(f"Generating coordinates for: {ref_expr}")
@@ -508,6 +583,14 @@ class OSWorldACI(ACI):
         self.grounding_model.reset()
 
         coord_w, coord_h = self._get_grounding_coordinate_space()
+        screenshot_bytes, screenshot_size, grounding_size = (
+            self._resize_screenshot_for_grounding(obs)
+        )
+        self.last_coordinate_debug = {
+            "screenshot_size": list(screenshot_size),
+            "grounding_size": list(grounding_size),
+            "mappings": [],
+        }
 
         # Build the prompt based on alignment
         coord_space_prefix = f"The image uses a coordinate system from (0, 0) at the top-left to ({coord_w}, {coord_h}) at the bottom-right.\n"
@@ -519,7 +602,7 @@ class OSWorldACI(ACI):
             prompt = f"{coord_space_prefix}Find the coordinates of the CENTER position of the text phrase '{phrase}' in the screenshot. Output only the x,y coordinates."
 
         self.grounding_model.add_message(
-            text_content=prompt, image_content=obs["screenshot"], put_text_last=True
+            text_content=prompt, image_content=screenshot_bytes, put_text_last=True
         )
         print(
             f"Generating text coordinates for phrase: {phrase} (alignment: {alignment})"
@@ -528,12 +611,11 @@ class OSWorldACI(ACI):
         # Generate and parse coordinates
         response = call_llm_safe(self.grounding_model)
         print("RAW MLLM TEXT COORDS RESPONSE:", response)
-        numericals = re.findall(r"\d+", response)
-        if len(numericals) >= 2:
-            grounding_coords = [int(numericals[0]), int(numericals[1])]
+        grounding_coords = self._parse_xy_from_grounding_response(response)
+        if grounding_coords is not None:
             # Convert from grounding space to screen pixel space so that
             # highlight_text_span (which uses coords directly) works correctly.
-            return self.resize_coordinates(grounding_coords)
+            return self.resize_coordinates(list(grounding_coords))
         else:
             # Fallback: raise an error if we can't parse coordinates
             raise ValueError(
@@ -547,6 +629,7 @@ class OSWorldACI(ACI):
         assert self.observation_type == "screenshot" or self.observation_type == "mixed"
         # Reset coords from previous action generation
         self.coords1, self.coords2 = None, None
+        self.last_coordinate_debug = {}
 
         try:
             # Extract the function name and args
@@ -588,29 +671,21 @@ class OSWorldACI(ACI):
 
     def assign_screenshot(self, obs: Dict):
         self.obs = obs
+        self.last_coordinate_debug = {}
 
     def set_task_instruction(self, task_instruction: str):
         """Set the current task instruction for the code agent."""
         self.current_task_instruction = task_instruction
 
-    # Resize from grounding model dim into OSWorld dim (1920 * 1080)
+    # Resize from grounding model coordinates into the current screenshot space.
     def resize_coordinates(self, coordinates: List[int]) -> List[int]:
-        # User explicitly passes the grounding model dimensions
-        if {"grounding_width", "grounding_height"}.issubset(
-            self.engine_params_for_grounding
-        ):
-            grounding_width = self.engine_params_for_grounding["grounding_width"]
-            grounding_height = self.engine_params_for_grounding["grounding_height"]
-        # Default to (1000, 1000), which is UI-TARS resizing
-        else:
-            print("Using UI-TARS grounding model dimensions")
-            grounding_width = 1000
-            grounding_height = 1000
-
-        return [
-            round(coordinates[0] * self.width / grounding_width),
-            round(coordinates[1] * self.height / grounding_height),
-        ]
+        exec_coords = self._scale_and_clamp_coordinates(
+            coordinates,
+            self._get_grounding_coordinate_space(),
+            self._get_screenshot_size(),
+        )
+        self._record_coordinate_mapping(coordinates, exec_coords)
+        return exec_coords
 
     # Given a generated ACI function, returns a list of argument values, where descriptions are at the front of the list
     def parse_function_args(self, function: str) -> List[str]:

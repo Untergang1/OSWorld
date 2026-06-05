@@ -731,6 +731,9 @@ class Worker(BaseModule):
                 and self.grounding_agent.last_code_agent_result is not None
                 else None
             ),
+            "coordinate_debug": getattr(
+                self.grounding_agent, "last_coordinate_debug", None
+            ),
         }
         if verifier_feedback_note:
             self.pending_verifier_feedback = None
