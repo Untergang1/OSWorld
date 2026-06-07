@@ -70,6 +70,28 @@ def _wavenumber_values(rows: List[Tuple[float, ...]]) -> List[float]:
     return values
 
 
+def _check_text_keywords(text: str, rules: Dict[str, Any], label: str) -> bool:
+    if rules.get("ignore_case", True):
+        haystack = text.lower()
+        required = [str(keyword).lower() for keyword in rules.get("include_keywords", [])]
+        alternatives = [str(keyword).lower() for keyword in rules.get("include_any_keywords", [])]
+    else:
+        haystack = text
+        required = [str(keyword) for keyword in rules.get("include_keywords", [])]
+        alternatives = [str(keyword) for keyword in rules.get("include_any_keywords", [])]
+
+    for keyword in required:
+        if keyword not in haystack:
+            logger.debug("OMNIC %s missing keyword: %s", label, keyword)
+            return False
+
+    if alternatives and not any(keyword in haystack for keyword in alternatives):
+        logger.debug("OMNIC %s missing all alternative keywords", label)
+        return False
+
+    return True
+
+
 def check_omnic_file_metadata(result_path: str, rules: Dict[str, Any]) -> float:
     """Check that OMNIC produced the requested output file."""
     return float(_check_basic_file(result_path, rules))
@@ -84,11 +106,8 @@ def check_omnic_export_table(result_path: str, rules: Dict[str, Any]) -> float:
     if not text:
         return 0.0
 
-    lowered = text.lower()
-    for keyword in rules.get("include_keywords", []):
-        if str(keyword).lower() not in lowered:
-            logger.debug("OMNIC export table missing keyword: %s", keyword)
-            return 0.0
+    if not _check_text_keywords(text, rules, "export table"):
+        return 0.0
 
     rows = _numeric_rows(text)
     if len(rows) < int(rules.get("min_numeric_rows", 20)):
@@ -107,6 +126,16 @@ def check_omnic_export_table(result_path: str, rules: Dict[str, Any]) -> float:
     max_wavenumber = rules.get("max_wavenumber")
     if max_wavenumber is not None and max(wavenumbers) < float(max_wavenumber):
         logger.debug("OMNIC export table does not reach high wavenumber bound")
+        return 0.0
+
+    wavenumber_min_at_least = rules.get("wavenumber_min_at_least")
+    if wavenumber_min_at_least is not None and min(wavenumbers) < float(wavenumber_min_at_least):
+        logger.debug("OMNIC export table reaches below expected low wavenumber bound")
+        return 0.0
+
+    wavenumber_max_at_most = rules.get("wavenumber_max_at_most")
+    if wavenumber_max_at_most is not None and max(wavenumbers) > float(wavenumber_max_at_most):
+        logger.debug("OMNIC export table exceeds expected high wavenumber bound")
         return 0.0
 
     max_ranges = rules.get("normalized_max_ranges")
@@ -129,6 +158,10 @@ def check_omnic_peak_table(result_path: str, rules: Dict[str, Any]) -> float:
 
     text = _read_text(result_path)
     rows = _numeric_rows(text)
+    if len(rows) < int(rules.get("min_numeric_rows", 1)):
+        logger.debug("OMNIC peak table has too few numeric rows: %d", len(rows))
+        return 0.0
+
     peak_values = _wavenumber_values(rows)
     if not peak_values:
         return 0.0
@@ -167,40 +200,25 @@ def check_omnic_text_contains(result_path: str, rules: Dict[str, Any]) -> float:
         return 0.0
 
     text = _read_text(result_path)
-    if rules.get("ignore_case", True):
-        haystack = text.lower()
-        required = [str(keyword).lower() for keyword in rules.get("include_keywords", [])]
-        alternatives = [str(keyword).lower() for keyword in rules.get("include_any_keywords", [])]
-    else:
-        haystack = text
-        required = [str(keyword) for keyword in rules.get("include_keywords", [])]
-        alternatives = [str(keyword) for keyword in rules.get("include_any_keywords", [])]
-
-    for keyword in required:
-        if keyword not in haystack:
-            logger.debug("OMNIC text export missing keyword: %s", keyword)
-            return 0.0
-
-    if alternatives and not any(keyword in haystack for keyword in alternatives):
-        logger.debug("OMNIC text export missing all alternative keywords")
-        return 0.0
-
-    return 1.0
+    return float(_check_text_keywords(text, rules, "text export"))
 
 
 def check_omnic_pdf_text(result_path: str, rules: Dict[str, Any]) -> float:
-    """Check that an OMNIC PDF report exists and has enough pages."""
+    """Check that an OMNIC PDF report exists and contains expected text."""
     if not _check_basic_file(result_path, rules):
         return 0.0
 
     try:
         import pdfplumber
 
+        page_texts = []
         with pdfplumber.open(result_path) as pdf:
             if len(pdf.pages) < int(rules.get("min_pages", 1)):
                 return 0.0
+            for page in pdf.pages:
+                page_texts.append(page.extract_text() or "")
     except Exception as exc:
         logger.debug("OMNIC PDF export is not readable: %s", exc)
         return 0.0
 
-    return 1.0
+    return float(_check_text_keywords("\n".join(page_texts), rules, "PDF report"))

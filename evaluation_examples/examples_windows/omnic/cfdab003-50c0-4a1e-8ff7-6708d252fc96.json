@@ -1,0 +1,50 @@
+{
+  "id": "cfdab003-50c0-4a1e-8ff7-6708d252fc96",
+  "snapshot": "omnic",
+  "instruction": "In OMNIC, the absorb.spa spectrum is already open. Apply an automatic baseline correction, run peak picking or Find Peaks, then export the peak table as absorb_peaks.csv in C:\\Users\\User\\Desktop.",
+  "source": "https://knowledge1.thermofisher.com/Molecular_Spectroscopy/Molecular_Spectroscopy_Software/OMNIC_Family/OMNIC_Suite_Software/OMNIC_Suite_Operator_Manuals/269-3593_Getting_Started_with_OMNIC_Software",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "powershell",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-Command",
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\Desktop' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\Desktop\\absorb_peaks.csv' -Force -ErrorAction SilentlyContinue"
+        ]
+      }
+    },
+    {
+      "type": "open",
+      "parameters": {
+        "path": "c:\\Users\\User\\OMNIC_data\\absorb.spa"
+      }
+    }
+  ],
+  "trajectory": "trajectories/",
+  "related_apps": [
+    "omnic"
+  ],
+  "evaluator": {
+    "func": "check_omnic_peak_table",
+    "result": {
+      "type": "vm_file",
+      "path": "c:\\Users\\User\\Desktop\\absorb_peaks.csv",
+      "dest": "absorb_peaks.csv"
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "extension": ".csv",
+        "min_bytes": 100,
+        "min_numeric_rows": 1
+      }
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
