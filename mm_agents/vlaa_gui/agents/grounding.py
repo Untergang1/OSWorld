@@ -833,10 +833,25 @@ class OSWorldACI(ACI):
             command += f"pyautogui.click({x}, {y}); "
 
         if overwrite:
-            command += (
-                f"pyautogui.hotkey({repr('command' if self.platform == 'darwin' else 'ctrl')}, 'a'); "
-                "pyautogui.press('backspace'); "
+            clear_strategy = (
+                getattr(self.env, "text_clear_strategy", "ctrl_a")
+                if self.env is not None
+                else "ctrl_a"
             )
+            if clear_strategy == "single_line":
+                # OMNIC edit fields do not reliably honor Ctrl+A, so select the current line.
+                command += (
+                    "pyautogui.press('end'); "
+                    "pyautogui.keyDown('shift'); "
+                    "pyautogui.press('home'); "
+                    "pyautogui.keyUp('shift'); "
+                    "pyautogui.press('backspace'); "
+                )
+            else:
+                command += (
+                    f"pyautogui.hotkey({repr('command' if self.platform == 'darwin' else 'ctrl')}, 'a'); "
+                    "pyautogui.press('backspace'); "
+                )
 
         # Check if text contains Unicode characters that pyautogui.write() can't handle
         has_unicode = any(ord(char) > 127 for char in text)
