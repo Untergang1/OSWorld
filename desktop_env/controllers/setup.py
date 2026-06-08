@@ -36,6 +36,8 @@ FILE_PATH = os.path.dirname(os.path.abspath(__file__))
 init_proxy_pool(PROXY_CONFIG_FILE)  # initialize the global proxy pool
 
 MAX_RETRIES = 20
+TRANSIENT_STATUS_CODES = {502, 503, 504}
+OPEN_SETUP_RETRIES = 5
 
 class SetupController:
     def __init__(self, vm_ip: str, server_port: int = 5000, chromium_port: int = 9222, vlc_port: int = 8080, cache_dir: str = "cache", client_password: str = "", screen_width: int = 1920, screen_height: int = 1080):
@@ -54,6 +56,34 @@ class SetupController:
     def reset_cache_dir(self, cache_dir: str):
         self.cache_dir = cache_dir
 
+    def _wait_until_server_ready(self) -> bool:
+        retry = 0
+        endpoints = ("/terminal", "/screenshot")
+        while retry < MAX_RETRIES:
+            try:
+                statuses = []
+                ready = True
+                for endpoint in endpoints:
+                    response = requests.get(self.http_server + endpoint, timeout=(5, 10))
+                    statuses.append(f"{endpoint}={response.status_code}")
+                    if response.status_code != 200:
+                        ready = False
+                if ready:
+                    return True
+                logger.info(
+                    "VM server not ready at %s (%s)",
+                    self.http_server,
+                    ", ".join(statuses),
+                )
+            except requests.exceptions.RequestException as e:
+                logger.info("VM server health check failed at %s: %s", self.http_server, e)
+
+            retry += 1
+            logger.info(f"retry: {retry}/{MAX_RETRIES}")
+            time.sleep(5)
+
+        return False
+
     def setup(self, config: List[Dict[str, Any]], use_proxy: bool = False)-> bool:
         """
         Args:
@@ -69,18 +99,8 @@ class SetupController:
         self.use_proxy = use_proxy
         # make sure connection can be established
         logger.info(f"try to connect {self.http_server}")
-        retry = 0
-        while retry < MAX_RETRIES:
-            try:
-                _ = requests.get(self.http_server + "/terminal")
-                break
-            except:
-                time.sleep(5)
-                retry += 1
-                logger.info(f"retry: {retry}/{MAX_RETRIES}")
-            
-            if retry == MAX_RETRIES:
-                return False
+        if not self._wait_until_server_ready():
+            return False
                 
 
         for i, cfg in enumerate(config):
@@ -287,15 +307,55 @@ class SetupController:
         }
 
         # send request to server to open file
-        try:
-            # The server-side call is now blocking and can take time.
-            # We set a timeout that is slightly longer than the server's timeout (1800s).
-            response = requests.post(self.http_server + "/setup" + "/open_file", headers=headers, data=payload, timeout=1810)
-            response.raise_for_status()  # This will raise an exception for 4xx and 5xx status codes
-            logger.info("Command executed successfully: %s", response.text)
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Failed to open file '{path}'. An error occurred while trying to send the request or the server responded with an error: {e}")
-            raise Exception(f"Failed to open file '{path}'. An error occurred while trying to send the request or the server responded with an error: {e}") from e
+        last_error: Optional[Exception] = None
+        for attempt in range(OPEN_SETUP_RETRIES):
+            if not self._wait_until_server_ready():
+                last_error = requests.RequestException("VM server did not become ready before open_file")
+            else:
+                try:
+                    # The server-side call is now blocking and can take time.
+                    # We set a timeout that is slightly longer than the server's timeout (1800s).
+                    response = requests.post(
+                        self.http_server + "/setup" + "/open_file",
+                        headers=headers,
+                        data=payload,
+                        timeout=1810,
+                    )
+                    if response.status_code == 200:
+                        logger.info("Command executed successfully: %s", response.text)
+                        return
+                    if response.status_code not in TRANSIENT_STATUS_CODES:
+                        response.raise_for_status()
+                    last_error = requests.HTTPError(
+                        f"{response.status_code} Server Error: {response.text}",
+                        response=response,
+                    )
+                except requests.exceptions.RequestException as e:
+                    last_error = e
+                    status_code = getattr(getattr(e, "response", None), "status_code", None)
+                    if status_code is not None and status_code not in TRANSIENT_STATUS_CODES:
+                        logger.error(
+                            "Open file failed for '%s' with non-retryable status %s: %s",
+                            path,
+                            status_code,
+                            e,
+                        )
+                        raise Exception(f"Failed to open file '{path}'. Non-retryable error: {e}") from e
+
+            if attempt < OPEN_SETUP_RETRIES - 1:
+                delay = min(3 * (2 ** attempt), 30)
+                logger.warning(
+                    "Open file attempt %d/%d failed for '%s': %s. Retrying in %ss.",
+                    attempt + 1,
+                    OPEN_SETUP_RETRIES,
+                    path,
+                    last_error,
+                    delay,
+                )
+                time.sleep(delay)
+
+        logger.error(f"Failed to open file '{path}'. An error occurred while trying to send the request or the server responded with an error: {last_error}")
+        raise Exception(f"Failed to open file '{path}'. An error occurred while trying to send the request or the server responded with an error: {last_error}") from last_error
 
     def _launch_setup(self, command: Union[str, List[str]], shell: bool = False):
         if not command:
@@ -363,6 +423,7 @@ class SetupController:
         command = replace_screen_env_in_command(command)
         payload = json.dumps({"command": command, "shell": shell})
         headers = {"Content-Type": "application/json"}
+        last_error: Optional[Exception] = None
 
         while not terminates:
             try:
@@ -382,21 +443,26 @@ class SetupController:
                 else:
                     logger.error("Failed to launch application. Status code: %s", response.text)
                     results = None
+                    last_error = requests.RequestException(
+                        f"Setup execute failed with status {response.status_code}: {response.text}"
+                    )
                     nb_failings += 1
             except requests.exceptions.RequestException as e:
                 logger.error("An error occurred while trying to send the request: %s", e)
                 traceback.print_exc()
 
                 results = None
+                last_error = e
                 nb_failings += 1
 
             if len(until) == 0:
-                terminates = True
+                terminates = results is not None
             elif results is not None:
                 terminates = "returncode" in until and results["returncode"] == until["returncode"] \
                              or "stdout" in until and until["stdout"] in results["output"] \
                              or "stderr" in until and until["stderr"] in results["error"]
-            terminates = terminates or nb_failings >= 5
+            if nb_failings >= 5 and not terminates:
+                raise Exception(f"Setup execute failed after {nb_failings} attempts: {last_error}") from last_error
             if not terminates:
                 time.sleep(0.3)
 

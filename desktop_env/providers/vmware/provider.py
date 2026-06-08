@@ -4,6 +4,8 @@ import platform
 import subprocess
 import time
 
+from filelock import FileLock
+
 from desktop_env.providers.base import Provider
 
 logger = logging.getLogger("desktopenv.providers.vmware.VMwareProvider")
@@ -12,6 +14,7 @@ logger.setLevel(logging.INFO)
 WAIT_TIME = 3
 STOP_TIMEOUT = 60
 POST_STOP_WAIT_TIME = 3
+VMRUN_LOCK = FileLock(".vmware_vmrun_lck")
 
 
 def get_vmrun_type(return_list=False):
@@ -32,14 +35,15 @@ def get_vmrun_type(return_list=False):
 class VMwareProvider(Provider):
     @staticmethod
     def _execute_command(command: list, return_output=False):
-        process = subprocess.run(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-        )
+        with VMRUN_LOCK:
+            process = subprocess.run(
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+            )
 
         if process.returncode != 0:
             raise subprocess.CalledProcessError(
