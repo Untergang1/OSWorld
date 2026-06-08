@@ -224,10 +224,23 @@ class PyAutoGUIVMwareBackend(Backend):
             code_parts.append("time.sleep(0.05)")
         # 2) Optional overwrite
         if act.overwrite:
-            code_parts.append("pyautogui.hotkey('ctrl', 'a', interval=0.2)")
-            code_parts.append("time.sleep(0.05)")
-            code_parts.append("pyautogui.press('backspace')")
-            code_parts.append("time.sleep(0.05)")
+            clear_strategy = (
+                getattr(self.env_controller, "text_clear_strategy", "ctrl_a")
+                if self.env_controller is not None
+                else "ctrl_a"
+            )
+            if clear_strategy == "single_line":
+                code_parts.append("pyautogui.press('end')")
+                code_parts.append("time.sleep(0.05)")
+                code_parts.append("pyautogui.keyDown('shift')")
+                code_parts.append("pyautogui.press('home')")
+                code_parts.append("pyautogui.keyUp('shift')")
+                code_parts.append("time.sleep(0.05)")
+            else:
+                code_parts.append("pyautogui.hotkey('ctrl', 'a', interval=0.2)")
+                code_parts.append("time.sleep(0.05)")
+                code_parts.append("pyautogui.press('backspace')")
+                code_parts.append("time.sleep(0.05)")
         # 3) Type text by write in VMware codegen path
         code_parts.append("pyautogui.write(" + repr(act.text) + ")")
         # 4) Optional enter

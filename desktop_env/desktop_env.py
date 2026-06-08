@@ -174,6 +174,7 @@ class DesktopEnv(gym.Env):
         
         self.snapshot_name = snapshot_name
         self.cache_dir_base: str = cache_dir
+        self.text_clear_strategy = "ctrl_a"
         # todo: add the logic to get the screen size from the VM
         self.headless = headless
         self.require_a11y_tree = require_a11y_tree
@@ -248,6 +249,7 @@ class DesktopEnv(gym.Env):
         self._traj_no += 1
         self._step_no = 0
         self.action_history.clear()
+        self.text_clear_strategy = "ctrl_a"
 
         for attempt in range(MAX_RETRIES):
             # Only revert to snapshot if environment has been used (step/setup)
@@ -332,8 +334,38 @@ class DesktopEnv(gym.Env):
         os.makedirs(self.cache_dir, exist_ok=True)
         self.instruction = task_config["instruction"]
         self.config = task_config["config"] if "config" in task_config else []
+        self.text_clear_strategy = self._infer_text_clear_strategy(task_config)
         
         self._set_evaluator_info(task_config)
+
+    @staticmethod
+    def _infer_text_clear_strategy(task_config: Optional[Dict[str, Any]]) -> str:
+        """Pick a text clearing strategy from stable task metadata."""
+        if not task_config:
+            return "ctrl_a"
+
+        snapshot = str(task_config.get("snapshot", "")).lower()
+        related_apps = task_config.get("related_apps", [])
+        if related_apps is None:
+            related_apps = []
+        elif isinstance(related_apps, str):
+            related_apps = [related_apps]
+
+        evaluator = task_config.get("evaluator", {})
+        funcs = evaluator.get("func", []) if isinstance(evaluator, dict) else []
+        if isinstance(funcs, str):
+            funcs = [funcs]
+        elif funcs is None:
+            funcs = []
+        elif not isinstance(funcs, (list, tuple, set)):
+            funcs = [funcs]
+
+        is_omnic = (
+            snapshot == "omnic"
+            or any(str(app).lower() == "omnic" for app in related_apps)
+            or any("omnic" in str(func).lower() for func in funcs)
+        )
+        return "single_line" if is_omnic else "ctrl_a"
 
     def _set_evaluator_info(self, task_config: Dict[str, Any]):
         """Set evaluator information from task config"""
