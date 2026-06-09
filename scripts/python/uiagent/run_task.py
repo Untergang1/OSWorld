@@ -148,17 +148,35 @@ def reset_osworld_env(env: Any, snapshot_name: str, task_config: dict | None) ->
     return env.reset(task_config=task_config)
 
 
-def start_uiagent_execution(service: Any, task: str, task_config: dict | None = None) -> dict:
+def start_uiagent_execution(
+    service: Any,
+    task: str,
+    task_config: dict | None = None,
+    max_steps: int | None = None,
+) -> dict:
     task_parameters = {}
     if task_config:
         task_parameters["osworld_task_config"] = task_config
 
-    return service.run_execution_inline(
-        task=task,
-        device="osworld-windows",
-        task_parameters=task_parameters,
-        learn_routine_on_success=True,
-    )
+    config_module = importlib.import_module("config")
+    has_original = hasattr(config_module, "EXECUTION_CONTROLLER_MAX_TURNS")
+    original_max_turns = getattr(config_module, "EXECUTION_CONTROLLER_MAX_TURNS", None)
+    if max_steps is not None and max_steps > 0:
+        config_module.EXECUTION_CONTROLLER_MAX_TURNS = int(max_steps)
+
+    try:
+        return service.run_execution_inline(
+            task=task,
+            device="osworld-windows",
+            task_parameters=task_parameters,
+            learn_routine_on_success=True,
+        )
+    finally:
+        if max_steps is not None and max_steps > 0:
+            if has_original:
+                config_module.EXECUTION_CONTROLLER_MAX_TURNS = original_max_turns
+            else:
+                delattr(config_module, "EXECUTION_CONTROLLER_MAX_TURNS")
 
 
 def _write_final_record(current: dict) -> str | None:
@@ -200,6 +218,7 @@ def run_uiagent_task(
     screen_width: int = 1920,
     screen_height: int = 1080,
     headless: bool = False,
+    max_steps: int | None = None,
 ) -> dict:
     del timeout, poll  # Inline mode runs in-process; controller limits and API timeouts govern duration.
     owns_env = env is None
@@ -225,7 +244,7 @@ def run_uiagent_task(
         service = ExecutionService()
         if stream:
             print("Running UIAgent inline against the OSWorld-managed VM...")
-        final_record = start_uiagent_execution(service, task, task_config)
+        final_record = start_uiagent_execution(service, task, task_config, max_steps)
         if verbose:
             print(json.dumps(final_record, ensure_ascii=False, indent=2))
         return final_record
@@ -270,10 +289,13 @@ def main() -> int:
     parser.add_argument("--headless", action="store_true")
     parser.add_argument("--poll", type=float, default=2.0, help="Accepted for compatibility; inline mode does not poll.")
     parser.add_argument("--timeout", type=float, default=1800.0, help="Accepted for compatibility; inline mode is not hard-killed.")
+    parser.add_argument("--max_steps", type=int, default=0, help="Override UIAgent controller max turns for this task. 0 uses UIAgent config.")
     parser.add_argument("--ready-timeout", type=float, default=None, help="Seconds to wait for the OSWorld screenshot endpoint before failing.")
     parser.add_argument("--task-config", default="", help="Optional JSON file with an OSWorld task_config.")
     parser.add_argument("--verbose", action="store_true", help="Print detailed final task record.")
     args = parser.parse_args()
+    if args.max_steps < 0:
+        parser.error("--max_steps must be >= 0")
 
     task_config = None
     if args.task_config:
@@ -309,6 +331,7 @@ def main() -> int:
         screen_width=args.screen_width,
         screen_height=args.screen_height,
         headless=args.headless,
+        max_steps=args.max_steps,
     )
     result_path = None
     try:

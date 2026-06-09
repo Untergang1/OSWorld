@@ -139,6 +139,7 @@ def run_one(
                 screen_width=args.screen_width,
                 screen_height=args.screen_height,
                 headless=args.headless,
+                max_steps=args.max_steps,
             )
             _write_json(example_dir / "uiagent_task.json", uiagent_record)
 
@@ -199,6 +200,7 @@ def main() -> int:
     parser.add_argument("--result-dir", type=Path, default=PROJECT_ROOT / "results" / "uiagent")
     parser.add_argument("--run-id", default="", help="Optional run id under --result-dir.")
     parser.add_argument("--timeout-per-task", type=float, default=1800.0)
+    parser.add_argument("--max-steps", "--max_steps", dest="max_steps", type=int, default=0, help="Override UIAgent controller max turns per task. 0 uses UIAgent config.")
     parser.add_argument("--poll", type=float, default=2.0)
     parser.add_argument("--ready-timeout", type=float, default=None)
     parser.add_argument("--screen-width", type=int, default=1920)
@@ -210,6 +212,8 @@ def main() -> int:
     parser.add_argument("--stop-after-eval", action="store_true", help="Stop the shared VM after the evaluation run.")
     parser.add_argument("--stream-uiagent", action="store_true", help="Print UIAgent polling status for each task.")
     args = parser.parse_args()
+    if args.max_steps < 0:
+        parser.error("--max_steps must be >= 0")
 
     os.environ["OSWORLD_ROOT"] = str(args.osworld_root)
     args.run_id = args.run_id or _make_run_id(args.domain)

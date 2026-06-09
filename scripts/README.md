@@ -104,6 +104,7 @@ python scripts/python/run_multienv_uiagent.py `
   --test_all_meta_path evaluation_examples\test_omnic_windows.json `
   --domain omnic `
   --num_envs 1 `
+  --max_steps 15 `
   --result_dir results\uiagent_qwen `
   --model_dir_name qwen
 ```
@@ -112,7 +113,8 @@ The result layout is
 `results/uiagent_qwen/pyautogui/screenshot/qwen/<domain>/<task_id>/`. For local
 VMware/VirtualBox runs, do not pass one `--path_to_vm` with `--num_envs > 1`;
 omit `--path_to_vm` so OSWorld can allocate free registered Windows VMs, or keep
-`--num_envs 1`.
+`--num_envs 1`. `--max_steps` maps to UIAgent controller turns; each turn may
+contain one high-level UI action or a routine.
 
 ### UIAgent Single Task
 

@@ -263,6 +263,7 @@ def run_one(
                 screen_width=args.screen_width,
                 screen_height=args.screen_height,
                 headless=args.headless,
+                max_steps=args.max_steps,
             )
             _write_json(example_dir / "uiagent_task.json", uiagent_record)
             write_uiagent_log_refs(example_dir, uiagent_record)
@@ -398,6 +399,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--action_space", type=str, default="pyautogui")
     parser.add_argument("--observation_type", type=str, default="screenshot")
     parser.add_argument("--timeout_per_task", "--timeout-per-task", dest="timeout_per_task", type=float, default=1800.0)
+    parser.add_argument("--max_steps", "--max-steps", dest="max_steps", type=int, default=0, help="Override UIAgent controller max turns per task. 0 uses UIAgent config.")
     parser.add_argument("--poll", type=float, default=2.0)
     parser.add_argument("--ready_timeout", "--ready-timeout", dest="ready_timeout", type=float, default=None)
     parser.add_argument("--stream_uiagent", "--stream-uiagent", dest="stream_uiagent", action="store_true")
@@ -410,6 +412,8 @@ def build_parser() -> argparse.ArgumentParser:
 def finalize_args(args: argparse.Namespace) -> argparse.Namespace:
     if args.num_envs < 1:
         raise ValueError("--num_envs must be >= 1")
+    if args.max_steps < 0:
+        raise ValueError("--max_steps must be >= 0")
     if args.action_space != "pyautogui":
         raise ValueError("UIAgent OSWorld bridge currently requires --action_space pyautogui")
     if args.path_to_vm and args.num_envs > 1 and args.provider_name in {"vmware", "virtualbox"}:
