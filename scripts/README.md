@@ -105,7 +105,7 @@ OSWorld environments. UIAgent's own repository logs stay in the UIAgent log
 directory; each OSWorld task result records that path in `uiagent_log_dir.txt`.
 
 ```powershell
-python scripts/python/run_multienv_uiagent.py `
+python scripts/python/uiagent/run_multienv_uiagent.py `
   --uiagent-root C:\Users\unter\UIAgent `
   --provider_name vmware `
   --os_type Windows `
