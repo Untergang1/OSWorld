@@ -55,15 +55,17 @@ python scripts/python/run_multienv.py \
 ### Agent-S On Windows OMNIC
 
 ```powershell
-python scripts/python/agent_s/run_local.py `
+python scripts/python/agent_s/run_multienv.py `
   --provider_name vmware `
   --path_to_vm vmware_vm_data\Windows0\Windows0.vmx `
   --os_type Windows `
-  --agent_platform windows `
+  --platform windows `
   --examples_dir evaluation_examples\examples_windows `
   --test_all_meta_path evaluation_examples\test_omnic_windows.json `
   --domain omnic `
-  --result_dir results\agent_s `
+  --result_dir results\vlaa_qwen `
+  --model_dir_name qwen3.6-plus `
+  --num_envs 1 `
   --observation_type screenshot `
   --max_steps 15 `
   --ground_provider <provider> `
@@ -71,8 +73,13 @@ python scripts/python/agent_s/run_local.py `
   --ground_model <model>
 ```
 
-Agent-S results are written under `results/agent_s/<run_id>/...`. Agent-S logs default to
+`run_multienv.py` uses the result directory directly, so this example writes task
+outputs under `results/vlaa_qwen/pyautogui/screenshot/qwen3.6-plus/...`. A single
+local VMware `.vmx` only supports `--num_envs 1`; use an independent environment
+provider before increasing the worker count. Agent-S logs default to
 `C:\Users\unter\Agent-S\logs\osworld\<run_id>\` when that directory is available, otherwise they fall back to `logs/agent_s/<run_id>/`.
+The older `run_local.py` entrypoint remains available and appends `<run_id>` under
+its `--result_dir`.
 
 ### UIAgent Batch Evaluation
 
