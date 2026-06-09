@@ -78,6 +78,8 @@ outputs under `results/vlaa_qwen/pyautogui/screenshot/qwen3.6-plus/...`. A singl
 local VMware `.vmx` only supports `--num_envs 1`; use an independent environment
 provider before increasing the worker count. Agent-S logs default to
 `C:\Users\unter\Agent-S\logs\osworld\<run_id>\` when that directory is available, otherwise they fall back to `logs/agent_s/<run_id>/`.
+For `qwen` providers, keep keys in the environment; the Agent-S runners accept
+either `QWEN_API_KEY` or `DASHSCOPE_API_KEY` without writing secrets to config.
 The older `run_local.py` entrypoint remains available and appends `<run_id>` under
 its `--result_dir`.
 

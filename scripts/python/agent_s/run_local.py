@@ -126,6 +126,14 @@ def infer_agent_platform(os_type: str) -> str:
     return "linux"
 
 
+def resolve_api_key(explicit_key: str, provider: str | None) -> str:
+    if explicit_key:
+        return explicit_key
+    if (provider or "").strip().lower() == "qwen":
+        return os.getenv("QWEN_API_KEY") or os.getenv("DASHSCOPE_API_KEY") or ""
+    return ""
+
+
 def load_config(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as handle:
         data = yaml.safe_load(handle) or {}
@@ -401,18 +409,20 @@ def get_result_dir(args: argparse.Namespace, domain: str, example_id: str) -> Pa
 
 
 def build_agent_and_env(args: argparse.Namespace) -> tuple[AgentS3, DesktopEnv]:
+    model_api_key = resolve_api_key(args.model_api_key, args.model_provider)
+    ground_api_key = resolve_api_key(args.ground_api_key, args.ground_provider)
     engine_params = {
         "engine_type": args.model_provider,
         "model": args.model,
         "base_url": args.model_url,
-        "api_key": args.model_api_key,
+        "api_key": model_api_key,
         "temperature": args.model_temperature,
     }
     engine_params_for_grounding = {
         "engine_type": args.ground_provider,
         "model": args.ground_model,
         "base_url": args.ground_url,
-        "api_key": args.ground_api_key,
+        "api_key": ground_api_key,
         "grounding_width": args.grounding_width,
         "grounding_height": args.grounding_height,
     }
