@@ -89,6 +89,31 @@ python scripts/python/uiagent/eval_windows.py `
   --result-dir results\uiagent
 ```
 
+### UIAgent Multi-Environment Evaluation
+
+Use this when you want a `run_multienv_vlaa.py`-style result layout and multiple
+OSWorld environments. UIAgent's own repository logs stay in the UIAgent log
+directory; each OSWorld task result records that path in `uiagent_log_dir.txt`.
+
+```powershell
+python scripts/python/run_multienv_uiagent.py `
+  --uiagent-root C:\Users\unter\UIAgent `
+  --provider_name vmware `
+  --os_type Windows `
+  --examples_subdir examples_windows `
+  --test_all_meta_path evaluation_examples\test_omnic_windows.json `
+  --domain omnic `
+  --num_envs 1 `
+  --result_dir results\uiagent_qwen `
+  --model_dir_name qwen
+```
+
+The result layout is
+`results/uiagent_qwen/pyautogui/screenshot/qwen/<domain>/<task_id>/`. For local
+VMware/VirtualBox runs, do not pass one `--path_to_vm` with `--num_envs > 1`;
+omit `--path_to_vm` so OSWorld can allocate free registered Windows VMs, or keep
+`--num_envs 1`.
+
 ### UIAgent Single Task
 
 ```powershell
