@@ -56,6 +56,16 @@ class SetupController:
     def reset_cache_dir(self, cache_dir: str):
         self.cache_dir = cache_dir
 
+    def _is_health_response_ready(self, endpoint: str, response: requests.Response) -> bool:
+        if response.status_code == 200:
+            return True
+        # Windows/macOS server keeps /terminal unimplemented and returns 500 by design.
+        return (
+            endpoint == "/terminal"
+            and response.status_code == 500
+            and "not implemented" in response.text.lower()
+        )
+
     def _wait_until_server_ready(self) -> bool:
         retry = 0
         endpoints = ("/terminal", "/screenshot")
@@ -66,7 +76,7 @@ class SetupController:
                 for endpoint in endpoints:
                     response = requests.get(self.http_server + endpoint, timeout=(5, 10))
                     statuses.append(f"{endpoint}={response.status_code}")
-                    if response.status_code != 200:
+                    if not self._is_health_response_ready(endpoint, response):
                         ready = False
                 if ready:
                     return True
