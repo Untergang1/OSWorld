@@ -20,6 +20,11 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from desktop_env.desktop_env import DesktopEnv
+from scripts.python.uiagent.log_collection import (
+    SUPPORTED_ARTIFACT_MODES,
+    UIAgentArtifactCollector,
+    resolve_uiagent_log_root,
+)
 from scripts.python.uiagent.run_task import run_uiagent_task
 
 
@@ -243,28 +248,51 @@ def run_one(
     score: Optional[float] = None
     error: Optional[str] = None
     snapshot_name = _task_snapshot(args, example)
+    collector: Optional[UIAgentArtifactCollector] = None
 
     try:
         if not args.evaluate_existing:
-            uiagent_record = run_uiagent_task(
-                example["instruction"],
-                uiagent_root=args.uiagent_root,
-                osworld_root=args.osworld_root,
-                vmx=args.path_to_vm or "",
-                snapshot_name=snapshot_name,
-                os_type=args.os_type,
-                ready_timeout=args.ready_timeout,
-                task_config=example,
-                timeout=args.timeout_per_task,
-                poll=args.poll,
-                stream=args.stream_uiagent,
-                env=env,
-                provider_name=args.provider_name,
-                screen_width=args.screen_width,
-                screen_height=args.screen_height,
-                headless=args.headless,
-                max_steps=args.max_steps,
+            collector = UIAgentArtifactCollector(
+                log_root=resolve_uiagent_log_root(args.uiagent_root, args.uiagent_log_root),
+                example_dir=example_dir,
+                example_id=example_id,
+                instruction=example["instruction"],
+                artifact_mode=args.uiagent_artifact_mode,
+                sync_interval=args.uiagent_artifact_sync_interval,
+                started_after=started,
             )
+            collector.start()
+            try:
+                uiagent_record = run_uiagent_task(
+                    example["instruction"],
+                    uiagent_root=args.uiagent_root,
+                    osworld_root=args.osworld_root,
+                    vmx=args.path_to_vm or "",
+                    snapshot_name=snapshot_name,
+                    os_type=args.os_type,
+                    ready_timeout=args.ready_timeout,
+                    task_config=example,
+                    timeout=args.timeout_per_task,
+                    poll=args.poll,
+                    stream=args.stream_uiagent,
+                    env=env,
+                    provider_name=args.provider_name,
+                    screen_width=args.screen_width,
+                    screen_height=args.screen_height,
+                    headless=args.headless,
+                    max_steps=args.max_steps,
+                )
+            finally:
+                final_log_dir = str(uiagent_record.get("log_dir") or "").strip()
+                collector.stop(
+                    final_record=uiagent_record or None,
+                    timeout=max(1.0, min(10.0, args.uiagent_artifact_sync_interval)),
+                )
+                if final_log_dir:
+                    collector.sync_once(
+                        final_record=uiagent_record or None,
+                        run_dir=Path(final_log_dir),
+                    )
             _write_json(example_dir / "uiagent_task.json", uiagent_record)
             write_uiagent_log_refs(example_dir, uiagent_record)
 
@@ -403,6 +431,21 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--poll", type=float, default=2.0)
     parser.add_argument("--ready_timeout", "--ready-timeout", dest="ready_timeout", type=float, default=None)
     parser.add_argument("--stream_uiagent", "--stream-uiagent", dest="stream_uiagent", action="store_true")
+    parser.add_argument("--uiagent_log_root", "--uiagent-log-root", dest="uiagent_log_root", default="")
+    parser.add_argument(
+        "--uiagent_artifact_mode",
+        "--uiagent-artifact-mode",
+        dest="uiagent_artifact_mode",
+        default="copy",
+        choices=sorted(SUPPORTED_ARTIFACT_MODES),
+    )
+    parser.add_argument(
+        "--uiagent_artifact_sync_interval",
+        "--uiagent-artifact-sync-interval",
+        dest="uiagent_artifact_sync_interval",
+        type=float,
+        default=5.0,
+    )
     parser.add_argument("--no_evaluate", "--no-evaluate", dest="no_evaluate", action="store_true")
     parser.add_argument("--evaluate_existing", "--evaluate-existing", dest="evaluate_existing", action="store_true")
     parser.add_argument("--overwrite", action="store_true", help="Rerun tasks even when result.txt exists.")
@@ -416,6 +459,8 @@ def finalize_args(args: argparse.Namespace) -> argparse.Namespace:
         raise ValueError("--max_steps must be >= 0")
     if args.action_space != "pyautogui":
         raise ValueError("UIAgent OSWorld bridge currently requires --action_space pyautogui")
+    if args.uiagent_artifact_sync_interval <= 0:
+        raise ValueError("--uiagent_artifact_sync_interval must be > 0")
     if args.path_to_vm and args.num_envs > 1 and args.provider_name in {"vmware", "virtualbox"}:
         raise ValueError(
             "Do not pass one local --path_to_vm with --num_envs > 1. "
