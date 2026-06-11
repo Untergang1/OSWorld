@@ -64,6 +64,7 @@ BUILTIN_DEFAULTS: dict[str, Any] = {
     "model_temperature": None,
     "ground_provider": None,
     "ground_url": None,
+    "ground_api_key": "",
     "ground_model": None,
     "grounding_width": None,
     "grounding_height": None,
@@ -81,7 +82,6 @@ CLI_ONLY_DEFAULTS: dict[str, Any] = {
     "test_all_meta_path": None,
     "domain": "all",
     "model_api_key": "",
-    "ground_api_key": "",
 }
 
 FORBIDDEN_CONFIG_KEYS = {
@@ -89,7 +89,6 @@ FORBIDDEN_CONFIG_KEYS = {
     "snapshot_name",
     "disable_proxy",
     "model_api_key",
-    "ground_api_key",
     "task_config_path",
     "test_all_meta_path",
     "domain",
@@ -220,7 +219,7 @@ def build_parser(defaults: dict[str, Any], config_parent: argparse.ArgumentParse
 
     parser.add_argument("--ground_provider", type=str, default=defaults["ground_provider"])
     parser.add_argument("--ground_url", type=str, default=defaults["ground_url"])
-    parser.add_argument("--ground_api_key", type=str, default=CLI_ONLY_DEFAULTS["ground_api_key"])
+    parser.add_argument("--ground_api_key", type=str, default=defaults["ground_api_key"])
     parser.add_argument("--ground_model", type=str, default=defaults["ground_model"])
     parser.add_argument("--grounding_width", type=int, default=defaults["grounding_width"])
     parser.add_argument("--grounding_height", type=int, default=defaults["grounding_height"])
