@@ -112,6 +112,12 @@ from .omnic import (
     check_omnic_peak_table,
     check_omnic_text_contains
 )
+from .scikit import (
+    check_scikit_csv_table,
+    check_scikit_file_metadata,
+    check_scikit_image_properties,
+    check_scikit_text_report
+)
 from .pdf import check_pdf_pages
 from .slides import (
     check_presenter_console_disable,

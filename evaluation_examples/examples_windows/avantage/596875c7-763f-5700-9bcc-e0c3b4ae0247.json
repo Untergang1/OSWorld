@@ -1,0 +1,78 @@
+{
+  "id": "596875c7-763f-5700-9bcc-e0c3b4ae0247",
+  "snapshot": "sci_kit_ready",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\SciKit_data\\avantage\\al_oxide_depth_profile.csv, the depth-profile data. Plot or tabulate composition versus sputter time, then export the processed depth profile as avantage_depth_profile.csv on the Desktop. Include a derived Depth_nm column and use CSV headers Sputter_Time_s, Depth_nm, Al_atomic_percent, O_atomic_percent, C_atomic_percent, and Si_atomic_percent.",
+  "source": "https://labadviser.nanolab.dtu.dk/index.php?title=Specific_Process_Knowledge%2FCharacterization%2FXPS%2FExport2CasaXPS",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "powershell",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-Command",
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\Desktop' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\Desktop\\avantage_depth_profile.csv' -Force -ErrorAction SilentlyContinue"
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "powershell",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-Command",
+          "$keywords=@('Avantage','Thermo'); $starts=@($env:ProgramData + '\\Microsoft\\Windows\\Start Menu\\Programs', $env:APPDATA + '\\Microsoft\\Windows\\Start Menu\\Programs') | Where-Object { Test-Path $_ }; $shortcut=Get-ChildItem -Path $starts -Recurse -Filter *.lnk -ErrorAction SilentlyContinue | Where-Object { $name=$_.BaseName; @($keywords | Where-Object { $name -like ('*' + $_ + '*') }).Count -gt 0 } | Select-Object -First 1; if ($shortcut) { Start-Process -FilePath $shortcut.FullName; Start-Sleep -Seconds 3; exit 0 }; $roots=@($env:ProgramFiles, ${env:ProgramFiles(x86)}) | Where-Object { $_ -and (Test-Path $_) }; $exe=Get-ChildItem -Path $roots -Recurse -Filter *.exe -ErrorAction SilentlyContinue | Where-Object { $name=$_.Name; $path=$_.FullName; @($keywords | Where-Object { $name -like ('*' + $_ + '*') -or $path -like ('*' + $_ + '*') }).Count -gt 0 } | Select-Object -First 1; if ($exe) { Start-Process -FilePath $exe.FullName; Start-Sleep -Seconds 3; exit 0 }; throw 'Unable to find installed avantage application shortcut or executable'"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/",
+  "related_apps": [
+    "avantage"
+  ],
+  "evaluator": {
+    "func": "check_scikit_csv_table",
+    "result": {
+      "type": "vm_file",
+      "path": "c:\\Users\\User\\Desktop\\avantage_depth_profile.csv",
+      "dest": "avantage_depth_profile.csv"
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "extension": ".csv",
+        "min_bytes": 180,
+        "min_numeric_rows": 6,
+        "min_numeric_cols": 6,
+        "include_keywords": [
+          "sputter",
+          "Al",
+          "O"
+        ],
+        "column_ranges": [
+          {
+            "index": 0,
+            "min_at_most": 1,
+            "max_at_least": 30
+          }
+        ],
+        "forbidden_sha256": [
+          "2fcfa0ecbe53f0f37bb92ba55e951b3b1a3fef28fd3aec37b782eec8215f7382"
+        ],
+        "required_header_keywords": [
+          "sputter",
+          "depth",
+          "al_atomic_percent"
+        ]
+      }
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}

@@ -1,0 +1,68 @@
+{
+  "id": "86a2b1f6-6d3c-5bce-a3da-73ad02da998c",
+  "snapshot": "sci_kit_ready",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\SciKit_data\\avantage\\tio2_regions.vms, the XPS regions file. Charge-correct the spectra to adventitious carbon at 284.8 eV, review Ti 2p and O 1s, and create a plain-text report named avantage_tio2_report.txt on the Desktop. The report should mention Ti 2p, O 1s, and charge correction.",
+  "source": "https://documents.thermofisher.com/TFS-Assets/CAD/Application-Notes/D16062~.pdf",
+  "config": [
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "powershell",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-Command",
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\Desktop' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\Desktop\\avantage_tio2_report.txt' -Force -ErrorAction SilentlyContinue"
+        ]
+      }
+    },
+    {
+      "type": "execute",
+      "parameters": {
+        "command": [
+          "powershell",
+          "-NoProfile",
+          "-ExecutionPolicy",
+          "Bypass",
+          "-Command",
+          "$keywords=@('Avantage','Thermo'); $starts=@($env:ProgramData + '\\Microsoft\\Windows\\Start Menu\\Programs', $env:APPDATA + '\\Microsoft\\Windows\\Start Menu\\Programs') | Where-Object { Test-Path $_ }; $shortcut=Get-ChildItem -Path $starts -Recurse -Filter *.lnk -ErrorAction SilentlyContinue | Where-Object { $name=$_.BaseName; @($keywords | Where-Object { $name -like ('*' + $_ + '*') }).Count -gt 0 } | Select-Object -First 1; if ($shortcut) { Start-Process -FilePath $shortcut.FullName; Start-Sleep -Seconds 3; exit 0 }; $roots=@($env:ProgramFiles, ${env:ProgramFiles(x86)}) | Where-Object { $_ -and (Test-Path $_) }; $exe=Get-ChildItem -Path $roots -Recurse -Filter *.exe -ErrorAction SilentlyContinue | Where-Object { $name=$_.Name; $path=$_.FullName; @($keywords | Where-Object { $name -like ('*' + $_ + '*') -or $path -like ('*' + $_ + '*') }).Count -gt 0 } | Select-Object -First 1; if ($exe) { Start-Process -FilePath $exe.FullName; Start-Sleep -Seconds 3; exit 0 }; throw 'Unable to find installed avantage application shortcut or executable'"
+        ]
+      }
+    }
+  ],
+  "trajectory": "trajectories/",
+  "related_apps": [
+    "avantage"
+  ],
+  "evaluator": {
+    "func": "check_scikit_text_report",
+    "result": {
+      "type": "vm_file",
+      "path": "c:\\Users\\User\\Desktop\\avantage_tio2_report.txt",
+      "dest": "avantage_tio2_report.txt"
+    },
+    "expected": {
+      "type": "rule",
+      "rules": {
+        "extension": ".txt",
+        "min_bytes": 120,
+        "include_keywords": [
+          "Ti 2p",
+          "O 1s"
+        ],
+        "include_any_keywords": [
+          "charge",
+          "284.8",
+          "correction"
+        ],
+        "forbidden_sha256": [
+          "474fd47455ff28bf232300c80ee6f9503de0ff09793375a14fcee0410476a3da"
+        ]
+      }
+    }
+  },
+  "proxy": false,
+  "fixed_ip": false,
+  "possibility_of_env_change": "low"
+}
