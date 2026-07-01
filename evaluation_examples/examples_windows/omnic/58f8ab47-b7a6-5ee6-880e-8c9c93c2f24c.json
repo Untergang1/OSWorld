@@ -1,7 +1,7 @@
 {
   "id": "58f8ab47-b7a6-5ee6-880e-8c9c93c2f24c",
   "snapshot": "omnic",
-  "instruction": "In OMNIC, open or import c:\\Users\\User\\OMNIC_data\\polymer_film.jdx, using the companion polymer_film.csv only if OMNIC asks for an ASCII import source. Apply an automatic baseline correction, run Find Peaks or peak picking, then export the peak table as polymer_film_peaks.csv on the Desktop. Use headers that identify the peak number, wavenumber in cm-1, and absorbance or intensity.",
+  "instruction": "In OMNIC, open or import c:\\Users\\User\\OMNIC_data\\unknown_clear_coating.jdx. Apply an automatic baseline correction, run Find Peaks or peak picking, then export the peak table as unknown_coating_peaks.csv on the Desktop. Use headers that identify the peak number, wavenumber in cm-1, and absorbance or intensity.",
   "source": "https://knowledge1.thermofisher.com/Molecular_Spectroscopy/Molecular_Spectroscopy_Software/OMNIC_Family/OMNIC_Suite_Software/OMNIC_Suite_Operator_Manuals/269-3593_Getting_Started_with_OMNIC_Software",
   "config": [
     {
@@ -13,7 +13,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-Command",
-          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\Desktop' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\Desktop\\polymer_film_peaks.csv' -Force -ErrorAction SilentlyContinue"
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\Desktop' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\Desktop\\unknown_coating_peaks.csv' -Force -ErrorAction SilentlyContinue"
         ]
       }
     },
@@ -39,8 +39,8 @@
     "func": "check_omnic_peak_table",
     "result": {
       "type": "vm_file",
-      "path": "c:\\Users\\User\\Desktop\\polymer_film_peaks.csv",
-      "dest": "polymer_film_peaks.csv"
+      "path": "c:\\Users\\User\\Desktop\\unknown_coating_peaks.csv",
+      "dest": "unknown_coating_peaks.csv"
     },
     "expected": {
       "type": "rule",
@@ -58,14 +58,14 @@
           "wavenumber"
         ],
         "expected_peaks": [
-          2916,
-          2849,
-          1472,
-          1377
+          1722,
+          1601,
+          1244,
+          1160
         ],
         "tolerance": 14,
         "forbidden_sha256": [
-          "8d44faa2c81d26e343aeaacb22909ca6ea989e6ed7bc2438bb52545421c6ca0c"
+          "bf8bfd8881eb3ec623f3c077f30a7c574005d6578c83817c40b3ab5e936c8e7d"
         ]
       }
     }

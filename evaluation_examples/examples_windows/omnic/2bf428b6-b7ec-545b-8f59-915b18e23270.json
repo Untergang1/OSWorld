@@ -1,7 +1,7 @@
 {
   "id": "2bf428b6-b7ec-545b-8f59-915b18e23270",
   "snapshot": "omnic",
-  "instruction": "In OMNIC, open or import c:\\Users\\User\\OMNIC_data\\unknown_clear_coating.jdx, using unknown_clear_coating.csv as the fallback ASCII source if needed. Zoom or limit the analysis to the fingerprint region from 1800 to 900 cm-1, then export only that region's X/Y data as unknown_coating_fingerprint.csv on the Desktop.",
+  "instruction": "In OMNIC, open or import c:\\Users\\User\\OMNIC_data\\unknown_clear_coating.jdx. Zoom or limit the analysis to the fingerprint region from 1800 to 900 cm-1, then export only that region's X/Y data as unknown_coating_fingerprint.csv on the Desktop.",
   "source": "https://knowledge1.thermofisher.com/Molecular_Spectroscopy/Molecular_Spectroscopy_Software/OMNIC_Family/OMNIC_Suite_Software/OMNIC_Suite_Operator_Manuals/269-3593_Getting_Started_with_OMNIC_Software",
   "config": [
     {
@@ -63,7 +63,7 @@
         "wavenumber_min_at_least": 850,
         "wavenumber_max_at_most": 1850,
         "forbidden_sha256": [
-          "c2105044228486e923f5a031126f0a1be97fe2aed6a93b2fa1302cca07bac5c4"
+          "bf8bfd8881eb3ec623f3c077f30a7c574005d6578c83817c40b3ab5e936c8e7d"
         ]
       }
     }
