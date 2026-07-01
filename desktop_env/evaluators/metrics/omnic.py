@@ -1,7 +1,8 @@
+import hashlib
 import logging
 import os
 import re
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Iterable, List, Tuple
 
 logger = logging.getLogger("desktopenv.metric.omnic")
 
@@ -14,6 +15,14 @@ def _safe_size(path: str) -> int:
         return os.path.getsize(path)
     except OSError:
         return 0
+
+
+def _file_sha256(path: str) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _check_basic_file(path: str, rules: Dict[str, Any]) -> bool:
@@ -36,6 +45,15 @@ def _check_basic_file(path: str, rules: Dict[str, Any]) -> bool:
         logger.debug("OMNIC metric: basename mismatch: %s", path)
         return False
 
+    forbidden_hashes = {str(value).lower() for value in rules.get("forbidden_sha256", [])}
+    if forbidden_hashes:
+        try:
+            if _file_sha256(path).lower() in forbidden_hashes:
+                logger.debug("OMNIC metric: output is byte-identical to a forbidden source file: %s", path)
+                return False
+        except OSError:
+            return False
+
     return True
 
 
@@ -51,13 +69,17 @@ def _read_text(path: str) -> str:
     return ""
 
 
-def _numeric_rows(text: str) -> List[Tuple[float, ...]]:
+def _numeric_rows(text: str, min_cols: int = 2) -> List[Tuple[float, ...]]:
     rows: List[Tuple[float, ...]] = []
     for line in text.splitlines():
         values = tuple(float(match.group(0)) for match in _NUMBER_RE.finditer(line))
-        if len(values) >= 2:
+        if len(values) >= min_cols:
             rows.append(values)
     return rows
+
+
+def _all_numbers(rows: Iterable[Tuple[float, ...]]) -> List[float]:
+    return [value for row in rows for value in row]
 
 
 def _wavenumber_values(rows: List[Tuple[float, ...]]) -> List[float]:
@@ -92,6 +114,44 @@ def _check_text_keywords(text: str, rules: Dict[str, Any], label: str) -> bool:
     return True
 
 
+def _check_header_keywords(text: str, rules: Dict[str, Any], label: str) -> bool:
+    header_text = "\n".join(text.splitlines()[:10]).lower()
+    for keyword in rules.get("required_header_keywords", []):
+        if str(keyword).lower() not in header_text:
+            logger.debug("OMNIC %s header missing keyword: %s", label, keyword)
+            return False
+    return True
+
+
+def _check_expected_values(rows: List[Tuple[float, ...]], rules: Dict[str, Any], label: str) -> bool:
+    numbers = _all_numbers(rows)
+    tolerance = float(rules.get("tolerance", 0.25))
+    for expected in rules.get("expected_values", []):
+        value = float(expected)
+        if not any(abs(candidate - value) <= tolerance for candidate in numbers):
+            logger.debug("OMNIC %s missing expected value near %s", label, value)
+            return False
+    return True
+
+
+def _check_column_ranges(rows: List[Tuple[float, ...]], rules: Dict[str, Any], label: str) -> bool:
+    for spec in rules.get("column_ranges", []):
+        idx = int(spec.get("index", 0))
+        values = [row[idx] for row in rows if len(row) > idx]
+        if not values:
+            logger.debug("OMNIC %s missing numeric column %d", label, idx)
+            return False
+        if "min_at_most" in spec and min(values) > float(spec["min_at_most"]):
+            return False
+        if "max_at_least" in spec and max(values) < float(spec["max_at_least"]):
+            return False
+        if "min_at_least" in spec and min(values) < float(spec["min_at_least"]):
+            return False
+        if "max_at_most" in spec and max(values) > float(spec["max_at_most"]):
+            return False
+    return True
+
+
 def check_omnic_file_metadata(result_path: str, rules: Dict[str, Any]) -> float:
     """Check that OMNIC produced the requested output file."""
     return float(_check_basic_file(result_path, rules))
@@ -108,10 +168,18 @@ def check_omnic_export_table(result_path: str, rules: Dict[str, Any]) -> float:
 
     if not _check_text_keywords(text, rules, "export table"):
         return 0.0
+    if not _check_header_keywords(text, rules, "export table"):
+        return 0.0
 
-    rows = _numeric_rows(text)
+    min_cols = int(rules.get("min_numeric_cols", 2))
+    rows = _numeric_rows(text, min_cols=min_cols)
     if len(rows) < int(rules.get("min_numeric_rows", 20)):
         logger.debug("OMNIC export table has too few numeric rows: %d", len(rows))
+        return 0.0
+
+    if not _check_expected_values(rows, rules, "export table"):
+        return 0.0
+    if not _check_column_ranges(rows, rules, "export table"):
         return 0.0
 
     wavenumbers = _wavenumber_values(rows)
@@ -157,9 +225,20 @@ def check_omnic_peak_table(result_path: str, rules: Dict[str, Any]) -> float:
         return 0.0
 
     text = _read_text(result_path)
-    rows = _numeric_rows(text)
+    if not _check_text_keywords(text, rules, "peak table"):
+        return 0.0
+    if not _check_header_keywords(text, rules, "peak table"):
+        return 0.0
+
+    min_cols = int(rules.get("min_numeric_cols", 2))
+    rows = _numeric_rows(text, min_cols=min_cols)
     if len(rows) < int(rules.get("min_numeric_rows", 1)):
         logger.debug("OMNIC peak table has too few numeric rows: %d", len(rows))
+        return 0.0
+
+    if not _check_expected_values(rows, rules, "peak table"):
+        return 0.0
+    if not _check_column_ranges(rows, rules, "peak table"):
         return 0.0
 
     peak_values = _wavenumber_values(rows)
