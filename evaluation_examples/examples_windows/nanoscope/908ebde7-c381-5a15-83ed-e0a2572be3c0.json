@@ -5,6 +5,17 @@
   "source": "https://www.nanophys.kth.se/nanolab/afm/icon/bruker-help/Content/SoftwareGuide/Offline/ModifyCommands/Flatten.htm",
   "config": [
     {
+      "type": "upload_file",
+      "parameters": {
+        "files": [
+          {
+            "local_path": "evaluation_examples/scikit_assets/nanoscope/afm_multifeature_height.csv",
+            "path": "C:\\Users\\User\\SciKit_data\\nanoscope\\afm_multifeature_height.csv"
+          }
+        ]
+      }
+    },
+    {
       "type": "execute",
       "parameters": {
         "command": [

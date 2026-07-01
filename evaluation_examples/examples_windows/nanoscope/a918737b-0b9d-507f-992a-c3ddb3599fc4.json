@@ -5,6 +5,17 @@
   "source": "https://www.epfl.ch/research/facilities/cmi/wp-content/uploads/2020/03/NanoScopeAnalysisV150Manual.pdf",
   "config": [
     {
+      "type": "upload_file",
+      "parameters": {
+        "files": [
+          {
+            "local_path": "evaluation_examples/scikit_assets/nanoscope/afm_multifeature_height.csv",
+            "path": "C:\\Users\\User\\SciKit_data\\nanoscope\\afm_multifeature_height.csv"
+          }
+        ]
+      }
+    },
+    {
       "type": "execute",
       "parameters": {
         "command": [

@@ -5,6 +5,17 @@
   "source": "https://documents.thermofisher.com/TFS-Assets/CAD/Application-Notes/D16062~.pdf",
   "config": [
     {
+      "type": "upload_file",
+      "parameters": {
+        "files": [
+          {
+            "local_path": "evaluation_examples/scikit_assets/avantage/tio2_regions.vms",
+            "path": "C:\\Users\\User\\SciKit_data\\avantage\\tio2_regions.vms"
+          }
+        ]
+      }
+    },
+    {
       "type": "execute",
       "parameters": {
         "command": [

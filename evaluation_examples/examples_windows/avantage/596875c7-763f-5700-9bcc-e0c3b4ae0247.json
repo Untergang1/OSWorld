@@ -5,6 +5,17 @@
   "source": "https://labadviser.nanolab.dtu.dk/index.php?title=Specific_Process_Knowledge%2FCharacterization%2FXPS%2FExport2CasaXPS",
   "config": [
     {
+      "type": "upload_file",
+      "parameters": {
+        "files": [
+          {
+            "local_path": "evaluation_examples/scikit_assets/avantage/al_oxide_depth_profile.csv",
+            "path": "C:\\Users\\User\\SciKit_data\\avantage\\al_oxide_depth_profile.csv"
+          }
+        ]
+      }
+    },
+    {
       "type": "execute",
       "parameters": {
         "command": [

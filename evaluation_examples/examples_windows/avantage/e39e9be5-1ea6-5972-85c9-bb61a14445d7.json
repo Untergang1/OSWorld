@@ -5,6 +5,17 @@
   "source": "https://documents.thermofisher.com/TFS-Assets/CAD/Application-Notes/D16062~.pdf",
   "config": [
     {
+      "type": "upload_file",
+      "parameters": {
+        "files": [
+          {
+            "local_path": "evaluation_examples/scikit_assets/avantage/oxide_o1s_map.csv",
+            "path": "C:\\Users\\User\\SciKit_data\\avantage\\oxide_o1s_map.csv"
+          }
+        ]
+      }
+    },
+    {
       "type": "execute",
       "parameters": {
         "command": [

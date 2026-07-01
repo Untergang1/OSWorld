@@ -5,6 +5,17 @@
   "source": "https://documents.thermofisher.com/TFS-Assets/CAD/Application-Notes/D16062~.pdf",
   "config": [
     {
+      "type": "upload_file",
+      "parameters": {
+        "files": [
+          {
+            "local_path": "evaluation_examples/scikit_assets/avantage/polymer_c1s_region.vms",
+            "path": "C:\\Users\\User\\SciKit_data\\avantage\\polymer_c1s_region.vms"
+          }
+        ]
+      }
+    },
+    {
       "type": "execute",
       "parameters": {
         "command": [

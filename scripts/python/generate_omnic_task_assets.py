@@ -1,6 +1,7 @@
 r"""Generate minimal deterministic FTIR assets for Windows OMNIC tasks.
 
-Copy the generated files to a Windows VM snapshot at C:\Users\User\OMNIC_data.
+The generated files live under evaluation_examples/scikit_assets/omnic and are
+uploaded to C:\Users\User\OMNIC_data by each OMNIC task config.
 """
 
 from __future__ import annotations
@@ -13,7 +14,7 @@ from pathlib import Path
 from typing import Iterable, Sequence
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "evaluation_examples" / "omnic_assets"
+OUT = ROOT / "evaluation_examples" / "scikit_assets" / "omnic"
 RNG = random.Random(20260701)
 
 
@@ -138,10 +139,11 @@ def generate_assets() -> None:
 
     with (OUT / "README_COPY_TO_VM.md").open("w", encoding="utf-8") as handle:
         handle.write("# OMNIC Task Assets\n\n")
-        handle.write("Copy the contents of this directory to the Windows VM so these files exist under:\n\n")
-        handle.write("`C:\\Users\\User\\OMNIC_data`\n\n")
-        handle.write("These deterministic synthetic FTIR/ATR spectra are benchmark inputs, not real experimental measurements. ")
-        handle.write("All OMNIC tasks use `unknown_clear_coating.jdx`; the library-match task also uses `coating_reference_library.csv`.\n")
+        handle.write("The OMNIC Windows task configs upload the required files from this directory to\n")
+        handle.write("`C:\\Users\\User\\OMNIC_data` during setup when run from the repository root.\n\n")
+        handle.write("These deterministic synthetic FTIR/ATR spectra are benchmark inputs, not real\n")
+        handle.write("experimental measurements. All OMNIC tasks use `unknown_clear_coating.jdx`; the\n")
+        handle.write("library-match task also uses `coating_reference_library.csv`.\n")
 
 
 def main() -> None:

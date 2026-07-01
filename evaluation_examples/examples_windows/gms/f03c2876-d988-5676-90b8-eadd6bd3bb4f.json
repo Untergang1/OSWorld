@@ -5,6 +5,17 @@
   "source": "https://www.gatan.com/products/tem-analysis/gatan-microscopy-suite-software",
   "config": [
     {
+      "type": "upload_file",
+      "parameters": {
+        "files": [
+          {
+            "local_path": "evaluation_examples/scikit_assets/gms/lattice_image.bmp",
+            "path": "C:\\Users\\User\\SciKit_data\\gms\\lattice_image.bmp"
+          }
+        ]
+      }
+    },
+    {
       "type": "execute",
       "parameters": {
         "command": [

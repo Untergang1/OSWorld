@@ -1,7 +1,7 @@
 r"""Generate deterministic synthetic data for the SciKit Windows tasks.
 
-The files are intentionally small and self-contained so they can be copied to a
-Windows VM snapshot at C:\Users\User\SciKit_data.
+The files are intentionally small and self-contained. Windows task configs
+upload each required asset from evaluation_examples/scikit_assets during setup.
 """
 
 from __future__ import annotations
@@ -21,12 +21,16 @@ def gaussian(x: np.ndarray, center: float, width: float, amplitude: float) -> np
 
 
 def ensure_dirs() -> None:
-    if OUT.exists():
-        for path in sorted(OUT.rglob("*"), reverse=True):
-            if path.is_file():
-                path.unlink()
+    OUT.mkdir(parents=True, exist_ok=True)
     for name in ("avantage", "nanoscope", "gms"):
-        (OUT / name).mkdir(parents=True, exist_ok=True)
+        target = OUT / name
+        if target.exists():
+            for path in sorted(target.rglob("*"), reverse=True):
+                if path.is_file():
+                    path.unlink()
+                elif path.is_dir():
+                    path.rmdir()
+        target.mkdir(parents=True, exist_ok=True)
 
 
 def write_xy_csv(path: Path, header: list[str], rows: np.ndarray) -> None:
@@ -236,18 +240,25 @@ def generate_gms() -> None:
 
 def write_readme() -> None:
     (OUT / "README_COPY_TO_VM.md").write_text(
-        "# SciKit Task Assets\n\n"
-        "Copy or rename this `scikit_assets` directory so that the Windows VM contains:\n\n"
-        "`C:\\Users\\User\\SciKit_data`\n\n"
-        "After copying, these paths must exist exactly:\n\n"
+        "# SciKit and OMNIC Task Assets\n\n"
+        "The Windows task configs upload the required local asset files during setup.\n"
+        "Manual pre-copying of the whole directory into the VM is no longer required for\n"
+        "the JSON tasks when they are run from the repository root.\n\n"
+        "The setup steps copy only the files needed by the current task into these VM\n"
+        "locations:\n\n"
         "- `C:\\Users\\User\\SciKit_data\\avantage`\n"
         "- `C:\\Users\\User\\SciKit_data\\nanoscope`\n"
-        "- `C:\\Users\\User\\SciKit_data\\gms`\n\n"
-        "The files are deterministic synthetic XPS, AFM, and TEM/EELS examples. "
-        "They are benchmark inputs, not real experimental measurements.\n\n"
-        "To keep the snapshot compact, NanoScope height-image tasks intentionally "
-        "share `nanoscope\\afm_multifeature_height.csv`, and GMS FFT/diffraction "
-        "tasks intentionally share `gms\\lattice_image.bmp`.\n",
+        "- `C:\\Users\\User\\SciKit_data\\gms`\n"
+        "- `C:\\Users\\User\\OMNIC_data`\n\n"
+        "Local asset folders map to those VM locations as follows:\n\n"
+        "- `avantage`, `nanoscope`, and `gms` contain deterministic synthetic XPS, AFM,\n"
+        "  and TEM/EELS benchmark inputs.\n"
+        "- `omnic` contains deterministic synthetic FTIR/ATR benchmark inputs.\n\n"
+        "NanoScope height-image tasks intentionally share\n"
+        "`nanoscope\\afm_multifeature_height.csv`, GMS FFT/diffraction tasks share\n"
+        "`gms\\lattice_image.bmp`, and most OMNIC tasks share\n"
+        "`omnic\\unknown_clear_coating.jdx`. The OMNIC library-match task also uploads\n"
+        "`omnic\\coating_reference_library.csv`.\n",
         encoding="utf-8",
     )
 

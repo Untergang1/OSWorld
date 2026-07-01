@@ -5,6 +5,17 @@
   "source": "https://knowledge1.thermofisher.com/Molecular_Spectroscopy/Molecular_Spectroscopy_Software/OMNIC_Family/OMNIC_Suite_Software/OMNIC_Suite_Operator_Manuals/269-3593_Getting_Started_with_OMNIC_Software",
   "config": [
     {
+      "type": "upload_file",
+      "parameters": {
+        "files": [
+          {
+            "local_path": "evaluation_examples/scikit_assets/omnic/unknown_clear_coating.jdx",
+            "path": "C:\\Users\\User\\OMNIC_data\\unknown_clear_coating.jdx"
+          }
+        ]
+      }
+    },
+    {
       "type": "execute",
       "parameters": {
         "command": [
