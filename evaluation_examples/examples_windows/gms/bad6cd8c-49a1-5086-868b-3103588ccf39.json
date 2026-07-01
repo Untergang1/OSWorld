@@ -1,6 +1,6 @@
 {
   "id": "bad6cd8c-49a1-5086-868b-3103588ccf39",
-  "snapshot": "sci_kit_ready",
+  "snapshot": "SciKit_ready",
   "instruction": "In GMS/DigitalMicrograph, open c:\\Users\\User\\eels_spectrum_image.bmp, the spectrum-image preview. Create or display C, O, and Si elemental maps, arrange them as a color map or montage, and export it as gms_eels_maps.bmp in c:\\Users\\User. Use a color overlay or RGB montage, not a grayscale preview.",
   "source": "https://eels.info/book/export/html/45",
   "config": [

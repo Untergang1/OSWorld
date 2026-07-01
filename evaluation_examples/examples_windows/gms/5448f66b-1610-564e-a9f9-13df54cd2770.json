@@ -1,6 +1,6 @@
 {
   "id": "5448f66b-1610-564e-a9f9-13df54cd2770",
-  "snapshot": "sci_kit_ready",
+  "snapshot": "SciKit_ready",
   "instruction": "In GMS/DigitalMicrograph, open c:\\Users\\User\\lattice_image.bmp, the TEM image. Apply or confirm a calibration, measure the lattice spacing, then export a calibration table as gms_lattice_calibration.csv in c:\\Users\\User with headers measurement, pixel_size_nm, and lattice_spacing_nm.",
   "source": "https://www.gatan.com/products/tem-analysis/gatan-microscopy-suite-software",
   "config": [

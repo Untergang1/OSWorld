@@ -1,6 +1,6 @@
 {
   "id": "58f8ab47-b7a6-5ee6-880e-8c9c93c2f24c",
-  "snapshot": "omnic",
+  "snapshot": "SciKit_ready",
   "instruction": "In OMNIC, open or import c:\\Users\\User\\unknown_clear_coating.jdx. Apply an automatic baseline correction, run Find Peaks or peak picking, then export the peak table as unknown_coating_peaks.csv in c:\\Users\\User. Use headers that identify the peak number, wavenumber in cm-1, and absorbance or intensity.",
   "source": "https://knowledge1.thermofisher.com/Molecular_Spectroscopy/Molecular_Spectroscopy_Software/OMNIC_Family/OMNIC_Suite_Software/OMNIC_Suite_Operator_Manuals/269-3593_Getting_Started_with_OMNIC_Software",
   "config": [

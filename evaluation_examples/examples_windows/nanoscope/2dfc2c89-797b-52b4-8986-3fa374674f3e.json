@@ -1,6 +1,6 @@
 {
   "id": "2dfc2c89-797b-52b4-8986-3fa374674f3e",
-  "snapshot": "sci_kit_ready",
+  "snapshot": "SciKit_ready",
   "instruction": "In NanoScope Analysis, open or import c:\\Users\\User\\afm_multifeature_height.csv, the shared multifeature AFM height image. Measure roughness for a clean, smoother region while excluding the dark scratch band and obvious particles, then export a text report as nanoscope_roughness_report.txt in c:\\Users\\User. Include both Ra and Rq roughness values and identify the excluded scratch region.",
   "source": "https://www.nanophys.kth.se/nanolab/afm/icon/bruker-help/Content/SoftwareGuide/Offline/AnalysisFunct/Roughness.htm",
   "config": [

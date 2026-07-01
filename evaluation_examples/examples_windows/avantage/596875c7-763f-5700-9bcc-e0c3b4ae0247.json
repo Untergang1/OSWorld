@@ -1,6 +1,6 @@
 {
   "id": "596875c7-763f-5700-9bcc-e0c3b4ae0247",
-  "snapshot": "sci_kit_ready",
+  "snapshot": "SciKit_ready",
   "instruction": "In Avantage, open or import c:\\Users\\User\\al_oxide_depth_profile.csv, the depth-profile data. Plot or tabulate composition versus sputter time, then export the processed depth profile as avantage_depth_profile.csv in c:\\Users\\User. Include a derived Depth_nm column and use CSV headers Sputter_Time_s, Depth_nm, Al_atomic_percent, O_atomic_percent, C_atomic_percent, and Si_atomic_percent.",
   "source": "https://labadviser.nanolab.dtu.dk/index.php?title=Specific_Process_Knowledge%2FCharacterization%2FXPS%2FExport2CasaXPS",
   "config": [

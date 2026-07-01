@@ -1,6 +1,6 @@
 {
   "id": "63625964-7efc-5dc7-96c2-56f546e77050",
-  "snapshot": "omnic",
+  "snapshot": "SciKit_ready",
   "instruction": "In OMNIC, open or import c:\\Users\\User\\unknown_clear_coating.jdx. Apply an automatic baseline correction, label or list the main peaks, and create a QA report PDF named coating_qa_report.pdf in c:\\Users\\User. The report should include the sample name unknown_clear_coating and peak information.",
   "source": "https://knowledge1.thermofisher.com/Molecular_Spectroscopy/Molecular_Spectroscopy_Software/OMNIC_Family/OMNIC_Suite_Software/OMNIC_Suite_Operator_Manuals/269-3593_Getting_Started_with_OMNIC_Software",
   "config": [

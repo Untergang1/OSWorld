@@ -1,6 +1,6 @@
 {
   "id": "a918737b-0b9d-507f-992a-c3ddb3599fc4",
-  "snapshot": "sci_kit_ready",
+  "snapshot": "SciKit_ready",
   "instruction": "In NanoScope Analysis, open or import c:\\Users\\User\\afm_multifeature_height.csv, the shared multifeature AFM height image. Use particle or threshold analysis to identify the bright nanoparticles without counting the step edge or scratch band, and export the particle table as nanoscope_particles.csv in c:\\Users\\User. Include at least particle size or area and height-related columns. Use CSV headers particle_id, area_nm2, equivalent_diameter_nm, and max_height_nm.",
   "source": "https://www.epfl.ch/research/facilities/cmi/wp-content/uploads/2020/03/NanoScopeAnalysisV150Manual.pdf",
   "config": [

@@ -1,6 +1,6 @@
 {
   "id": "b46a4d4a-d19c-5733-bc5f-d0bc16ff06fe",
-  "snapshot": "sci_kit_ready",
+  "snapshot": "SciKit_ready",
   "instruction": "In NanoScope Analysis, open or import c:\\Users\\User\\adhesion_force_curve.csv, the force curve. Baseline or zero the force curve near the non-contact region, then export the processed force-distance data as nanoscope_force_curve.csv in c:\\Users\\User with headers z_distance_nm and baseline_corrected_force_nN.",
   "source": "https://www.nanophys.kth.se/nanolab/afm/icon/bruker-help/Content/ForceVolume/ForceVolImgFileFormat.htm",
   "config": [

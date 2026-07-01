@@ -1,6 +1,6 @@
 {
   "id": "f03c2876-d988-5676-90b8-eadd6bd3bb4f",
-  "snapshot": "sci_kit_ready",
+  "snapshot": "SciKit_ready",
   "instruction": "In GMS/DigitalMicrograph, open c:\\Users\\User\\lattice_image.bmp, the TEM image. Generate the FFT or power spectrum of the lattice image and export it as gms_lattice_fft.bmp in c:\\Users\\User. Keep the zero-frequency spot centered and bright in the export.",
   "source": "https://www.gatan.com/products/tem-analysis/gatan-microscopy-suite-software",
   "config": [

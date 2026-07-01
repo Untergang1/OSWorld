@@ -1,6 +1,6 @@
 {
   "id": "c48cc63f-7d27-5979-9133-bd5e625e93a4",
-  "snapshot": "sci_kit_ready",
+  "snapshot": "SciKit_ready",
   "instruction": "In GMS/DigitalMicrograph, open or import c:\\Users\\User\\eels_core_loss_spectrum.csv, the EELS spectrum. Subtract or fit the background, mark the C-K edge near 284 eV and O-K edge near 532 eV, then export the edge or processed spectrum table as gms_eels_edges.csv in c:\\Users\\User. Use CSV headers energy_loss_eV and background_subtracted_counts, and include C-K and O-K edge labels.",
   "source": "https://eels.info/book/export/html/44",
   "config": [

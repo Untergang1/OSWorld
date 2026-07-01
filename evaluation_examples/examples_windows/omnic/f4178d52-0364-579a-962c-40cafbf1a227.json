@@ -1,6 +1,6 @@
 {
   "id": "f4178d52-0364-579a-962c-40cafbf1a227",
-  "snapshot": "omnic",
+  "snapshot": "SciKit_ready",
   "instruction": "In OMNIC, open or import c:\\Users\\User\\unknown_clear_coating.jdx. Compare it with the combined reference library at c:\\Users\\User\\coating_reference_library.csv, which contains acrylic coating, epoxy resin, and polyurethane spectra. Create a plain text report named coating_library_match.txt in c:\\Users\\User with the sample name, the best library match, and one or two peak reasons for the match.",
   "source": "https://knowledge1.thermofisher.com/Molecular_Spectroscopy/Molecular_Spectroscopy_Software/OMNIC_Family/OMNIC_Suite_Software/OMNIC_Suite_Operator_Manuals/269-3593_Getting_Started_with_OMNIC_Software",
   "config": [

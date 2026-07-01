@@ -1,6 +1,6 @@
 {
   "id": "e39e9be5-1ea6-5972-85c9-bb61a14445d7",
-  "snapshot": "sci_kit_ready",
+  "snapshot": "SciKit_ready",
   "instruction": "In Avantage, open or import c:\\Users\\User\\oxide_o1s_map.csv, the XPS map table. Create a false-color O 1s map and export it as avantage_o1s_map.bmp in c:\\Users\\User. Use a color scale rather than a grayscale export.",
   "source": "https://documents.thermofisher.com/TFS-Assets/CAD/Application-Notes/D16062~.pdf",
   "config": [

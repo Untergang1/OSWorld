@@ -1,6 +1,6 @@
 {
   "id": "d1accb7f-780e-5cc5-920d-ec815ef80941",
-  "snapshot": "sci_kit_ready",
+  "snapshot": "SciKit_ready",
   "instruction": "In GMS/DigitalMicrograph, open c:\\Users\\User\\lattice_image.bmp, the TEM lattice image. Generate the FFT or power spectrum from the lattice image, measure at least three diffraction spots or rings in that FFT/power spectrum, and export the measurement table as gms_diffraction_measurements.csv in c:\\Users\\User. Include ring radius or d-spacing values. Use CSV headers ring_index, radius_px, and d_spacing_nm.",
   "source": "https://www.gatan.com/products/tem-analysis/gatan-microscopy-suite-software",
   "config": [

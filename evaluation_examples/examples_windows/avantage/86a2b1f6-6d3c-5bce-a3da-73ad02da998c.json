@@ -1,6 +1,6 @@
 {
   "id": "86a2b1f6-6d3c-5bce-a3da-73ad02da998c",
-  "snapshot": "sci_kit_ready",
+  "snapshot": "SciKit_ready",
   "instruction": "In Avantage, open or import c:\\Users\\User\\tio2_regions.vms, the XPS regions file. Charge-correct the spectra to adventitious carbon at 284.8 eV, review Ti 2p and O 1s, and create a plain-text report named avantage_tio2_report.txt in c:\\Users\\User. The report should mention Ti 2p, O 1s, and charge correction.",
   "source": "https://documents.thermofisher.com/TFS-Assets/CAD/Application-Notes/D16062~.pdf",
   "config": [

@@ -1,6 +1,6 @@
 {
   "id": "eb1c57ba-70df-5031-8f8f-bb029f0171f7",
-  "snapshot": "sci_kit_ready",
+  "snapshot": "SciKit_ready",
   "instruction": "In Avantage, open or import c:\\Users\\User\\polymer_survey.vms, the XPS survey spectrum. Identify the C 1s, O 1s, Si 2p, and N 1s peaks, perform a standard quantification, then export the quantification or peak table as avantage_polymer_quant.csv in c:\\Users\\User. Include element/transition names, binding energies, and atomic percent or area values. Use CSV headers Element, Binding_Energy_eV, Atomic_Percent, and Area.",
   "source": "https://documents.thermofisher.com/TFS-Assets/CAD/Application-Notes/D16062~.pdf",
   "config": [
