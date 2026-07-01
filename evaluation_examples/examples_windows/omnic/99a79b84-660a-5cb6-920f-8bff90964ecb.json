@@ -1,7 +1,7 @@
 {
   "id": "99a79b84-660a-5cb6-920f-8bff90964ecb",
   "snapshot": "omnic",
-  "instruction": "In OMNIC, open or import c:\\Users\\User\\OMNIC_data\\unknown_clear_coating.jdx. Smooth the spectrum lightly, normalize the main absorbance band so the maximum intensity is about 1.0 or 100%, then export the normalized X/Y spectrum as unknown_coating_normalized.csv on the Desktop.",
+  "instruction": "In OMNIC, open or import c:\\Users\\User\\unknown_clear_coating.jdx. Smooth the spectrum lightly, normalize the main absorbance band so the maximum intensity is about 1.0 or 100%, then export the normalized X/Y spectrum as unknown_coating_normalized.csv in c:\\Users\\User.",
   "source": "https://knowledge1.thermofisher.com/Molecular_Spectroscopy/Molecular_Spectroscopy_Software/OMNIC_Family/OMNIC_Suite_Software/OMNIC_Suite_Operator_Manuals/269-3593_Getting_Started_with_OMNIC_Software",
   "config": [
     {
@@ -10,7 +10,7 @@
         "files": [
           {
             "local_path": "evaluation_examples/scikit_assets/omnic/unknown_clear_coating.jdx",
-            "path": "C:\\Users\\User\\OMNIC_data\\unknown_clear_coating.jdx"
+            "path": "C:\\Users\\User\\unknown_clear_coating.jdx"
           }
         ]
       }
@@ -24,7 +24,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-Command",
-          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\Desktop' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\Desktop\\unknown_coating_normalized.csv' -Force -ErrorAction SilentlyContinue"
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\unknown_coating_normalized.csv' -Force -ErrorAction SilentlyContinue"
         ]
       }
     },
@@ -50,7 +50,7 @@
     "func": "check_omnic_export_table",
     "result": {
       "type": "vm_file",
-      "path": "c:\\Users\\User\\Desktop\\unknown_coating_normalized.csv",
+      "path": "c:\\Users\\User\\unknown_coating_normalized.csv",
       "dest": "unknown_coating_normalized.csv"
     },
     "expected": {

@@ -1,7 +1,7 @@
 {
   "id": "f03c2876-d988-5676-90b8-eadd6bd3bb4f",
   "snapshot": "sci_kit_ready",
-  "instruction": "In GMS/DigitalMicrograph, open c:\\Users\\User\\SciKit_data\\gms\\lattice_image.bmp, the TEM image. Generate the FFT or power spectrum of the lattice image and export it as gms_lattice_fft.bmp on the Desktop. Keep the zero-frequency spot centered and bright in the export.",
+  "instruction": "In GMS/DigitalMicrograph, open c:\\Users\\User\\lattice_image.bmp, the TEM image. Generate the FFT or power spectrum of the lattice image and export it as gms_lattice_fft.bmp in c:\\Users\\User. Keep the zero-frequency spot centered and bright in the export.",
   "source": "https://www.gatan.com/products/tem-analysis/gatan-microscopy-suite-software",
   "config": [
     {
@@ -10,7 +10,7 @@
         "files": [
           {
             "local_path": "evaluation_examples/scikit_assets/gms/lattice_image.bmp",
-            "path": "C:\\Users\\User\\SciKit_data\\gms\\lattice_image.bmp"
+            "path": "C:\\Users\\User\\lattice_image.bmp"
           }
         ]
       }
@@ -24,7 +24,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-Command",
-          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\Desktop' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\Desktop\\gms_lattice_fft.bmp' -Force -ErrorAction SilentlyContinue"
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\gms_lattice_fft.bmp' -Force -ErrorAction SilentlyContinue"
         ]
       }
     },
@@ -50,7 +50,7 @@
     "func": "check_scikit_image_properties",
     "result": {
       "type": "vm_file",
-      "path": "c:\\Users\\User\\Desktop\\gms_lattice_fft.bmp",
+      "path": "c:\\Users\\User\\gms_lattice_fft.bmp",
       "dest": "gms_lattice_fft.bmp"
     },
     "expected": {

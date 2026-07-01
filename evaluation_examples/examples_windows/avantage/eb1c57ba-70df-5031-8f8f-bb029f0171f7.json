@@ -1,7 +1,7 @@
 {
   "id": "eb1c57ba-70df-5031-8f8f-bb029f0171f7",
   "snapshot": "sci_kit_ready",
-  "instruction": "In Avantage, open or import c:\\Users\\User\\SciKit_data\\avantage\\polymer_survey.vms, the XPS survey spectrum. Identify the C 1s, O 1s, Si 2p, and N 1s peaks, perform a standard quantification, then export the quantification or peak table as avantage_polymer_quant.csv on the Desktop. Include element/transition names, binding energies, and atomic percent or area values. Use CSV headers Element, Binding_Energy_eV, Atomic_Percent, and Area.",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\polymer_survey.vms, the XPS survey spectrum. Identify the C 1s, O 1s, Si 2p, and N 1s peaks, perform a standard quantification, then export the quantification or peak table as avantage_polymer_quant.csv in c:\\Users\\User. Include element/transition names, binding energies, and atomic percent or area values. Use CSV headers Element, Binding_Energy_eV, Atomic_Percent, and Area.",
   "source": "https://documents.thermofisher.com/TFS-Assets/CAD/Application-Notes/D16062~.pdf",
   "config": [
     {
@@ -10,7 +10,7 @@
         "files": [
           {
             "local_path": "evaluation_examples/scikit_assets/avantage/polymer_survey.vms",
-            "path": "C:\\Users\\User\\SciKit_data\\avantage\\polymer_survey.vms"
+            "path": "C:\\Users\\User\\polymer_survey.vms"
           }
         ]
       }
@@ -24,7 +24,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-Command",
-          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\Desktop' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\Desktop\\avantage_polymer_quant.csv' -Force -ErrorAction SilentlyContinue"
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\avantage_polymer_quant.csv' -Force -ErrorAction SilentlyContinue"
         ]
       }
     },
@@ -50,7 +50,7 @@
     "func": "check_scikit_csv_table",
     "result": {
       "type": "vm_file",
-      "path": "c:\\Users\\User\\Desktop\\avantage_polymer_quant.csv",
+      "path": "c:\\Users\\User\\avantage_polymer_quant.csv",
       "dest": "avantage_polymer_quant.csv"
     },
     "expected": {

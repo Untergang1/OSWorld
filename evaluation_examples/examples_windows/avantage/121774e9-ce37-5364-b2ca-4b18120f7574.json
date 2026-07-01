@@ -1,7 +1,7 @@
 {
   "id": "121774e9-ce37-5364-b2ca-4b18120f7574",
   "snapshot": "sci_kit_ready",
-  "instruction": "In Avantage, open or import c:\\Users\\User\\SciKit_data\\avantage\\polymer_c1s_region.vms, the high-resolution C 1s spectrum. Apply a background correction and fit at least two C 1s components, one near 284.8 eV and one near 286.4 eV. Export the fitted component table as avantage_c1s_fit.csv on the Desktop. Use CSV headers Component, Binding_Energy_eV, FWHM_eV, and Area.",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\polymer_c1s_region.vms, the high-resolution C 1s spectrum. Apply a background correction and fit at least two C 1s components, one near 284.8 eV and one near 286.4 eV. Export the fitted component table as avantage_c1s_fit.csv in c:\\Users\\User. Use CSV headers Component, Binding_Energy_eV, FWHM_eV, and Area.",
   "source": "https://documents.thermofisher.com/TFS-Assets/CAD/Application-Notes/D16062~.pdf",
   "config": [
     {
@@ -10,7 +10,7 @@
         "files": [
           {
             "local_path": "evaluation_examples/scikit_assets/avantage/polymer_c1s_region.vms",
-            "path": "C:\\Users\\User\\SciKit_data\\avantage\\polymer_c1s_region.vms"
+            "path": "C:\\Users\\User\\polymer_c1s_region.vms"
           }
         ]
       }
@@ -24,7 +24,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-Command",
-          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\Desktop' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\Desktop\\avantage_c1s_fit.csv' -Force -ErrorAction SilentlyContinue"
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\avantage_c1s_fit.csv' -Force -ErrorAction SilentlyContinue"
         ]
       }
     },
@@ -50,7 +50,7 @@
     "func": "check_scikit_csv_table",
     "result": {
       "type": "vm_file",
-      "path": "c:\\Users\\User\\Desktop\\avantage_c1s_fit.csv",
+      "path": "c:\\Users\\User\\avantage_c1s_fit.csv",
       "dest": "avantage_c1s_fit.csv"
     },
     "expected": {

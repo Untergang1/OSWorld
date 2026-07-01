@@ -1,7 +1,7 @@
 {
   "id": "2dfc2c89-797b-52b4-8986-3fa374674f3e",
   "snapshot": "sci_kit_ready",
-  "instruction": "In NanoScope Analysis, open or import c:\\Users\\User\\SciKit_data\\nanoscope\\afm_multifeature_height.csv, the shared multifeature AFM height image. Measure roughness for a clean, smoother region while excluding the dark scratch band and obvious particles, then export a text report as nanoscope_roughness_report.txt on the Desktop. Include both Ra and Rq roughness values and identify the excluded scratch region.",
+  "instruction": "In NanoScope Analysis, open or import c:\\Users\\User\\afm_multifeature_height.csv, the shared multifeature AFM height image. Measure roughness for a clean, smoother region while excluding the dark scratch band and obvious particles, then export a text report as nanoscope_roughness_report.txt in c:\\Users\\User. Include both Ra and Rq roughness values and identify the excluded scratch region.",
   "source": "https://www.nanophys.kth.se/nanolab/afm/icon/bruker-help/Content/SoftwareGuide/Offline/AnalysisFunct/Roughness.htm",
   "config": [
     {
@@ -10,7 +10,7 @@
         "files": [
           {
             "local_path": "evaluation_examples/scikit_assets/nanoscope/afm_multifeature_height.csv",
-            "path": "C:\\Users\\User\\SciKit_data\\nanoscope\\afm_multifeature_height.csv"
+            "path": "C:\\Users\\User\\afm_multifeature_height.csv"
           }
         ]
       }
@@ -24,7 +24,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-Command",
-          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\Desktop' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\Desktop\\nanoscope_roughness_report.txt' -Force -ErrorAction SilentlyContinue"
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\nanoscope_roughness_report.txt' -Force -ErrorAction SilentlyContinue"
         ]
       }
     },
@@ -50,7 +50,7 @@
     "func": "check_scikit_text_report",
     "result": {
       "type": "vm_file",
-      "path": "c:\\Users\\User\\Desktop\\nanoscope_roughness_report.txt",
+      "path": "c:\\Users\\User\\nanoscope_roughness_report.txt",
       "dest": "nanoscope_roughness_report.txt"
     },
     "expected": {

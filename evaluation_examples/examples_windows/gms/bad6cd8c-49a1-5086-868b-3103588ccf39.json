@@ -1,7 +1,7 @@
 {
   "id": "bad6cd8c-49a1-5086-868b-3103588ccf39",
   "snapshot": "sci_kit_ready",
-  "instruction": "In GMS/DigitalMicrograph, open c:\\Users\\User\\SciKit_data\\gms\\eels_spectrum_image.bmp, the spectrum-image preview. Create or display C, O, and Si elemental maps, arrange them as a color map or montage, and export it as gms_eels_maps.bmp on the Desktop. Use a color overlay or RGB montage, not a grayscale preview.",
+  "instruction": "In GMS/DigitalMicrograph, open c:\\Users\\User\\eels_spectrum_image.bmp, the spectrum-image preview. Create or display C, O, and Si elemental maps, arrange them as a color map or montage, and export it as gms_eels_maps.bmp in c:\\Users\\User. Use a color overlay or RGB montage, not a grayscale preview.",
   "source": "https://eels.info/book/export/html/45",
   "config": [
     {
@@ -10,7 +10,7 @@
         "files": [
           {
             "local_path": "evaluation_examples/scikit_assets/gms/eels_spectrum_image.bmp",
-            "path": "C:\\Users\\User\\SciKit_data\\gms\\eels_spectrum_image.bmp"
+            "path": "C:\\Users\\User\\eels_spectrum_image.bmp"
           }
         ]
       }
@@ -24,7 +24,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-Command",
-          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User\\Desktop' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\Desktop\\gms_eels_maps.bmp' -Force -ErrorAction SilentlyContinue"
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\gms_eels_maps.bmp' -Force -ErrorAction SilentlyContinue"
         ]
       }
     },
@@ -50,7 +50,7 @@
     "func": "check_scikit_image_properties",
     "result": {
       "type": "vm_file",
-      "path": "c:\\Users\\User\\Desktop\\gms_eels_maps.bmp",
+      "path": "c:\\Users\\User\\gms_eels_maps.bmp",
       "dest": "gms_eels_maps.bmp"
     },
     "expected": {

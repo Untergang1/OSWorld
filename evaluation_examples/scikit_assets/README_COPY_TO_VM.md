@@ -4,15 +4,12 @@ The Windows task configs upload the required local asset files during setup.
 Manual pre-copying of the whole directory into the VM is no longer required for
 the JSON tasks when they are run from the repository root.
 
-The setup steps copy only the files needed by the current task into these VM
-locations:
+Each task copies only the files it needs directly into:
 
-- `C:\Users\User\SciKit_data\avantage`
-- `C:\Users\User\SciKit_data\nanoscope`
-- `C:\Users\User\SciKit_data\gms`
-- `C:\Users\User\OMNIC_data`
+- `C:\Users\User`
 
-Local asset folders map to those VM locations as follows:
+Task instructions also ask agents to save exported results in the same directory.
+The local asset folders remain organized by application:
 
 - `avantage`, `nanoscope`, and `gms` contain deterministic synthetic XPS, AFM,
   and TEM/EELS benchmark inputs.
