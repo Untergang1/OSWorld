@@ -1,7 +1,7 @@
 {
   "id": "908ebde7-c381-5a15-83ed-e0a2572be3c0",
   "snapshot": "sci_kit_ready",
-  "instruction": "In NanoScope Analysis, open or import c:\\Users\\User\\SciKit_data\\nanoscope\\tilted_polymer_terrace.csv, the AFM height image. Apply a plane fit or flatten correction to remove tilt and line bow, then export the corrected height data as nanoscope_flattened_height.csv on the Desktop with CSV headers x_nm, y_nm, and flattened_height_nm.",
+  "instruction": "In NanoScope Analysis, open or import c:\\Users\\User\\SciKit_data\\nanoscope\\afm_multifeature_height.csv, the shared multifeature AFM height image. Apply a plane fit or flatten correction to remove global tilt and line bow, then export the corrected height data as nanoscope_flattened_height.csv on the Desktop with CSV headers x_nm, y_nm, and flattened_height_nm.",
   "source": "https://www.nanophys.kth.se/nanolab/afm/icon/bruker-help/Content/SoftwareGuide/Offline/ModifyCommands/Flatten.htm",
   "config": [
     {
@@ -55,7 +55,7 @@
           "x"
         ],
         "forbidden_sha256": [
-          "0ab7d902a1cac660476742f9ad2edd86a8f2a0113068668d17dc73df2e43700c"
+          "dea22d0b35ccb3dc22cea05aff2c3e97729f0dff2c69a098f3cce3a179e7a462"
         ],
         "include_keywords": [
           "flattened_height_nm"

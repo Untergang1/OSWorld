@@ -132,7 +132,6 @@ def generate_avantage() -> None:
     )
     survey_rows = np.column_stack([be, np.maximum(counts, 0)])
     write_vms_like(base / "polymer_survey.vms", "Polymer film survey", "binding_energy_eV", "counts", survey_rows)
-    write_xy_csv(base / "polymer_survey.csv", ["binding_energy_eV", "counts"], survey_rows)
 
     c1s_be = np.linspace(278, 294, 641)
     c1s = (
@@ -182,25 +181,22 @@ def generate_nanoscope() -> None:
     y, x = np.mgrid[0:size, 0:size]
     pixel_nm = 4.0
 
-    terrace = 25 * (x > 58) + 0.12 * x + 0.08 * y + 1.5 * np.sin(y / 8) + RNG.normal(0, 0.45, (size, size))
-    write_matrix_csv(base / "tilted_polymer_terrace.csv", terrace, pixel_nm, "height_nm")
-    save_grayscale_bmp(base / "tilted_polymer_terrace.bmp", terrace)
-
-    rough = 2.5 * RNG.normal(0, 1, (size, size)) + 1.2 * np.sin(x / 6)
-    rough[55:68, 12:118] -= 18
-    write_matrix_csv(base / "roughness_scratch_height.csv", rough, pixel_nm, "height_nm")
-    save_grayscale_bmp(base / "roughness_scratch_height.bmp", rough)
-
-    step = 1.2 * RNG.normal(0, 1, (size, size)) + 42 * (x > 64) + 4 * np.sin(x / 18)
-    write_matrix_csv(base / "step_grating_height.csv", step, pixel_nm, "height_nm")
-    save_grayscale_bmp(base / "step_grating_height.bmp", step)
-
-    particles = RNG.normal(0, 0.7, (size, size))
+    height = (
+        0.12 * x
+        + 0.08 * y
+        + 1.5 * np.sin(y / 8)
+        + 42 * (x > 64)
+        + 2.0 * RNG.normal(0, 1, (size, size))
+    )
+    height[55:68, 12:118] -= 18
     centers = [(24, 31, 9), (45, 84, 7), (72, 42, 12), (92, 96, 8), (108, 58, 10), (34, 108, 6), (82, 18, 7)]
     for cy, cx, amp in centers:
-        particles += amp * np.exp(-((x - cx) ** 2 + (y - cy) ** 2) / (2 * 4.2**2))
-    write_matrix_csv(base / "nanoparticles_height.csv", particles, pixel_nm, "height_nm")
-    save_grayscale_bmp(base / "nanoparticles_height.bmp", particles)
+        height += amp * np.exp(-((x - cx) ** 2 + (y - cy) ** 2) / (2 * 4.2**2))
+    write_matrix_csv(base / "afm_multifeature_height.csv", height, pixel_nm, "height_nm")
+
+    # Preserve downstream deterministic files after consolidating four height maps into one.
+    for _ in range(3):
+        RNG.normal(0, 1, (size, size))
 
     distance = np.linspace(-120, 120, 481)
     force = 0.015 * distance + 6 / (1 + np.exp(-(distance - 20) / 7)) - 2.5 * np.exp(-((distance + 22) / 16) ** 2)
@@ -237,16 +233,6 @@ def generate_gms() -> None:
     si_map = np.exp(-((xx + 0.05) ** 2 + (yy - 0.35) ** 2) / 0.18) + 0.05 * RNG.random((128, 128))
     save_grayscale_bmp(base / "eels_spectrum_image.bmp", c_map + o_map + si_map)
 
-    r = np.sqrt((x - 128) ** 2 + (y - 128) ** 2)
-    saed = (
-        gaussian(r, 0, 2.2, 4.0)
-        + gaussian(r, 38, 1.8, 1.2)
-        + gaussian(r, 66, 2.2, 1.0)
-        + gaussian(r, 94, 2.6, 0.75)
-        + 0.08 * RNG.random((size, size))
-    )
-    save_grayscale_bmp(base / "saed_pattern.bmp", saed)
-
 
 def write_readme() -> None:
     (OUT / "README_COPY_TO_VM.md").write_text(
@@ -258,7 +244,10 @@ def write_readme() -> None:
         "- `C:\\Users\\User\\SciKit_data\\nanoscope`\n"
         "- `C:\\Users\\User\\SciKit_data\\gms`\n\n"
         "The files are deterministic synthetic XPS, AFM, and TEM/EELS examples. "
-        "They are benchmark inputs, not real experimental measurements.\n",
+        "They are benchmark inputs, not real experimental measurements.\n\n"
+        "To keep the snapshot compact, NanoScope height-image tasks intentionally "
+        "share `nanoscope\\afm_multifeature_height.csv`, and GMS FFT/diffraction "
+        "tasks intentionally share `gms\\lattice_image.bmp`.\n",
         encoding="utf-8",
     )
 

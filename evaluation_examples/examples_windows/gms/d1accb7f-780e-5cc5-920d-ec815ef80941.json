@@ -1,7 +1,7 @@
 {
   "id": "d1accb7f-780e-5cc5-920d-ec815ef80941",
   "snapshot": "sci_kit_ready",
-  "instruction": "In GMS/DigitalMicrograph, open c:\\Users\\User\\SciKit_data\\gms\\saed_pattern.bmp, the diffraction pattern. Measure at least three diffraction rings or spots and export the measurement table as gms_diffraction_measurements.csv on the Desktop. Include ring radius or d-spacing values. Use CSV headers ring_index, radius_px, and d_spacing_nm.",
+  "instruction": "In GMS/DigitalMicrograph, open c:\\Users\\User\\SciKit_data\\gms\\lattice_image.bmp, the TEM lattice image. Generate the FFT or power spectrum from the lattice image, measure at least three diffraction spots or rings in that FFT/power spectrum, and export the measurement table as gms_diffraction_measurements.csv on the Desktop. Include ring radius or d-spacing values. Use CSV headers ring_index, radius_px, and d_spacing_nm.",
   "source": "https://www.gatan.com/products/tem-analysis/gatan-microscopy-suite-software",
   "config": [
     {
@@ -53,25 +53,27 @@
           "ring",
           "spot",
           "d-spacing",
-          "radius"
+          "radius",
+          "fft"
         ],
-        "expected_values": [
-          38,
-          66,
-          94
-        ],
-        "tolerance": 8.0,
         "forbidden_sha256": [
-          "d430725f1796af4c0b1787c9a6aad2256ca21263e98ba36c8485ee2e620f2539"
+          "474f19bf51a12a57920645cc43bf2a604120f70dbdc39a76a277ea71e5eca786"
         ],
         "include_keywords": [
           "ring_index",
-          "radius_px"
+          "radius_px",
+          "d_spacing_nm"
         ],
         "required_header_keywords": [
           "ring",
-          "radius"
-        ]
+          "radius",
+          "d_spacing"
+        ],
+        "expected_values": [
+          8.3,
+          14.2
+        ],
+        "tolerance": 3.0
       }
     }
   },

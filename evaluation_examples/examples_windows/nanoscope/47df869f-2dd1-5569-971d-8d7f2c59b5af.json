@@ -1,7 +1,7 @@
 {
   "id": "47df869f-2dd1-5569-971d-8d7f2c59b5af",
   "snapshot": "sci_kit_ready",
-  "instruction": "In NanoScope Analysis, open or import c:\\Users\\User\\SciKit_data\\nanoscope\\step_grating_height.csv, the AFM height image. Draw a section line across the step edge, measure the step height, and export the section profile as nanoscope_step_section.csv on the Desktop with headers section_distance_nm and section_height_nm, and include a step_height_nm value or row.",
+  "instruction": "In NanoScope Analysis, open or import c:\\Users\\User\\SciKit_data\\nanoscope\\afm_multifeature_height.csv, the shared multifeature AFM height image. Draw a section line across the vertical step edge near x = 256 nm, measure the step height, and export the section profile as nanoscope_step_section.csv on the Desktop with headers section_distance_nm and section_height_nm, and include a step_height_nm value or row.",
   "source": "https://www.nanophys.kth.se/nanolab/afm/icon/bruker-help/Content/SoftwareGuide/Offline/AnalysisFunct/Section.htm",
   "config": [
     {
@@ -62,7 +62,7 @@
           }
         ],
         "forbidden_sha256": [
-          "cdfa18d474f7cb7eb18e021e830b31f0d4d2c0bb3caeff87b6da8f5395fe3fe5"
+          "dea22d0b35ccb3dc22cea05aff2c3e97729f0dff2c69a098f3cce3a179e7a462"
         ],
         "include_keywords": [
           "section_distance_nm",
