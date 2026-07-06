@@ -307,11 +307,21 @@ class SetupController:
     def _tidy_desktop_setup(self, **config):
         raise NotImplementedError()
 
-    def _open_setup(self, path: str):
+    def _open_setup(
+            self,
+            path: str,
+            window_name: str = "",
+            timeout_seconds: Optional[int] = None,
+    ):
         if not path:
             raise Exception(f"Setup Open - Invalid path ({path}).")
 
-        payload = json.dumps({"path": path})
+        payload_data: Dict[str, Any] = {"path": path}
+        if window_name:
+            payload_data["window_name"] = window_name
+        if timeout_seconds is not None:
+            payload_data["timeout_seconds"] = timeout_seconds
+        payload = json.dumps(payload_data)
         headers = {
             'Content-Type': 'application/json'
         }
@@ -323,13 +333,14 @@ class SetupController:
                 last_error = requests.RequestException("VM server did not become ready before open_file")
             else:
                 try:
-                    # The server-side call is now blocking and can take time.
-                    # We set a timeout that is slightly longer than the server's timeout (1800s).
+                    # The server-side call is blocking; keep the client timeout
+                    # slightly longer than the server-side window wait.
+                    request_timeout = (timeout_seconds + 10) if timeout_seconds is not None else 1810
                     response = requests.post(
                         self.http_server + "/setup" + "/open_file",
                         headers=headers,
                         data=payload,
-                        timeout=1810,
+                        timeout=request_timeout,
                     )
                     if response.status_code == 200:
                         logger.info("Command executed successfully: %s", response.text)

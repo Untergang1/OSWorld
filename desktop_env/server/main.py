@@ -1286,9 +1286,16 @@ def download_file():
 def open_file():
     data = request.json
     path = data.get('path', None)
+    window_name = data.get('window_name', None)
+    timeout_seconds = data.get('timeout_seconds', TIMEOUT)
 
     if not path:
         return "Path not supplied!", 400
+
+    try:
+        timeout_seconds = float(timeout_seconds)
+    except (TypeError, ValueError):
+        return f"Invalid timeout_seconds: {timeout_seconds}", 400
 
     path_obj = Path(os.path.expandvars(os.path.expanduser(path)))
 
@@ -1325,20 +1332,21 @@ def open_file():
 
         start_time = time.time()
         window_found = False
+        window_title_candidates = [window_name] if window_name else [file_name, file_name_without_ext]
+        window_title_candidates = [candidate for candidate in window_title_candidates if candidate]
 
-        while time.time() - start_time < TIMEOUT:
+        while time.time() - start_time < timeout_seconds:
             os_name = platform.system()
             if os_name in ['Windows', 'Darwin']:
                 import pygetwindow as gw
-                # Check for window title containing file name or file name without extension
-                windows = gw.getWindowsWithTitle(file_name)
-                if not windows:
-                    windows = gw.getWindowsWithTitle(file_name_without_ext)
-
-                if windows:
-                    # To be more specific, we can try to activate it
-                    windows[0].activate()
-                    window_found = True
+                for title_candidate in window_title_candidates:
+                    windows = gw.getWindowsWithTitle(title_candidate)
+                    if windows:
+                        # To be more specific, we can try to activate it
+                        windows[0].activate()
+                        window_found = True
+                        break
+                if window_found:
                     break
             elif os_name == 'Linux':
                 try:
@@ -1349,7 +1357,7 @@ def open_file():
                         pass  # No windows, just continue waiting
                     else:
                         for window in window_list:
-                            if file_name in window or file_name_without_ext in window:
+                            if any(title_candidate in window for title_candidate in window_title_candidates):
                                 # a window is found, now activate it
                                 window_id = window.split()[0]
                                 subprocess.run(['wmctrl', '-i', '-a', window_id], check=True)
@@ -1370,7 +1378,7 @@ def open_file():
         if window_found:
             return "File opened and window activated successfully"
         else:
-            return f"Failed to find window for {file_name} within {TIMEOUT} seconds.", 500
+            return f"Failed to find window for {window_title_candidates} within {timeout_seconds:g} seconds.", 500
 
     except Exception as e:
         return f"Failed to open {path}. Error: {e}", 500

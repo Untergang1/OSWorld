@@ -1,6 +1,10 @@
 import unittest
 from types import SimpleNamespace
 
+from tests.setup_import_stubs import install_setup_controller_stubs
+
+install_setup_controller_stubs()
+
 from desktop_env.controllers.setup import SetupController
 
 

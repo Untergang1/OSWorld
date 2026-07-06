@@ -33,16 +33,11 @@
       }
     },
     {
-      "type": "execute",
+      "type": "open",
       "parameters": {
-        "command": [
-          "powershell",
-          "-NoProfile",
-          "-ExecutionPolicy",
-          "Bypass",
-          "-Command",
-          "$keywords=@('OMNIC','Thermo'); $starts=@($env:ProgramData + '\\Microsoft\\Windows\\Start Menu\\Programs', $env:APPDATA + '\\Microsoft\\Windows\\Start Menu\\Programs') | Where-Object { Test-Path $_ }; $shortcut=Get-ChildItem -Path $starts -Recurse -Filter *.lnk -ErrorAction SilentlyContinue | Where-Object { $name=$_.BaseName; @($keywords | Where-Object { $name -like ('*' + $_ + '*') }).Count -gt 0 } | Select-Object -First 1; if ($shortcut) { Start-Process -FilePath $shortcut.FullName; Start-Sleep -Seconds 3; exit 0 }; $roots=@($env:ProgramFiles, ${env:ProgramFiles(x86)}) | Where-Object { $_ -and (Test-Path $_) }; $exe=Get-ChildItem -Path $roots -Recurse -Filter *.exe -ErrorAction SilentlyContinue | Where-Object { $name=$_.Name; $path=$_.FullName; @($keywords | Where-Object { $name -like ('*' + $_ + '*') -or $path -like ('*' + $_ + '*') }).Count -gt 0 } | Select-Object -First 1; if ($exe) { Start-Process -FilePath $exe.FullName; Start-Sleep -Seconds 3; exit 0 }; throw 'Unable to find installed OMNIC application shortcut or executable'"
-        ]
+        "path": "C:\\Program Files (x86)\\Omnic\\omnic32.exe",
+        "window_name": "OMNIC",
+        "timeout_seconds": 60
       }
     }
   ],
