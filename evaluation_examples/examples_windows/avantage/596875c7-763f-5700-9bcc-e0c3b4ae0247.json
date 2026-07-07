@@ -35,6 +35,12 @@
         "window_name": "Avantage",
         "timeout_seconds": 60
       }
+    },
+    {
+      "type": "sleep",
+      "parameters": {
+        "seconds": 5
+      }
     }
   ],
   "trajectory": "trajectories/",
