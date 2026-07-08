@@ -1,16 +1,16 @@
 {
   "id": "eb1c57ba-70df-5031-8f8f-bb029f0171f7",
   "snapshot": "SciKit_ready",
-  "instruction": "In Avantage, open or import c:\\Users\\User\\polymer_survey.vms, the XPS survey spectrum. Identify the C 1s, O 1s, Si 2p, and N 1s peaks, perform a standard quantification, then export the quantification or peak table as avantage_polymer_quant.csv in c:\\Users\\User. Include element/transition names, binding energies, and atomic percent or area values. Use CSV headers Element, Binding_Energy_eV, Atomic_Percent, and Area.",
-  "source": "https://documents.thermofisher.com/TFS-Assets/CAD/Application-Notes/D16062~.pdf",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vms, the CasaXPS VAMAS XPS example file. Identify the C 1s, O 1s, Mg 1s, and Mg 2s regions, perform a standard quantification, then export the quantification or peak table as avantage_polymer_quant.csv in c:\\Users\\User. Include element/transition names, binding energies, and atomic percent or area values. Use CSV headers Element, Binding_Energy_eV, Atomic_Percent, and Area.",
+  "source": "https://www.casa-software.com/index.php?zipfile=VVhWaGJuUkNlVmhRVXk1NmFYQT1NREF3TURBd1FYTndaV04wYzA5bQ%3D%3D",
   "config": [
     {
       "type": "upload_file",
       "parameters": {
         "files": [
           {
-            "local_path": "evaluation_examples/scikit_assets/avantage/polymer_survey.vms",
-            "path": "C:\\Users\\User\\polymer_survey.vms"
+            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vms",
+            "path": "C:\\Users\\User\\quant_by_xps.vms"
           }
         ]
       }
@@ -64,7 +64,7 @@
         "include_keywords": [
           "C 1s",
           "O 1s",
-          "atomic_percent"
+          "Mg"
         ],
         "include_any_keywords": [
           "atomic",
@@ -75,7 +75,7 @@
           284.8,
           532.0
         ],
-        "tolerance": 2.0,
+        "tolerance": 5.0,
         "forbidden_sha256": [
           "9c6212027d7f47ff2ffea8459f41eb6130bd4e84fbfaaea667e1fa43f93000fe"
         ],

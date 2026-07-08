@@ -1,16 +1,16 @@
 {
   "id": "e39e9be5-1ea6-5972-85c9-bb61a14445d7",
   "snapshot": "SciKit_ready",
-  "instruction": "In Avantage, open or import c:\\Users\\User\\oxide_o1s_map.csv, the XPS map table. Create a false-color O 1s map and export it as avantage_o1s_map.bmp in c:\\Users\\User. Use a color scale rather than a grayscale export.",
-  "source": "https://documents.thermofisher.com/TFS-Assets/CAD/Application-Notes/D16062~.pdf",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vms, the CasaXPS VAMAS XPS example file. Display one or more XPS regions using colored traces or a color scale, then export the view as avantage_xps_view.bmp in c:\\Users\\User. Use a color export rather than a grayscale export.",
+  "source": "https://www.casa-software.com/index.php?zipfile=VVhWaGJuUkNlVmhRVXk1NmFYQT1NREF3TURBd1FYTndaV04wYzA5bQ%3D%3D",
   "config": [
     {
       "type": "upload_file",
       "parameters": {
         "files": [
           {
-            "local_path": "evaluation_examples/scikit_assets/avantage/oxide_o1s_map.csv",
-            "path": "C:\\Users\\User\\oxide_o1s_map.csv"
+            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vms",
+            "path": "C:\\Users\\User\\quant_by_xps.vms"
           }
         ]
       }
@@ -24,7 +24,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-Command",
-          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\avantage_o1s_map.bmp' -Force -ErrorAction SilentlyContinue"
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\avantage_xps_view.bmp' -Force -ErrorAction SilentlyContinue"
         ]
       }
     },
@@ -51,8 +51,8 @@
     "func": "check_scikit_image_properties",
     "result": {
       "type": "vm_file",
-      "path": "c:\\Users\\User\\avantage_o1s_map.bmp",
-      "dest": "avantage_o1s_map.bmp"
+      "path": "c:\\Users\\User\\avantage_xps_view.bmp",
+      "dest": "avantage_xps_view.bmp"
     },
     "expected": {
       "type": "rule",

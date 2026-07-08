@@ -1,16 +1,16 @@
 {
   "id": "121774e9-ce37-5364-b2ca-4b18120f7574",
   "snapshot": "SciKit_ready",
-  "instruction": "In Avantage, open or import c:\\Users\\User\\polymer_c1s_region.vms, the high-resolution C 1s spectrum. Apply a background correction and fit at least two C 1s components, one near 284.8 eV and one near 286.4 eV. Export the fitted component table as avantage_c1s_fit.csv in c:\\Users\\User. Use CSV headers Component, Binding_Energy_eV, FWHM_eV, and Area.",
-  "source": "https://documents.thermofisher.com/TFS-Assets/CAD/Application-Notes/D16062~.pdf",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vms, the CasaXPS VAMAS XPS example file. Select the C 1s region, apply a background correction, and fit at least two C 1s components or peak entries. Export the fitted component table as avantage_c1s_fit.csv in c:\\Users\\User. Use CSV headers Component, Binding_Energy_eV, FWHM_eV, and Area.",
+  "source": "https://www.casa-software.com/index.php?zipfile=VVhWaGJuUkNlVmhRVXk1NmFYQT1NREF3TURBd1FYTndaV04wYzA5bQ%3D%3D",
   "config": [
     {
       "type": "upload_file",
       "parameters": {
         "files": [
           {
-            "local_path": "evaluation_examples/scikit_assets/avantage/polymer_c1s_region.vms",
-            "path": "C:\\Users\\User\\polymer_c1s_region.vms"
+            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vms",
+            "path": "C:\\Users\\User\\quant_by_xps.vms"
           }
         ]
       }
@@ -72,10 +72,9 @@
           "peak"
         ],
         "expected_values": [
-          284.8,
-          286.4
+          284.8
         ],
-        "tolerance": 1.0,
+        "tolerance": 5.0,
         "forbidden_sha256": [
           "c4bab6733f3e68856c2f4e69df1ca0009ea370031af83e927404af4112d1c741"
         ],

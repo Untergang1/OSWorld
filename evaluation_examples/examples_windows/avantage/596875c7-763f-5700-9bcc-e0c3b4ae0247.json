@@ -1,16 +1,16 @@
 {
   "id": "596875c7-763f-5700-9bcc-e0c3b4ae0247",
   "snapshot": "SciKit_ready",
-  "instruction": "In Avantage, open or import c:\\Users\\User\\al_oxide_depth_profile.csv, the depth-profile data. Plot or tabulate composition versus sputter time, then export the processed depth profile as avantage_depth_profile.csv in c:\\Users\\User. Include a derived Depth_nm column and use CSV headers Sputter_Time_s, Depth_nm, Al_atomic_percent, O_atomic_percent, C_atomic_percent, and Si_atomic_percent.",
-  "source": "https://labadviser.nanolab.dtu.dk/index.php?title=Specific_Process_Knowledge%2FCharacterization%2FXPS%2FExport2CasaXPS",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vms, the CasaXPS VAMAS XPS example file. Compare the C 1s, O 1s, Mg 1s, and Mg 2s regions, then export a processed quantification table as avantage_region_quant.csv in c:\\Users\\User. Include CSV headers Region, Binding_Energy_eV, Atomic_Percent, Area, and Notes.",
+  "source": "https://www.casa-software.com/index.php?zipfile=VVhWaGJuUkNlVmhRVXk1NmFYQT1NREF3TURBd1FYTndaV04wYzA5bQ%3D%3D",
   "config": [
     {
       "type": "upload_file",
       "parameters": {
         "files": [
           {
-            "local_path": "evaluation_examples/scikit_assets/avantage/al_oxide_depth_profile.csv",
-            "path": "C:\\Users\\User\\al_oxide_depth_profile.csv"
+            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vms",
+            "path": "C:\\Users\\User\\quant_by_xps.vms"
           }
         ]
       }
@@ -24,7 +24,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-Command",
-          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\avantage_depth_profile.csv' -Force -ErrorAction SilentlyContinue"
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\avantage_region_quant.csv' -Force -ErrorAction SilentlyContinue"
         ]
       }
     },
@@ -51,35 +51,39 @@
     "func": "check_scikit_csv_table",
     "result": {
       "type": "vm_file",
-      "path": "c:\\Users\\User\\avantage_depth_profile.csv",
-      "dest": "avantage_depth_profile.csv"
+      "path": "c:\\Users\\User\\avantage_region_quant.csv",
+      "dest": "avantage_region_quant.csv"
     },
     "expected": {
       "type": "rule",
       "rules": {
         "extension": ".csv",
-        "min_bytes": 180,
-        "min_numeric_rows": 6,
-        "min_numeric_cols": 6,
+        "min_bytes": 150,
+        "min_numeric_rows": 3,
+        "min_numeric_cols": 2,
         "include_keywords": [
-          "sputter",
-          "Al",
-          "O"
+          "Mg",
+          "O 1s",
+          "C 1s"
         ],
-        "column_ranges": [
-          {
-            "index": 0,
-            "min_at_most": 1,
-            "max_at_least": 30
-          }
+        "include_any_keywords": [
+          "atomic",
+          "area",
+          "percent",
+          "region"
         ],
+        "expected_values": [
+          284.8,
+          532.0
+        ],
+        "tolerance": 5.0,
         "forbidden_sha256": [
           "2fcfa0ecbe53f0f37bb92ba55e951b3b1a3fef28fd3aec37b782eec8215f7382"
         ],
         "required_header_keywords": [
-          "sputter",
-          "depth",
-          "al_atomic_percent"
+          "region",
+          "binding",
+          "area"
         ]
       }
     }

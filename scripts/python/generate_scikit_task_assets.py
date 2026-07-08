@@ -22,7 +22,8 @@ def gaussian(x: np.ndarray, center: float, width: float, amplitude: float) -> np
 
 def ensure_dirs() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    for name in ("avantage", "nanoscope", "gms"):
+    (OUT / "avantage").mkdir(parents=True, exist_ok=True)
+    for name in ("nanoscope", "gms"):
         target = OUT / name
         if target.exists():
             for path in sorted(target.rglob("*"), reverse=True):
@@ -101,82 +102,6 @@ def save_rgb_bmp(path: Path, channels: list[np.ndarray]) -> None:
         rgb.append(np.uint8(ch * 255))
     _write_bmp(path, np.dstack(rgb))
 
-
-def write_vms_like(path: Path, title: str, x_label: str, y_label: str, rows: np.ndarray) -> None:
-    """Write a compact VAMAS-style ASCII transfer file plus tabular data.
-
-    Avantage installations usually understand VAMAS/ASCII imports, but exact
-    vendor binary formats are not generated here. The table is deliberately
-    transparent so the same file remains usable through text/ASCII import.
-    """
-
-    with path.open("w", newline="", encoding="utf-8") as handle:
-        handle.write("VAMAS Surface Chemical Analysis Standard Data Transfer Format\n")
-        handle.write(f"Experiment: {title}\n")
-        handle.write("Technique: XPS\n")
-        handle.write(f"Columns: {x_label}, {y_label}\n")
-        handle.write("DataStart\n")
-        writer = csv.writer(handle)
-        writer.writerow([x_label, y_label])
-        writer.writerows(rows)
-
-
-def generate_avantage() -> None:
-    base = OUT / "avantage"
-
-    be = np.linspace(0, 1200, 1201)
-    counts = (
-        1200
-        + 45 * np.sqrt(be + 1)
-        + gaussian(be, 284.8, 1.4, 22000)
-        + gaussian(be, 399.8, 1.8, 3600)
-        + gaussian(be, 532.0, 2.1, 8800)
-        + gaussian(be, 103.3, 1.5, 4400)
-        + RNG.normal(0, 45, be.size)
-    )
-    survey_rows = np.column_stack([be, np.maximum(counts, 0)])
-    write_vms_like(base / "polymer_survey.vms", "Polymer film survey", "binding_energy_eV", "counts", survey_rows)
-
-    c1s_be = np.linspace(278, 294, 641)
-    c1s = (
-        220
-        + gaussian(c1s_be, 284.8, 0.55, 9300)
-        + gaussian(c1s_be, 286.4, 0.75, 4100)
-        + gaussian(c1s_be, 288.7, 0.9, 1300)
-        + 25 * (294 - c1s_be)
-        + RNG.normal(0, 25, c1s_be.size)
-    )
-    write_vms_like(base / "polymer_c1s_region.vms", "Polymer film C 1s high resolution", "binding_energy_eV", "counts", np.column_stack([c1s_be, c1s]))
-
-    tio2_be = np.linspace(280, 540, 1041)
-    tio2 = (
-        500
-        + gaussian(tio2_be, 284.8, 0.8, 2500)
-        + gaussian(tio2_be, 458.7, 0.9, 12000)
-        + gaussian(tio2_be, 464.4, 1.1, 6200)
-        + gaussian(tio2_be, 529.9, 1.0, 14500)
-        + gaussian(tio2_be, 531.7, 1.3, 3200)
-        + RNG.normal(0, 30, tio2_be.size)
-    )
-    write_vms_like(base / "tio2_regions.vms", "TiO2 reference regions", "binding_energy_eV", "counts", np.column_stack([tio2_be, tio2]))
-
-    times = np.array([0, 2, 5, 10, 15, 20, 30, 45, 60], dtype=float)
-    al = 8 + 67 * (1 - np.exp(-times / 18))
-    oxygen = 48 - 17 * (1 - np.exp(-times / 20))
-    carbon = 34 * np.exp(-times / 8)
-    silicon = 100 - al - oxygen - carbon
-    depth_rows = np.column_stack([times, al, oxygen, carbon, silicon])
-    write_xy_csv(
-        base / "al_oxide_depth_profile.csv",
-        ["sputter_time_s", "Al_atomic_percent", "O_atomic_percent", "C_atomic_percent", "Si_atomic_percent"],
-        depth_rows,
-    )
-
-    yy, xx = np.mgrid[-1:1:96j, -1:1:96j]
-    oxygen_map = 0.35 + 0.45 * np.exp(-((xx + 0.25) ** 2 + (yy - 0.15) ** 2) / 0.18) + 0.05 * RNG.random((96, 96))
-    silicon_map = 0.35 + 0.4 * np.exp(-((xx - 0.35) ** 2 + (yy + 0.15) ** 2) / 0.20) + 0.04 * RNG.random((96, 96))
-    carbon_map = 0.18 + 0.15 * RNG.random((96, 96))
-    write_matrix_csv(base / "oxide_o1s_map.csv", oxygen_map * 100, 0.25, "O1s_atomic_percent")
 
 
 def generate_nanoscope() -> None:
@@ -262,7 +187,6 @@ def write_readme() -> None:
 
 def main() -> None:
     ensure_dirs()
-    generate_avantage()
     generate_nanoscope()
     generate_gms()
     write_readme()

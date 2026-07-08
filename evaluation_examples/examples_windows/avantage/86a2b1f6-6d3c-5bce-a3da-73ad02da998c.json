@@ -1,16 +1,16 @@
 {
   "id": "86a2b1f6-6d3c-5bce-a3da-73ad02da998c",
   "snapshot": "SciKit_ready",
-  "instruction": "In Avantage, open or import c:\\Users\\User\\tio2_regions.vms, the XPS regions file. Charge-correct the spectra to adventitious carbon at 284.8 eV, review Ti 2p and O 1s, and create a plain-text report named avantage_tio2_report.txt in c:\\Users\\User. The report should mention Ti 2p, O 1s, and charge correction.",
-  "source": "https://documents.thermofisher.com/TFS-Assets/CAD/Application-Notes/D16062~.pdf",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vms, the CasaXPS VAMAS XPS example file. Charge-correct or reference the spectra to adventitious carbon near 284.8 eV, review the Mg 1s and O 1s regions, and create a plain-text report named avantage_mg_report.txt in c:\\Users\\User. The report should mention Mg 1s, O 1s, and charge correction or energy referencing.",
+  "source": "https://www.casa-software.com/index.php?zipfile=VVhWaGJuUkNlVmhRVXk1NmFYQT1NREF3TURBd1FYTndaV04wYzA5bQ%3D%3D",
   "config": [
     {
       "type": "upload_file",
       "parameters": {
         "files": [
           {
-            "local_path": "evaluation_examples/scikit_assets/avantage/tio2_regions.vms",
-            "path": "C:\\Users\\User\\tio2_regions.vms"
+            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vms",
+            "path": "C:\\Users\\User\\quant_by_xps.vms"
           }
         ]
       }
@@ -24,7 +24,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-Command",
-          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\avantage_tio2_report.txt' -Force -ErrorAction SilentlyContinue"
+          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\avantage_mg_report.txt' -Force -ErrorAction SilentlyContinue"
         ]
       }
     },
@@ -51,8 +51,8 @@
     "func": "check_scikit_text_report",
     "result": {
       "type": "vm_file",
-      "path": "c:\\Users\\User\\avantage_tio2_report.txt",
-      "dest": "avantage_tio2_report.txt"
+      "path": "c:\\Users\\User\\avantage_mg_report.txt",
+      "dest": "avantage_mg_report.txt"
     },
     "expected": {
       "type": "rule",
@@ -60,13 +60,14 @@
         "extension": ".txt",
         "min_bytes": 120,
         "include_keywords": [
-          "Ti 2p",
+          "Mg 1s",
           "O 1s"
         ],
         "include_any_keywords": [
           "charge",
           "284.8",
-          "correction"
+          "correction",
+          "reference"
         ],
         "forbidden_sha256": [
           "474fd47455ff28bf232300c80ee6f9503de0ff09793375a14fcee0410476a3da"

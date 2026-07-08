@@ -11,8 +11,9 @@ Each task copies only the files it needs directly into:
 Task instructions also ask agents to save exported results in the same directory.
 The local asset folders remain organized by application:
 
-- `avantage`, `nanoscope`, and `gms` contain deterministic synthetic XPS, AFM,
-  and TEM/EELS benchmark inputs.
+- `avantage` contains externally sourced CasaXPS VAMAS XPS inputs.
+- `nanoscope` and `gms` contain deterministic synthetic AFM and TEM/EELS
+  benchmark inputs.
 - `omnic` contains deterministic synthetic FTIR/ATR benchmark inputs.
 
 NanoScope height-image tasks intentionally share
