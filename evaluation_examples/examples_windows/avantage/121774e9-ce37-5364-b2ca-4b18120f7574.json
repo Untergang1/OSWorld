@@ -1,7 +1,7 @@
 {
   "id": "121774e9-ce37-5364-b2ca-4b18120f7574",
   "snapshot": "SciKit_ready",
-  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vms, the CasaXPS VAMAS XPS example file. Select the C 1s region, apply a background correction, and fit at least two C 1s components or peak entries. Export the fitted component table as avantage_c1s_fit.csv in c:\\Users\\User. Use CSV headers Component, Binding_Energy_eV, FWHM_eV, and Area.",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vgp, the native Avantage project exported from the CasaXPS XPS example. Select the C 1s region, apply a background correction, and fit at least two C 1s components or peak entries. Export the fitted component table as avantage_c1s_fit.csv in c:\\Users\\User. Use CSV headers Component, Binding_Energy_eV, FWHM_eV, and Area.",
   "source": "https://www.casa-software.com/index.php?zipfile=VVhWaGJuUkNlVmhRVXk1NmFYQT1NREF3TURBd1FYTndaV04wYzA5bQ%3D%3D",
   "config": [
     {
@@ -9,8 +9,8 @@
       "parameters": {
         "files": [
           {
-            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vms",
-            "path": "C:\\Users\\User\\quant_by_xps.vms"
+            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vgp",
+            "path": "C:\\Users\\User\\quant_by_xps.vgp"
           }
         ]
       }

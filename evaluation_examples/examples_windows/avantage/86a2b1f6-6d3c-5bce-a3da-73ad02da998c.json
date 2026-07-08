@@ -1,7 +1,7 @@
 {
   "id": "86a2b1f6-6d3c-5bce-a3da-73ad02da998c",
   "snapshot": "SciKit_ready",
-  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vms, the CasaXPS VAMAS XPS example file. Charge-correct or reference the spectra to adventitious carbon near 284.8 eV, review the Mg 1s and O 1s regions, and create a plain-text report named avantage_mg_report.txt in c:\\Users\\User. The report should mention Mg 1s, O 1s, and charge correction or energy referencing.",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vgp, the native Avantage project exported from the CasaXPS XPS example. Charge-correct or reference the spectra to adventitious carbon near 284.8 eV, review the Mg 1s and O 1s regions, and create a plain-text report named avantage_mg_report.txt in c:\\Users\\User. The report should mention Mg 1s, O 1s, and charge correction or energy referencing.",
   "source": "https://www.casa-software.com/index.php?zipfile=VVhWaGJuUkNlVmhRVXk1NmFYQT1NREF3TURBd1FYTndaV04wYzA5bQ%3D%3D",
   "config": [
     {
@@ -9,8 +9,8 @@
       "parameters": {
         "files": [
           {
-            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vms",
-            "path": "C:\\Users\\User\\quant_by_xps.vms"
+            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vgp",
+            "path": "C:\\Users\\User\\quant_by_xps.vgp"
           }
         ]
       }

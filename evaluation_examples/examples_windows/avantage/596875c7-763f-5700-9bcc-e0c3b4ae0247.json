@@ -1,7 +1,7 @@
 {
   "id": "596875c7-763f-5700-9bcc-e0c3b4ae0247",
   "snapshot": "SciKit_ready",
-  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vms, the CasaXPS VAMAS XPS example file. Compare the C 1s, O 1s, Mg 1s, and Mg 2s regions, then export a processed quantification table as avantage_region_quant.csv in c:\\Users\\User. Include CSV headers Region, Binding_Energy_eV, Atomic_Percent, Area, and Notes.",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vgp, the native Avantage project exported from the CasaXPS XPS example. Compare the C 1s, O 1s, Mg 1s, and Mg 2s regions, then export a processed quantification table as avantage_region_quant.csv in c:\\Users\\User. Include CSV headers Region, Binding_Energy_eV, Atomic_Percent, Area, and Notes.",
   "source": "https://www.casa-software.com/index.php?zipfile=VVhWaGJuUkNlVmhRVXk1NmFYQT1NREF3TURBd1FYTndaV04wYzA5bQ%3D%3D",
   "config": [
     {
@@ -9,8 +9,8 @@
       "parameters": {
         "files": [
           {
-            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vms",
-            "path": "C:\\Users\\User\\quant_by_xps.vms"
+            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vgp",
+            "path": "C:\\Users\\User\\quant_by_xps.vgp"
           }
         ]
       }

@@ -1,7 +1,7 @@
 {
   "id": "e39e9be5-1ea6-5972-85c9-bb61a14445d7",
   "snapshot": "SciKit_ready",
-  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vms, the CasaXPS VAMAS XPS example file. Display one or more XPS regions using colored traces or a color scale, then export the view as avantage_xps_view.bmp in c:\\Users\\User. Use a color export rather than a grayscale export.",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vgp, the native Avantage project exported from the CasaXPS XPS example. Display one or more XPS regions using colored traces or a color scale, then export the view as avantage_xps_view.bmp in c:\\Users\\User. Use a color export rather than a grayscale export.",
   "source": "https://www.casa-software.com/index.php?zipfile=VVhWaGJuUkNlVmhRVXk1NmFYQT1NREF3TURBd1FYTndaV04wYzA5bQ%3D%3D",
   "config": [
     {
@@ -9,8 +9,8 @@
       "parameters": {
         "files": [
           {
-            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vms",
-            "path": "C:\\Users\\User\\quant_by_xps.vms"
+            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vgp",
+            "path": "C:\\Users\\User\\quant_by_xps.vgp"
           }
         ]
       }

@@ -1,7 +1,7 @@
 {
   "id": "eb1c57ba-70df-5031-8f8f-bb029f0171f7",
   "snapshot": "SciKit_ready",
-  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vms, the CasaXPS VAMAS XPS example file. Identify the C 1s, O 1s, Mg 1s, and Mg 2s regions, perform a standard quantification, then export the quantification or peak table as avantage_polymer_quant.csv in c:\\Users\\User. Include element/transition names, binding energies, and atomic percent or area values. Use CSV headers Element, Binding_Energy_eV, Atomic_Percent, and Area.",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vgp, the native Avantage project exported from the CasaXPS XPS example. Identify the C 1s, O 1s, Mg 1s, and Mg 2s regions, perform a standard quantification, then export the quantification or peak table as avantage_polymer_quant.csv in c:\\Users\\User. Include element/transition names, binding energies, and atomic percent or area values. Use CSV headers Element, Binding_Energy_eV, Atomic_Percent, and Area.",
   "source": "https://www.casa-software.com/index.php?zipfile=VVhWaGJuUkNlVmhRVXk1NmFYQT1NREF3TURBd1FYTndaV04wYzA5bQ%3D%3D",
   "config": [
     {
@@ -9,8 +9,8 @@
       "parameters": {
         "files": [
           {
-            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vms",
-            "path": "C:\\Users\\User\\quant_by_xps.vms"
+            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vgp",
+            "path": "C:\\Users\\User\\quant_by_xps.vgp"
           }
         ]
       }
