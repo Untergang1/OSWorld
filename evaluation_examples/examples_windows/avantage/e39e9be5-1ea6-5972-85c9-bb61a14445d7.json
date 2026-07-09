@@ -9,8 +9,8 @@
       "parameters": {
         "files": [
           {
-            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.vgp",
-            "path": "C:\\Users\\User\\quant_by_xps.vgp"
+            "local_path": "evaluation_examples/scikit_assets/avantage/quant_by_xps.zip",
+            "path": "C:\\Users\\User\\quant_by_xps.zip"
           }
         ]
       }
@@ -24,7 +24,7 @@
           "-ExecutionPolicy",
           "Bypass",
           "-Command",
-          "New-Item -ItemType Directory -Force -Path 'c:\\Users\\User' | Out-Null; Remove-Item -LiteralPath 'c:\\Users\\User\\avantage_xps_view.bmp' -Force -ErrorAction SilentlyContinue"
+          "Expand-Archive -LiteralPath 'C:\\Users\\User\\quant_by_xps.zip' -DestinationPath 'C:\\Users\\User' -Force; Remove-Item -LiteralPath 'c:\\Users\\User\\avantage_xps_view.bmp' -Force -ErrorAction SilentlyContinue"
         ]
       }
     },
