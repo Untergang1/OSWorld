@@ -1,7 +1,7 @@
 {
   "id": "121774e9-ce37-5364-b2ca-4b18120f7574",
   "snapshot": "SciKit_ready",
-  "instruction": "在 Avantage 中打开或导入 c:\\Users\\User\\quant_by_xps.vgp，该文件是从 CasaXPS XPS 示例导出的原生 Avantage 项目。选择 C 1s 区域，应用背景校正，并拟合至少两个 C 1s 组分或峰条目。将拟合组分表导出为 c:\\Users\\User\\avantage_c1s_fit.csv。CSV 表头请使用 Component、Binding_Energy_eV、FWHM_eV 和 Area。",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vgp, the native Avantage project exported from the CasaXPS XPS example. Select the C 1s region, apply a background correction, and fit at least two C 1s components or peak entries. Export the fitted component table as avantage_c1s_fit.csv in c:\\Users\\User. Use CSV headers Component, Binding_Energy_eV, FWHM_eV, and Area.",
   "source": "https://www.casa-software.com/index.php?zipfile=VVhWaGJuUkNlVmhRVXk1NmFYQT1NREF3TURBd1FYTndaV04wYzA5bQ%3D%3D",
   "config": [
     {

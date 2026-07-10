@@ -1,7 +1,7 @@
 {
   "id": "596875c7-763f-5700-9bcc-e0c3b4ae0247",
   "snapshot": "SciKit_ready",
-  "instruction": "在 Avantage 中打开或导入 c:\\Users\\User\\quant_by_xps.vgp，该文件是从 CasaXPS XPS 示例导出的原生 Avantage 项目。比较 C 1s、O 1s、Mg 1s 和 Mg 2s 区域，然后将处理后的定量表导出为 c:\\Users\\User\\avantage_region_quant.csv。CSV 表头请包含 Region、Binding_Energy_eV、Atomic_Percent、Area 和 Notes。",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vgp, the native Avantage project exported from the CasaXPS XPS example. Compare the C 1s, O 1s, Mg 1s, and Mg 2s regions, then export a processed quantification table as avantage_region_quant.csv in c:\\Users\\User. Include CSV headers Region, Binding_Energy_eV, Atomic_Percent, Area, and Notes.",
   "source": "https://www.casa-software.com/index.php?zipfile=VVhWaGJuUkNlVmhRVXk1NmFYQT1NREF3TURBd1FYTndaV04wYzA5bQ%3D%3D",
   "config": [
     {

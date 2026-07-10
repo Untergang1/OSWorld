@@ -1,7 +1,7 @@
 {
   "id": "eb1c57ba-70df-5031-8f8f-bb029f0171f7",
   "snapshot": "SciKit_ready",
-  "instruction": "在 Avantage 中打开或导入 c:\\Users\\User\\quant_by_xps.vgp，该文件是从 CasaXPS XPS 示例导出的原生 Avantage 项目。识别 C 1s、O 1s、Mg 1s 和 Mg 2s 区域，执行标准定量分析，然后将定量表或峰表导出为 c:\\Users\\User\\avantage_polymer_quant.csv。表中应包含元素/跃迁名称、结合能，以及原子百分比或峰面积数值。CSV 表头请使用 Element、Binding_Energy_eV、Atomic_Percent 和 Area。",
+  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vgp, the native Avantage project exported from the CasaXPS XPS example. Identify the C 1s, O 1s, Mg 1s, and Mg 2s regions, perform a standard quantification, then export the quantification or peak table as avantage_polymer_quant.csv in c:\\Users\\User. Include element/transition names, binding energies, and atomic percent or area values. Use CSV headers Element, Binding_Energy_eV, Atomic_Percent, and Area.",
   "source": "https://www.casa-software.com/index.php?zipfile=VVhWaGJuUkNlVmhRVXk1NmFYQT1NREF3TURBd1FYTndaV04wYzA5bQ%3D%3D",
   "config": [
     {
