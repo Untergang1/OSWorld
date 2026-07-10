@@ -1,7 +1,7 @@
 {
   "id": "e39e9be5-1ea6-5972-85c9-bb61a14445d7",
   "snapshot": "SciKit_ready",
-  "instruction": "In Avantage, open or import c:\\Users\\User\\quant_by_xps.vgp, the native Avantage project exported from the CasaXPS XPS example. Display one or more XPS regions using colored traces or a color scale, then export the view as avantage_xps_view.bmp in c:\\Users\\User. Use a color export rather than a grayscale export.",
+  "instruction": "在 Avantage 中打开或导入 c:\\Users\\User\\quant_by_xps.vgp，该文件是从 CasaXPS XPS 示例导出的原生 Avantage 项目。使用彩色曲线或色标显示一个或多个 XPS 区域，然后将该视图导出为 c:\\Users\\User\\avantage_xps_view.bmp。请使用彩色导出，而非灰度导出。",
   "source": "https://www.casa-software.com/index.php?zipfile=VVhWaGJuUkNlVmhRVXk1NmFYQT1NREF3TURBd1FYTndaV04wYzA5bQ%3D%3D",
   "config": [
     {
