@@ -15,9 +15,11 @@ function Set-DwordPolicy {
         [int]$Value
     )
 
-    New-Item -Path $Path -Force | Out-Null
-    New-ItemProperty -Path $Path -Name $Name -PropertyType DWord -Value $Value -Force |
-        Out-Null
+    if (-not (Test-Path -LiteralPath $Path)) {
+        New-Item -Path $Path -Force | Out-Null
+    }
+
+    Set-ItemProperty -Path $Path -Name $Name -Type DWord -Value $Value -Force
 }
 
 # Disable current-user toast notifications and the notification center.
