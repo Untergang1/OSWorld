@@ -216,3 +216,6 @@ scripts/python/agent_s/config.yaml
 
 dialog.md
 AGENTS.md
+
+# Local UIA capture artifacts; keep the reusable capture script tracked.
+train_data/captures/
