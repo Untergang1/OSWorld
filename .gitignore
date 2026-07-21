@@ -219,3 +219,5 @@ AGENTS.md
 
 # Local UIA capture artifacts; keep the reusable capture script tracked.
 train_data/captures/
+train_data/avantage/
+evaluation_examples/scikit_assets/
