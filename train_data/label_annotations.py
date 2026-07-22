@@ -1,26 +1,18 @@
-"""Draw Avantage annotation bounding boxes on their source screenshots.
+"""Draw annotation bounding boxes for a versioned training dataset.
 
 Run from the repository root with:
 
-    python train_data/avantage/label_annotations.py
+    python train_data/label_annotations.py train_data/avantage/v2
 """
 
 from __future__ import annotations
 
+import argparse
 import csv
 from collections import Counter, defaultdict
+from dataclasses import dataclass
 from pathlib import Path
 
-try:
-    from PIL import Image, ImageDraw
-except ImportError as exc:  # pragma: no cover - depends on the active environment.
-    raise SystemExit("Pillow is required; install the project's Python dependencies first.") from exc
-
-
-DATASET_DIR = Path(__file__).resolve().parent
-ANNOTATIONS_PATH = DATASET_DIR / "annotations.csv"
-IMAGES_DIR = DATASET_DIR / "images"
-OUTPUT_DIR = DATASET_DIR / "labeled_images"
 REQUIRED_COLUMNS = {"image", "description", "left", "top", "right", "bottom"}
 COLORS_BY_DESCRIPTION_COUNT = {
     1: (0, 114, 178),
@@ -34,6 +26,25 @@ class AnnotationError(ValueError):
     """Raised when an annotation cannot be rendered safely."""
 
 
+@dataclass(frozen=True)
+class DatasetPaths:
+    """Locations required to render one versioned annotation dataset."""
+
+    root: Path
+
+    @property
+    def annotations(self) -> Path:
+        return self.root / "annotations.csv"
+
+    @property
+    def images(self) -> Path:
+        return self.root / "images"
+
+    @property
+    def output(self) -> Path:
+        return self.root / "labeled_images"
+
+
 def parse_coordinate(value: str, column: str, row_number: int) -> int:
     """Return an integer CSV coordinate with a clear error for invalid input."""
     try:
@@ -44,13 +55,13 @@ def parse_coordinate(value: str, column: str, row_number: int) -> int:
         ) from exc
 
 
-def load_elements() -> dict[str, Counter[tuple[int, int, int, int]]]:
+def load_elements(paths: DatasetPaths) -> dict[str, Counter[tuple[int, int, int, int]]]:
     """Group annotation rows by screenshot and unique bounding box."""
-    if not ANNOTATIONS_PATH.is_file():
-        raise AnnotationError(f"Annotation CSV is missing: {ANNOTATIONS_PATH}")
+    if not paths.annotations.is_file():
+        raise AnnotationError(f"Annotation CSV is missing: {paths.annotations}")
 
     elements: dict[str, Counter[tuple[int, int, int, int]]] = defaultdict(Counter)
-    with ANNOTATIONS_PATH.open("r", encoding="utf-8-sig", newline="") as csv_file:
+    with paths.annotations.open("r", encoding="utf-8-sig", newline="") as csv_file:
         reader = csv.DictReader(csv_file)
         columns = set(reader.fieldnames or ())
         missing_columns = REQUIRED_COLUMNS - columns
@@ -64,7 +75,8 @@ def load_elements() -> dict[str, Counter[tuple[int, int, int, int]]]:
             image_name = (row["image"] or "").strip()
             if not image_name or Path(image_name).name != image_name:
                 raise AnnotationError(
-                    f"Row {row_number}: image must be a filename in {IMAGES_DIR}, got {image_name!r}."
+                    f"Row {row_number}: image must be a filename in {paths.images}, "
+                    f"got {image_name!r}."
                 )
 
             left = parse_coordinate(row["left"], "left", row_number)
@@ -84,10 +96,19 @@ def load_elements() -> dict[str, Counter[tuple[int, int, int, int]]]:
 
 
 def render_image(
-    image_name: str, elements: Counter[tuple[int, int, int, int]]
+    paths: DatasetPaths,
+    image_name: str,
+    elements: Counter[tuple[int, int, int, int]],
 ) -> int:
     """Draw every element in one screenshot and return its element count."""
-    image_path = IMAGES_DIR / image_name
+    try:
+        from PIL import Image, ImageDraw
+    except ImportError as exc:  # pragma: no cover - depends on the active environment.
+        raise SystemExit(
+            "Pillow is required; install the project's Python dependencies first."
+        ) from exc
+
+    image_path = paths.images / image_name
     if not image_path.is_file():
         raise AnnotationError(f"Source image is missing: {image_path}")
 
@@ -113,20 +134,35 @@ def render_image(
             width=LINE_WIDTH,
         )
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    image.save(OUTPUT_DIR / image_name, format="PNG")
+    paths.output.mkdir(parents=True, exist_ok=True)
+    image.save(paths.output / image_name, format="PNG")
     return len(elements)
 
 
-def main() -> None:
-    """Render all screenshots named by the annotation CSV."""
-    elements_by_image = load_elements()
+def parse_args() -> argparse.Namespace:
+    """Parse the versioned dataset directory to render."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "dataset_dir",
+        type=Path,
+        help="Directory containing annotations.csv and images/.",
+    )
+    return parser.parse_args()
+
+
+def main(dataset_dir: Path) -> None:
+    """Render all screenshots named by one annotation CSV."""
+    paths = DatasetPaths(dataset_dir.resolve())
+    if not paths.root.is_dir():
+        raise AnnotationError(f"Dataset directory is missing: {paths.root}")
+
+    elements_by_image = load_elements(paths)
     description_counts = Counter()
     element_total = 0
 
     for image_name in sorted(elements_by_image):
         elements = elements_by_image[image_name]
-        element_total += render_image(image_name, elements)
+        element_total += render_image(paths, image_name, elements)
         description_counts.update(elements.values())
 
     count_summary = ", ".join(
@@ -135,12 +171,12 @@ def main() -> None:
     )
     print(
         f"Wrote {len(elements_by_image)} labeled image(s) containing "
-        f"{element_total} element(s) to {OUTPUT_DIR}\n{count_summary}"
+        f"{element_total} element(s) to {paths.output}\n{count_summary}"
     )
 
 
 if __name__ == "__main__":
     try:
-        main()
+        main(parse_args().dataset_dir)
     except AnnotationError as exc:
         raise SystemExit(f"Cannot render annotations: {exc}") from exc
