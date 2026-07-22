@@ -38,8 +38,9 @@ DEFAULT_CAPTURES_DIR = Path("train_data/captures")
 DEFAULT_OUTPUT_DIR = Path("train_data/avantage/v3")
 MAX_DESCRIPTION_LENGTH = 420
 MIN_DESCRIPTION_LENGTH = 12
+MAX_BATCH_SIZE = 10
 CHECKPOINT_SCHEMA_VERSION = 1
-PROMPT_VERSION = "full-image-target-content-only-v1"
+PROMPT_VERSION = "full-image-batched-target-content-only-v2"
 
 
 class GenerationError(RuntimeError):
@@ -106,7 +107,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--base-url", help="OpenAI-compatible API base URL.")
     parser.add_argument("--api-key", help="OpenAI-compatible API key.")
     parser.add_argument("--model", default="qwen3.7-plus", help="Chat-completions model name.")
-    parser.add_argument("--timeout", type=float, default=90.0, help="Per-request timeout in seconds.")
+    parser.add_argument("--timeout", type=float, default=120.0, help="Per-request timeout in seconds.")
     parser.add_argument("--max-retries", type=int, default=3, help="Attempts per target, including the first.")
     parser.add_argument("--resume", action="store_true", help="Continue from the incomplete checkpoint in output-dir.")
     parser.add_argument("--overwrite", action="store_true", help="Replace a completed annotations.csv in output-dir.")
@@ -304,20 +305,29 @@ def png_data_url(data: bytes) -> str:
     return "data:image/png;base64," + base64.b64encode(data).decode("ascii")
 
 
-def build_messages(target: MatchedTarget, full_image: bytes) -> list[dict[str, Any]]:
-    """Build a full-image-only request with the target's content as UIA context."""
-    prompt = f"""Describe exactly one GUI element for an image-grounding dataset.
+def build_messages(batch: list[MatchedTarget], full_image: bytes) -> list[dict[str, Any]]:
+    """Build one full-image request for up to ten targets from that screenshot."""
+    if not batch or len(batch) > MAX_BATCH_SIZE:
+        raise GenerationError(f"A request batch must contain 1-{MAX_BATCH_SIZE} targets")
+    if len({item.source.raw_sha256 for item in batch}) != 1:
+        raise GenerationError("A request batch must contain targets from exactly one screenshot")
+    target_blocks = "\n\n".join(
+        f"Target {index}:\n"
+        f"- Rectangle (left, top, right, bottom): {item.target.bbox.key}\n"
+        f"- Target UIA content (the only UIA field provided): {uia_hint(item)}"
+        for index, item in enumerate(batch, start=1)
+    )
+    prompt = f"""Describe {len(batch)} GUI elements for an image-grounding dataset.
 
-The image is the unmodified full raw screenshot. The target is exactly the rectangle (left, top, right, bottom) {target.target.bbox.key}, using zero-based screenshot pixels with right and bottom exclusive. No box has been drawn on the image.
+The image is one unmodified full raw screenshot. No boxes have been drawn on the image. Each target rectangle uses zero-based screenshot pixels with right and bottom exclusive.
 
-Write one specific, unambiguous English referring expression for that exact element. Prioritize what is visibly present in the full screenshot: text, icon shape/color, control role, position, containing pane/dialog, and nearby visible labels. The target UIA content below is supplementary only; use it only when it agrees with the visual evidence. Do not invent unseen details.
+For every target, write one specific, unambiguous English referring expression for its exact element. Prioritize what is visibly present in the full screenshot: text, icon shape/color, control role, position, containing pane/dialog, and nearby visible labels. The target UIA content is supplementary only; use it only when it agrees with the visual evidence. Do not invent unseen details.
 
-Target UIA content (the only UIA field provided; prompt version {PROMPT_VERSION}):
-{uia_hint(target)}
+{target_blocks}
 
-Output only the description itself. Do not output a label, heading, list marker, quotes, JSON, reasoning, or alternatives."""
+Output only a JSON object with exactly the string keys \"1\" through \"{len(batch)}\", where each value is the description for the target with that number. Do not output Markdown, a code fence, labels, reasoning, or alternatives. Prompt version: {PROMPT_VERSION}."""
     return [
-        {"role": "system", "content": "You produce concise visual GUI descriptions and output only the requested description."},
+        {"role": "system", "content": "You produce concise visual GUI descriptions and output only the requested JSON object."},
         {
             "role": "user",
             "content": [
@@ -352,6 +362,47 @@ def normalize_description(response: str) -> str:
     if len(re.findall(r"[A-Za-z]", text)) < 6 or re.search(r"[\u4e00-\u9fff]", text):
         raise GenerationError("model description is not English text")
     return text
+
+
+def normalize_batch_descriptions(response: str, batch: list[MatchedTarget]) -> dict[str, str]:
+    """Validate a complete ordinal-to-description JSON response for one request batch."""
+    def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        payload: dict[str, Any] = {}
+        for key, value in pairs:
+            if key in payload:
+                raise GenerationError("model batch response contains a duplicate target number")
+            payload[key] = value
+        return payload
+
+    try:
+        payload = json.loads(response, object_pairs_hook=reject_duplicate_keys)
+    except json.JSONDecodeError as exc:
+        raise GenerationError("model batch response is not valid JSON") from exc
+    if not isinstance(payload, dict):
+        raise GenerationError("model batch response must be a JSON object")
+    expected_keys = {str(index) for index in range(1, len(batch) + 1)}
+    if set(payload) != expected_keys:
+        raise GenerationError("model batch response must contain exactly the expected target numbers")
+    descriptions: dict[str, str] = {}
+    for index, item in enumerate(batch, start=1):
+        value = payload[str(index)]
+        if not isinstance(value, str):
+            raise GenerationError(f"model batch response target {index} is not a description string")
+        descriptions[item.target.checkpoint_key] = normalize_description(value)
+    return descriptions
+
+
+def iter_pending_batches(
+    targets: list[MatchedTarget], completed: dict[str, str]
+) -> Iterable[list[MatchedTarget]]:
+    """Group unfinished targets by screenshot while preserving image and target order."""
+    pending_by_screenshot: dict[str, list[MatchedTarget]] = {}
+    for item in targets:
+        if item.target.checkpoint_key not in completed:
+            pending_by_screenshot.setdefault(item.source.raw_sha256, []).append(item)
+    for items in pending_by_screenshot.values():
+        for start in range(0, len(items), MAX_BATCH_SIZE):
+            yield items[start:start + MAX_BATCH_SIZE]
 
 
 def generation_fingerprint(targets: list[MatchedTarget], model: str) -> str:
@@ -495,19 +546,31 @@ def prepare_checkpoint(
     return checkpoint_path, {}
 
 
-def request_description(client: Any, model: str, messages: list[dict[str, Any]], timeout: float) -> str:
-    response = client.chat.completions.create(model=model, messages=messages, temperature=0, max_tokens=160, timeout=timeout)
+def request_descriptions(
+    client: Any,
+    model: str,
+    messages: list[dict[str, Any]],
+    timeout: float,
+    batch: list[MatchedTarget],
+) -> dict[str, str]:
+    response = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=0,
+        max_tokens=160 * len(batch),
+        timeout=timeout,
+    )
     try:
         content = response.choices[0].message.content
     except (AttributeError, IndexError) as exc:
         raise GenerationError("model response contains no chat-completions message") from exc
     if not isinstance(content, str):
         raise GenerationError("model response message is not text")
-    return normalize_description(content)
+    return normalize_batch_descriptions(content, batch)
 
 
 def generate_descriptions(args: argparse.Namespace, targets: list[MatchedTarget], sources: dict[str, SourceImage]) -> dict[str, str]:
-    """Call the model once per selected element, preserving an interruption checkpoint."""
+    """Call the model in same-screenshot batches, preserving per-target checkpoints."""
     OpenAI = require_generation_dependencies()
     output_dir = args.output_dir.resolve()
     annotations_path = output_dir / "annotations.csv"
@@ -519,25 +582,30 @@ def generate_descriptions(args: argparse.Namespace, targets: list[MatchedTarget]
     client = OpenAI(api_key=args.api_key, base_url=args.base_url, timeout=args.timeout, max_retries=0)
     raw_bytes = {name: source.raw_path.read_bytes() for name, source in sources.items()}
 
-    for index, item in enumerate(targets, start=1):
-        target = item.target
-        if target.checkpoint_key in completed:
-            continue
-        messages = build_messages(item, raw_bytes[target.image_name])
+    target_positions = {item.target.checkpoint_key: index for index, item in enumerate(targets, start=1)}
+    for batch in iter_pending_batches(targets, completed):
+        image_name = batch[0].target.image_name
+        messages = build_messages(batch, raw_bytes[image_name])
         last_error: Exception | None = None
         for attempt in range(1, args.max_retries + 1):
             try:
-                description = request_description(client, args.model, messages, args.timeout)
-                append_checkpoint(checkpoint_path, target, description)
-                completed[target.checkpoint_key] = description
-                print(f"[{index}/{len(targets)}] {target.identifier}")
+                descriptions = request_descriptions(client, args.model, messages, args.timeout, batch)
                 break
             except Exception as exc:  # OpenAI-compatible providers expose varying exception classes.
                 last_error = exc
                 if attempt < args.max_retries:
                     time.sleep(min(8.0, 2.0 ** (attempt - 1)))
         else:
-            raise GenerationError(f"{target.identifier}: model failed after {args.max_retries} attempt(s): {last_error}") from last_error
+            identifiers = ", ".join(item.target.identifier for item in batch)
+            raise GenerationError(
+                f"Batch ({identifiers}): model failed after {args.max_retries} attempt(s): {last_error}"
+            ) from last_error
+        for item in batch:
+            target = item.target
+            description = descriptions[target.checkpoint_key]
+            append_checkpoint(checkpoint_path, target, description)
+            completed[target.checkpoint_key] = description
+            print(f"[{target_positions[target.checkpoint_key]}/{len(targets)}] {target.identifier}")
 
     write_annotations(annotations_path, targets, completed)
     checkpoint_path.unlink(missing_ok=True)
