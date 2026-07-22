@@ -83,8 +83,10 @@ class GenerateAvantageV3Tests(unittest.TestCase):
     def test_prompt_does_not_contain_a_source_description_field(self):
         source = MODULE.SourceImage("sample.png", Path("v2.png"), Path("raw.png"), Path("uia.json"), 100, 100, "raw", "uia")
         element = {
-            "control_uid": "target", "type": "ButtonControl", "content": "Open", "state": {"enabled": True},
-            "rect_screenshot": {"left": 10, "top": 20, "right": 30, "bottom": 40}, "ancestor_control_uids": [],
+            "control_uid": "CONTROL_UID_SENTINEL", "type": "TYPE_SENTINEL", "content": "Open",
+            "state": {"STATE_SENTINEL": "not-for-model"},
+            "rect_screenshot": {"internal": "UIA_RECT_SENTINEL"},
+            "ancestor_control_uids": ["ANCESTOR_SENTINEL"],
         }
         with tempfile.TemporaryDirectory() as directory:
             annotations = Path(directory) / "annotations.csv"
@@ -94,11 +96,21 @@ class GenerateAvantageV3Tests(unittest.TestCase):
                 encoding="utf-8",
             )
             target = MODULE.load_targets(annotations)[0]
-            matched = MODULE.MatchedTarget(target, source, element, (element,))
-            messages = MODULE.build_messages(matched, b"full", b"crop", (0, 0, 100, 100))
+            matched = MODULE.MatchedTarget(target, source, element)
+            messages = MODULE.build_messages(matched, b"full")
             serialized = json.dumps(messages)
+            user_content = messages[1]["content"]
+            prompt = user_content[0]["text"]
+            image_parts = [part for part in user_content if part["type"] == "image_url"]
             self.assertNotIn("SOURCE_DESCRIPTION_SENTINEL", serialized)
-            self.assertIn("reported name/function: Open", serialized)
+            self.assertEqual([part["type"] for part in user_content], ["text", "image_url"])
+            self.assertEqual(len(image_parts), 1)
+            self.assertEqual(image_parts[0]["image_url"]["url"], MODULE.png_data_url(b"full"))
+            self.assertIn("Target UIA content", prompt)
+            self.assertIn("\nOpen\n", prompt)
+            for forbidden in ("CONTROL_UID_SENTINEL", "TYPE_SENTINEL", "STATE_SENTINEL", "UIA_RECT_SENTINEL", "ANCESTOR_SENTINEL"):
+                self.assertNotIn(forbidden, serialized)
+            self.assertNotIn("context crop", prompt)
 
     def test_dry_run_validates_real_dataset_without_writing_output(self):
         result = subprocess.run(

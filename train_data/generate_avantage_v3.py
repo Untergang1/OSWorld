@@ -38,9 +38,8 @@ DEFAULT_CAPTURES_DIR = Path("train_data/captures")
 DEFAULT_OUTPUT_DIR = Path("train_data/avantage/v3")
 MAX_DESCRIPTION_LENGTH = 420
 MIN_DESCRIPTION_LENGTH = 12
-MAX_NEIGHBORS = 6
 CHECKPOINT_SCHEMA_VERSION = 1
-PROMPT_VERSION = "visual-first-v1"
+PROMPT_VERSION = "full-image-target-content-only-v1"
 
 
 class GenerationError(RuntimeError):
@@ -55,14 +54,6 @@ class Bbox:
     top: int
     right: int
     bottom: int
-
-    @property
-    def width(self) -> int:
-        return self.right - self.left
-
-    @property
-    def height(self) -> int:
-        return self.bottom - self.top
 
     @property
     def key(self) -> tuple[int, int, int, int]:
@@ -104,7 +95,6 @@ class MatchedTarget:
     target: Target
     source: SourceImage
     element: dict[str, Any]
-    elements: tuple[dict[str, Any], ...]
 
 
 def parse_args() -> argparse.Namespace:
@@ -296,7 +286,7 @@ def match_targets(targets: list[Target], sources: dict[str, SourceImage]) -> lis
         candidates = by_rect[target.image_name].get(target.bbox.key, [])
         if len(candidates) != 1:
             raise GenerationError(f"{target.identifier}: expected one exact UIA rect match, found {len(candidates)}")
-        matched.append(MatchedTarget(target, source, candidates[0], elements_by_image[target.image_name]))
+        matched.append(MatchedTarget(target, source, candidates[0]))
     return matched
 
 
@@ -304,97 +294,25 @@ def text_value(value: Any) -> str:
     return value.strip() if isinstance(value, str) else ""
 
 
-def control_center(element: dict[str, Any]) -> tuple[float, float] | None:
-    key = uia_rect_key(element)
-    if key is None:
-        return None
-    left, top, right, bottom = key
-    return (left + right) / 2, (top + bottom) / 2
-
-
-def named_ancestor(element: dict[str, Any], elements: tuple[dict[str, Any], ...]) -> tuple[str, str] | None:
-    by_uid = {text_value(item.get("control_uid")): item for item in elements}
-    for uid in reversed(element.get("ancestor_control_uids") or []):
-        ancestor = by_uid.get(text_value(uid))
-        if ancestor:
-            content = text_value(ancestor.get("content"))
-            if content:
-                return text_value(ancestor.get("type")) or "control", content
-    return None
-
-
-def nearby_controls(target: MatchedTarget) -> list[str]:
-    """Return compact, nearby UIA hints without replacing visual evidence."""
-    center = control_center(target.element)
-    if center is None:
-        return []
-    target_uid = text_value(target.element.get("control_uid"))
-    choices: list[tuple[float, str]] = []
-    for candidate in target.elements:
-        if text_value(candidate.get("control_uid")) == target_uid:
-            continue
-        content = text_value(candidate.get("content"))
-        candidate_center = control_center(candidate)
-        if not content or candidate_center is None:
-            continue
-        distance = ((candidate_center[0] - center[0]) ** 2 + (candidate_center[1] - center[1]) ** 2) ** 0.5
-        if distance > 550:
-            continue
-        role = text_value(candidate.get("type")) or "control"
-        choices.append((distance, f"{role}: {content}"))
-    return [description for _, description in sorted(choices, key=lambda item: item[0])[:MAX_NEIGHBORS]]
-
-
 def uia_hint(target: MatchedTarget) -> str:
-    """Serialize only supplementary UIA data for the prompt."""
-    role = text_value(target.element.get("type")) or "unknown control"
+    """Return the target's sole UIA field permitted in a model request."""
     content = text_value(target.element.get("content"))
-    enabled = (target.element.get("state") or {}).get("enabled")
-    parts = [f"reported role: {role}"]
-    if content:
-        parts.append(f"reported name/function: {content}")
-    if isinstance(enabled, bool):
-        parts.append("reported state: enabled" if enabled else "reported state: disabled")
-    ancestor = named_ancestor(target.element, target.elements)
-    if ancestor:
-        parts.append(f"nearest named container: {ancestor[0]} {ancestor[1]}")
-    neighbors = nearby_controls(target)
-    if neighbors:
-        parts.append("nearby reported controls: " + "; ".join(neighbors))
-    return "\n".join(f"- {part}" for part in parts)
-
-
-def crop_bounds(bbox: Bbox, image_width: int, image_height: int) -> tuple[int, int, int, int]:
-    """Keep enough visual context for icons and long thin table rows alike."""
-    crop_width = min(image_width, max(384, bbox.width + 320))
-    crop_height = min(image_height, max(384, bbox.height + 320))
-    center_x = (bbox.left + bbox.right) // 2
-    center_y = (bbox.top + bbox.bottom) // 2
-    left = max(0, min(image_width - crop_width, center_x - crop_width // 2))
-    top = max(0, min(image_height - crop_height, center_y - crop_height // 2))
-    return left, top, left + crop_width, top + crop_height
+    return content if content else "(empty)"
 
 
 def png_data_url(data: bytes) -> str:
     return "data:image/png;base64," + base64.b64encode(data).decode("ascii")
 
 
-def build_messages(target: MatchedTarget, full_image: bytes, context_image: bytes, crop: tuple[int, int, int, int]) -> list[dict[str, Any]]:
-    """Build a visual-first request with no source-description content."""
-    crop_left, crop_top, _, _ = crop
-    relative = (
-        target.target.bbox.left - crop_left,
-        target.target.bbox.top - crop_top,
-        target.target.bbox.right - crop_left,
-        target.target.bbox.bottom - crop_top,
-    )
+def build_messages(target: MatchedTarget, full_image: bytes) -> list[dict[str, Any]]:
+    """Build a full-image-only request with the target's content as UIA context."""
     prompt = f"""Describe exactly one GUI element for an image-grounding dataset.
 
-The first image is the unmodified full screenshot. The second image is an unmodified context crop from it. The target is exactly the rectangle (left, top, right, bottom) {relative} in the context crop, using zero-based pixels with right and bottom exclusive. No box has been drawn on either image.
+The image is the unmodified full raw screenshot. The target is exactly the rectangle (left, top, right, bottom) {target.target.bbox.key}, using zero-based screenshot pixels with right and bottom exclusive. No box has been drawn on the image.
 
-Write one specific, unambiguous English referring expression for that exact element. Prioritize what is visibly present: text, icon shape/color, control role, position, containing pane/dialog, and nearby visible labels. The UIA notes below are supplementary only; use a reported function only when it agrees with the visual evidence. Do not invent unseen details.
+Write one specific, unambiguous English referring expression for that exact element. Prioritize what is visibly present in the full screenshot: text, icon shape/color, control role, position, containing pane/dialog, and nearby visible labels. The target UIA content below is supplementary only; use it only when it agrees with the visual evidence. Do not invent unseen details.
 
-UIA notes (prompt version {PROMPT_VERSION}):
+Target UIA content (the only UIA field provided; prompt version {PROMPT_VERSION}):
 {uia_hint(target)}
 
 Output only the description itself. Do not output a label, heading, list marker, quotes, JSON, reasoning, or alternatives."""
@@ -405,7 +323,6 @@ Output only the description itself. Do not output a label, heading, list marker,
             "content": [
                 {"type": "text", "text": prompt},
                 {"type": "image_url", "image_url": {"url": png_data_url(full_image)}},
-                {"type": "image_url", "image_url": {"url": png_data_url(context_image)}},
             ],
         },
     ]
@@ -544,16 +461,12 @@ def copy_images(sources: dict[str, SourceImage], output_dir: Path) -> None:
         temporary.replace(destination)
 
 
-def require_generation_dependencies() -> tuple[Any, Any]:
+def require_generation_dependencies() -> Any:
     try:
         from openai import OpenAI
     except ImportError as exc:  # pragma: no cover - depends on active environment.
         raise SystemExit("OpenAI is required; install the project dependencies before generating descriptions.") from exc
-    try:
-        from PIL import Image
-    except ImportError as exc:  # pragma: no cover - depends on active environment.
-        raise SystemExit("Pillow is required; install the project dependencies before generating descriptions.") from exc
-    return OpenAI, Image
+    return OpenAI
 
 
 def prepare_checkpoint(
@@ -595,7 +508,7 @@ def request_description(client: Any, model: str, messages: list[dict[str, Any]],
 
 def generate_descriptions(args: argparse.Namespace, targets: list[MatchedTarget], sources: dict[str, SourceImage]) -> dict[str, str]:
     """Call the model once per selected element, preserving an interruption checkpoint."""
-    OpenAI, Image = require_generation_dependencies()
+    OpenAI = require_generation_dependencies()
     output_dir = args.output_dir.resolve()
     annotations_path = output_dir / "annotations.csv"
     fingerprint = generation_fingerprint(targets, args.model)
@@ -610,14 +523,7 @@ def generate_descriptions(args: argparse.Namespace, targets: list[MatchedTarget]
         target = item.target
         if target.checkpoint_key in completed:
             continue
-        with Image.open(item.source.raw_path) as image:
-            crop = crop_bounds(target.bbox, image.width, image.height)
-            cropped = image.crop(crop)
-            with tempfile.SpooledTemporaryFile(max_size=2 * 1024 * 1024) as buffer:
-                cropped.save(buffer, format="PNG")
-                buffer.seek(0)
-                context_bytes = buffer.read()
-        messages = build_messages(item, raw_bytes[target.image_name], context_bytes, crop)
+        messages = build_messages(item, raw_bytes[target.image_name])
         last_error: Exception | None = None
         for attempt in range(1, args.max_retries + 1):
             try:
