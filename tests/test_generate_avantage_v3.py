@@ -123,27 +123,28 @@ class GenerateAvantageV3Tests(unittest.TestCase):
             self.assertEqual(len(image_parts), 1)
             self.assertEqual(image_parts[0]["image_url"]["url"], MODULE.png_data_url(b"full"))
             self.assertIn("Target UIA content", prompt)
+            self.assertIn("additional prominent identifying features", prompt)
             self.assertIn("provided): Open\n", prompt)
             for forbidden in ("CONTROL_UID_SENTINEL", "TYPE_SENTINEL", "STATE_SENTINEL", "UIA_RECT_SENTINEL", "ANCESTOR_SENTINEL"):
                 self.assertNotIn(forbidden, serialized)
             self.assertNotIn("context crop", prompt)
 
-    def test_pending_batches_are_per_screenshot_and_never_exceed_ten_targets(self):
+    def test_pending_batches_are_per_screenshot_and_never_exceed_fifteen_targets(self):
         first_image = [
             self.make_matched_target(f"avantage-target-{index:03d}-01", "first.png", index)
-            for index in range(1, 12)
+            for index in range(1, 17)
         ]
-        second_image = [self.make_matched_target("avantage-target-012-01", "second.png", 12, "second-raw")]
+        second_image = [self.make_matched_target("avantage-target-017-01", "second.png", 17, "second-raw")]
         batches = list(MODULE.iter_pending_batches(first_image + second_image, {}))
         self.assertEqual([[item.target.image_name for item in batch] for batch in batches], [
-            ["first.png"] * 10,
+            ["first.png"] * 15,
             ["first.png"],
             ["second.png"],
         ])
 
         completed = {first_image[0].target.checkpoint_key: "The File menu at the far left of the menu bar."}
         resumed_batches = list(MODULE.iter_pending_batches(first_image + second_image, completed))
-        self.assertEqual([len(batch) for batch in resumed_batches], [10, 1])
+        self.assertEqual([len(batch) for batch in resumed_batches], [15, 1])
         self.assertNotIn(first_image[0], resumed_batches[0])
 
         same_screenshot = [

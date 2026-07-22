@@ -38,9 +38,9 @@ DEFAULT_CAPTURES_DIR = Path("train_data/captures")
 DEFAULT_OUTPUT_DIR = Path("train_data/avantage/v3")
 MAX_DESCRIPTION_LENGTH = 420
 MIN_DESCRIPTION_LENGTH = 12
-MAX_BATCH_SIZE = 10
+MAX_BATCH_SIZE = 15
 CHECKPOINT_SCHEMA_VERSION = 1
-PROMPT_VERSION = "full-image-batched-target-content-only-v2"
+PROMPT_VERSION = "full-image-batched-target-content-only-v3"
 
 
 class GenerationError(RuntimeError):
@@ -321,7 +321,7 @@ def build_messages(batch: list[MatchedTarget], full_image: bytes) -> list[dict[s
 
 The image is one unmodified full raw screenshot. No boxes have been drawn on the image. Each target rectangle uses zero-based screenshot pixels with right and bottom exclusive.
 
-For every target, write one specific, unambiguous English referring expression for its exact element. Prioritize what is visibly present in the full screenshot: text, icon shape/color, control role, position, containing pane/dialog, and nearby visible labels. The target UIA content is supplementary only; use it only when it agrees with the visual evidence. Do not invent unseen details.
+For every target, write one specific, unambiguous English referring expression for its exact element. Prioritize what is visibly present in the full screenshot: text, icon shape/color, control role, position, containing pane/dialog, and additional prominent identifying features. The target UIA content is supplementary only; use it only when it agrees with the visual evidence. Do not invent unseen details.
 
 {target_blocks}
 
