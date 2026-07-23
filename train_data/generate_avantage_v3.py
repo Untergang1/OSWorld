@@ -42,7 +42,7 @@ MIN_DESCRIPTION_LENGTH = 12
 MAX_BATCH_SIZE = 15
 CHECKPOINT_SCHEMA_VERSION = 1
 CONTEXT_CROP_MARGIN = 20
-PROMPT_VERSION = "full-image-batched-target-context-crops-v4"
+PROMPT_VERSION = "full-image-batched-target-context-crops-v5-relative-references"
 
 
 class GenerationError(RuntimeError):
