@@ -17,6 +17,7 @@ import argparse
 import base64
 import csv
 import hashlib
+import io
 import json
 import os
 import re
@@ -40,7 +41,8 @@ MAX_DESCRIPTION_LENGTH = 420
 MIN_DESCRIPTION_LENGTH = 12
 MAX_BATCH_SIZE = 15
 CHECKPOINT_SCHEMA_VERSION = 1
-PROMPT_VERSION = "full-image-batched-target-content-only-v3"
+CONTEXT_CROP_MARGIN = 20
+PROMPT_VERSION = "full-image-batched-target-context-crops-v4"
 
 
 class GenerationError(RuntimeError):
@@ -305,35 +307,70 @@ def png_data_url(data: bytes) -> str:
     return "data:image/png;base64," + base64.b64encode(data).decode("ascii")
 
 
+def context_crop_box(image_width: int, image_height: int, bbox: Bbox) -> tuple[int, int, int, int]:
+    """Return the in-bounds crop rectangle for one target's screenshot context."""
+    return (
+        max(0, bbox.left - CONTEXT_CROP_MARGIN),
+        max(0, bbox.top - CONTEXT_CROP_MARGIN),
+        min(image_width, bbox.right + CONTEXT_CROP_MARGIN),
+        min(image_height, bbox.bottom + CONTEXT_CROP_MARGIN),
+    )
+
+
+def context_crop_png(full_image: bytes, bbox: Bbox) -> bytes:
+    """Encode the bbox plus its in-bounds surrounding screenshot context."""
+    try:
+        from PIL import Image
+    except ImportError as exc:  # pragma: no cover - depends on the active environment.
+        raise GenerationError("Pillow is required to create element context crops") from exc
+    try:
+        with Image.open(io.BytesIO(full_image)) as image:
+            image.load()
+            crop = image.crop(context_crop_box(image.width, image.height, bbox))
+            output = io.BytesIO()
+            crop.save(output, format="PNG")
+    except (OSError, ValueError) as exc:
+        raise GenerationError("Cannot create a context crop from the full screenshot") from exc
+    return output.getvalue()
+
+
 def build_messages(batch: list[MatchedTarget], full_image: bytes) -> list[dict[str, Any]]:
-    """Build one full-image request for up to ten targets from that screenshot."""
+    """Build one full-image request followed by interleaved target context crops."""
     if not batch or len(batch) > MAX_BATCH_SIZE:
         raise GenerationError(f"A request batch must contain 1-{MAX_BATCH_SIZE} targets")
     if len({item.source.raw_sha256 for item in batch}) != 1:
         raise GenerationError("A request batch must contain targets from exactly one screenshot")
-    target_blocks = "\n\n".join(
-        f"Target {index}:\n"
-        f"- Rectangle (left, top, right, bottom): {item.target.bbox.key}\n"
-        f"- Target UIA content (the only UIA field provided): {uia_hint(item)}"
-        for index, item in enumerate(batch, start=1)
-    )
     prompt = f"""Describe {len(batch)} GUI elements for an image-grounding dataset.
 
-The image is one unmodified full raw screenshot. No boxes have been drawn on the image. Each target rectangle uses zero-based screenshot pixels with right and bottom exclusive.
+First is one unmodified full raw screenshot for global context. No boxes have been drawn on any image. Each element is then presented as text followed by its own context-crop image. Each target rectangle uses zero-based screenshot pixels with right and bottom exclusive.
 
-For every target, write one specific, unambiguous English referring expression for its exact element. Prioritize what is visibly present in the full screenshot: text, icon shape/color, control role, position, containing pane/dialog, and additional prominent identifying features. The target UIA content is supplementary only; use it only when it agrees with the visual evidence. Do not invent unseen details.
-
-{target_blocks}
+For every target, write one specific, unambiguous English referring expression for its exact element. Use the full screenshot for global position and surrounding application context, and its context crop to identify the exact control. Prioritize visible evidence: text, icon shape/color, control role, position, containing pane/dialog, and additional prominent identifying features. The target UIA content is supplementary only; use it only when it agrees with the visual evidence. Do not invent unseen details.
 
 Output only a JSON object with exactly the string keys \"1\" through \"{len(batch)}\", where each value is the description for the target with that number. Do not output Markdown, a code fence, labels, reasoning, or alternatives. Prompt version: {PROMPT_VERSION}."""
+    content: list[dict[str, Any]] = [
+        {"type": "text", "text": prompt},
+        {"type": "image_url", "image_url": {"url": png_data_url(full_image)}},
+    ]
+    for index, item in enumerate(batch, start=1):
+        content.append({
+            "type": "text",
+            "text": (
+                f"Element {index}:\n"
+                f"- Element ID: {item.target.identifier}\n"
+                f"- Rectangle (left, top, right, bottom): {item.target.bbox.key}\n"
+                f"- content (the only UIA field provided): {uia_hint(item)}\n"
+                f"The following image is Element {index}'s context crop."
+            ),
+        })
+        content.append({
+            "type": "image_url",
+            "image_url": {"url": png_data_url(context_crop_png(full_image, item.target.bbox))},
+        })
     return [
         {"role": "system", "content": "You produce concise visual GUI descriptions and output only the requested JSON object."},
         {
             "role": "user",
-            "content": [
-                {"type": "text", "text": prompt},
-                {"type": "image_url", "image_url": {"url": png_data_url(full_image)}},
-            ],
+            "content": content,
         },
     ]
 

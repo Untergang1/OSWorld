@@ -113,21 +113,35 @@ class GenerateAvantageV3Tests(unittest.TestCase):
             )
             target = MODULE.load_targets(annotations)[0]
             matched = MODULE.MatchedTarget(target, source, element)
-            messages = MODULE.build_messages([matched], b"full")
+            with patch.object(MODULE, "context_crop_png", return_value=b"crop"):
+                messages = MODULE.build_messages([matched], b"full")
             serialized = json.dumps(messages)
             user_content = messages[1]["content"]
             prompt = user_content[0]["text"]
             image_parts = [part for part in user_content if part["type"] == "image_url"]
             self.assertNotIn("SOURCE_DESCRIPTION_SENTINEL", serialized)
-            self.assertEqual([part["type"] for part in user_content], ["text", "image_url"])
-            self.assertEqual(len(image_parts), 1)
+            self.assertEqual([part["type"] for part in user_content], ["text", "image_url", "text", "image_url"])
+            self.assertEqual(len(image_parts), 2)
             self.assertEqual(image_parts[0]["image_url"]["url"], MODULE.png_data_url(b"full"))
-            self.assertIn("Target UIA content", prompt)
+            self.assertEqual(image_parts[1]["image_url"]["url"], MODULE.png_data_url(b"crop"))
+            self.assertIn("Element ID: avantage-target-001-01", user_content[2]["text"])
+            self.assertIn("Rectangle (left, top, right, bottom): (10, 20, 30, 40)", user_content[2]["text"])
+            self.assertIn("content (the only UIA field provided): Open", user_content[2]["text"])
+            self.assertIn("target UIA content is supplementary", prompt)
             self.assertIn("additional prominent identifying features", prompt)
-            self.assertIn("provided): Open\n", prompt)
             for forbidden in ("CONTROL_UID_SENTINEL", "TYPE_SENTINEL", "STATE_SENTINEL", "UIA_RECT_SENTINEL", "ANCESTOR_SENTINEL"):
                 self.assertNotIn(forbidden, serialized)
-            self.assertNotIn("context crop", prompt)
+            self.assertIn("context-crop", prompt)
+
+    def test_context_crop_box_is_clamped_to_screenshot_bounds(self):
+        self.assertEqual(
+            MODULE.context_crop_box(30, 40, MODULE.Bbox(0, 0, 10, 12)),
+            (0, 0, 30, 32),
+        )
+        self.assertEqual(
+            MODULE.context_crop_box(30, 40, MODULE.Bbox(25, 30, 30, 40)),
+            (5, 10, 30, 40),
+        )
 
     def test_pending_batches_are_per_screenshot_and_never_exceed_fifteen_targets(self):
         first_image = [
@@ -247,12 +261,15 @@ class GenerateAvantageV3Tests(unittest.TestCase):
             )
             with patch.object(MODULE, "require_generation_dependencies", return_value=FakeOpenAI), patch.object(
                 MODULE, "append_checkpoint", wraps=MODULE.append_checkpoint
-            ) as append_checkpoint:
+            ) as append_checkpoint, patch.object(MODULE, "context_crop_png", return_value=b"crop"):
                 descriptions = MODULE.generate_descriptions(args, [first, second], {"sample.png": source})
 
             self.assertEqual(len(calls), 1)
             message_parts = calls[0]["messages"][1]["content"]
-            self.assertEqual([part["type"] for part in message_parts], ["text", "image_url"])
+            self.assertEqual(
+                [part["type"] for part in message_parts],
+                ["text", "image_url", "text", "image_url", "text", "image_url"],
+            )
             self.assertEqual(descriptions[first.target.checkpoint_key], "The first control near the top of the window.")
             self.assertEqual(descriptions[second.target.checkpoint_key], "The second control near the top of the window.")
             self.assertEqual(
