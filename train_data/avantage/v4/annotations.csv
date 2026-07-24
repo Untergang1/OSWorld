@@ -1,0 +1,325 @@
+id,image,description,left,top,right,bottom,app_version
+avantage-target-001-01,avantage_empty_workspace.png,"The blue-and-black tool icon on the left vertical toolbar, directly below the microscope icon.",3,372,45,415,unknown
+avantage-target-001-02,avantage_empty_workspace.png,the gray instrument icon for Scanned View on the left vertical toolbar,3,372,45,415,unknown
+avantage-target-002-01,avantage_empty_workspace.png,"The  square button with a pale yellow grid and small arrow marks on the left vertical toolbar, below the platter-grid icon.",3,465,45,507,unknown
+avantage-target-002-02,avantage_empty_workspace.png,"The  grid-like icon in the lower half of the left toolbar, immediately above the colored stacked-bars button.",3,465,45,507,unknown
+avantage-target-002-03,avantage_empty_workspace.png,the yellow table icon with a small white overlay for New Processing View on the left vertical toolbar,3,465,45,507,unknown
+avantage-target-003-01,avantage_empty_workspace.png,"The white page icon at the very top of the left vertical toolbar, above the yellow folder icon.",3,71,45,114,unknown
+avantage-target-003-02,avantage_empty_workspace.png,The blank-document-shaped button in the first slot of the far-left toolbar.,3,71,45,114,unknown
+avantage-target-003-03,avantage_empty_workspace.png,the blank white document icon with a yellow folded corner for creating a new document/view,3,71,45,114,unknown
+avantage-target-004-01,avantage_empty_workspace.png,The  button with a red check mark over a green shape on the lower left vertical toolbar.,3,565,45,607,unknown
+avantage-target-004-02,avantage_empty_workspace.png,"The colorful check-mark icon in the left toolbar, directly below the multicolored stacked-bars icon.",3,565,45,607,unknown
+avantage-target-004-03,avantage_empty_workspace.png,the green checkmark and red X icon for User Preferences on the left vertical toolbar,3,565,45,607,unknown
+avantage-target-005-01,avantage_empty_workspace.png,"The printer-shaped icon on the left vertical toolbar, below the pale green floppy-disk icon.",3,239,45,281,unknown
+avantage-target-005-02,avantage_empty_workspace.png,the gray printer icon on the left vertical toolbar,3,239,45,281,unknown
+avantage-target-006-01,avantage_empty_workspace.png,"The  left-toolbar button with several small red, green, and blue horizontal blocks, just above the red-and-green check mark.",3,515,45,557,unknown
+avantage-target-006-02,avantage_empty_workspace.png,The  multicolored stacked-bars icon near the bottom of the left vertical toolbar.,3,515,45,557,unknown
+avantage-target-006-03,avantage_empty_workspace.png,the green-and-red branching flowchart icon for Experiment and Properties Views,3,515,45,557,unknown
+avantage-target-007-01,avantage_empty_workspace.png,"The pale green floppy-disk icon on the left toolbar, below the import-document icon.",3,197,45,240,unknown
+avantage-target-007-02,avantage_empty_workspace.png,the green floppy-disk Save Document icon on the left vertical toolbar,3,197,45,240,unknown
+avantage-target-008-01,avantage_empty_workspace.png,"The  square icon showing a small grid of pale cells on the left toolbar, above the yellow-grid processing button.",3,415,45,457,unknown
+avantage-target-008-02,avantage_empty_workspace.png,"The  platter-like grid button in the left vertical toolbar, positioned between the scanning icon and the grid-with-arrows icon.",3,415,45,457,unknown
+avantage-target-008-03,avantage_empty_workspace.png,the gray square grid icon with white plus signs for Platter View,3,415,45,457,unknown
+avantage-target-009-01,avantage_empty_workspace.png,"The  button with a red peak curve on the left vertical toolbar, directly below the printer icon.",3,289,45,331,unknown
+avantage-target-009-02,avantage_empty_workspace.png,"The  red-spectrum-curve icon in the left toolbar, between the printer and microscope icons.",3,289,45,331,unknown
+avantage-target-009-03,avantage_empty_workspace.png,the plot icon showing a red curve over a yellow baseline for Current Data View,3,289,45,331,unknown
+avantage-target-010-01,avantage_empty_workspace.png,"The document-and-yellow-arrow icon in the left toolbar, below the yellow folder button.",3,155,45,197,unknown
+avantage-target-010-02,avantage_empty_workspace.png,the document icon with a blue curved arrow for importing data files,3,155,45,197,unknown
+avantage-target-011-01,avantage_empty_workspace.png,The bright yellow folder icon in the second slot of the far-left vertical toolbar.,3,112,45,155,unknown
+avantage-target-011-02,avantage_empty_workspace.png,"The  open-folder-shaped button on the left toolbar, directly below the white blank-page icon.",3,112,45,155,unknown
+avantage-target-011-03,avantage_empty_workspace.png,yellow folder Open Document button in the left vertical toolbar,3,112,45,155,unknown
+avantage-target-012-01,avantage_empty_workspace.png,The  blue question-mark icon over a small monitor at the bottom of the left vertical toolbar.,3,615,45,657,unknown
+avantage-target-012-02,avantage_empty_workspace.png,The  help-like monitor-and-question-mark button directly above the small blue sidebar arrow.,3,615,45,657,unknown
+avantage-target-012-03,avantage_empty_workspace.png,The square blue-and-white icon with a question mark near the lower end of the far-left toolbar.,3,615,45,657,unknown
+avantage-target-012-04,avantage_empty_workspace.png,help button with a green question mark on the left vertical toolbar,3,615,45,657,unknown
+avantage-target-013-01,avantage_empty_workspace.png,"The small down-arrow menu button at the bottom of the left vertical toolbar, beneath the monitor question-mark icon.",3,663,45,687,unknown
+avantage-target-013-02,avantage_empty_workspace.png,Toolbar Options button at the bottom of the left vertical toolbar,3,663,45,687,unknown
+avantage-target-014-01,avantage_empty_workspace.png,"The  microscope-shaped icon on the left vertical toolbar, below the red spectrum-curve icon.",3,331,45,374,unknown
+avantage-target-014-02,avantage_empty_workspace.png,"The  black microscope graphic in the far-left toolbar, immediately above the dark scanning-style icon.",3,331,45,374,unknown
+avantage-target-014-03,avantage_empty_workspace.png,microscope-shaped Optical View button on the left vertical toolbar,3,331,45,374,unknown
+avantage-target-015-01,avantage_empty_workspace.png,"The Reset button in the bottom action row of the left properties pane, to the right of Apply.",388,1061,468,1085,unknown
+avantage-target-015-02,avantage_empty_workspace.png,Reset button to the right of Apply at the bottom of the Experiment Root Object pane,388,1061,468,1085,unknown
+avantage-target-016-01,avantage_empty_workspace.png,"The View text menu in the top menu bar, between Edit and Window.",83,31,126,59,unknown
+avantage-target-016-02,avantage_empty_workspace.png,View menu in the top menu bar,83,31,126,59,unknown
+avantage-target-017-01,avantage_empty_workspace.png,"The Edit text menu in the top menu bar, immediately right of File and left of View.",45,31,83,59,unknown
+avantage-target-017-02,avantage_empty_workspace.png,Edit menu in the top menu bar,45,31,83,59,unknown
+avantage-target-018-01,avantage_empty_workspace.png,The File text menu at the far left of the application menu bar.,10,31,45,59,unknown
+avantage-target-018-02,avantage_empty_workspace.png,File menu in the top menu bar,10,31,45,59,unknown
+avantage-target-019-01,avantage_empty_workspace.png,"The Help text menu at the right end of the top menu bar, after Window.",193,31,235,59,unknown
+avantage-target-019-02,avantage_empty_workspace.png,Help menu in the top menu bar,193,31,235,59,unknown
+avantage-target-020-01,avantage_empty_workspace.png,"The Window text menu in the top menu bar, positioned between View and Help.",128,31,193,59,unknown
+avantage-target-020-02,avantage_empty_workspace.png,Window menu in the top menu bar,128,31,193,59,unknown
+avantage-target-021-01,avantage_empty_workspace.png,"The first small tool icon in the Experiment strip, a four-point cross just right of the pane divider.",51,94,85,121,unknown
+avantage-target-021-02,avantage_empty_workspace.png,the Experiment item in the left-hand experiment tree,51,94,85,121,unknown
+avantage-target-022-01,avantage_empty_workspace.png,"The red abort-style icon at the far right of the Experiment toolbar, just left of the white-page icon.",395,94,423,121,unknown
+avantage-target-022-02,avantage_empty_workspace.png,the red exclamation-mark Abort Experiment Run toolbar button,395,94,423,121,unknown
+avantage-target-023-01,avantage_empty_workspace.png,"The diagonal dotted-line icon in the Experiment strip, second after the four-point cross.",85,94,119,121,unknown
+avantage-target-023-02,avantage_empty_workspace.png,the gray diagonal-dots Line tool button in the Experiment toolbar,85,94,119,121,unknown
+avantage-target-024-01,avantage_empty_workspace.png,"The  green play-triangle button in the Experiment toolbar, immediately left of the green double-triangle button.",283,94,310,121,unknown
+avantage-target-024-02,avantage_empty_workspace.png,The  green right-pointing triangle icon in the Experiment strip near the center-left.,283,94,310,121,unknown
+avantage-target-024-03,avantage_empty_workspace.png,the green right-pointing Experiment Run button,283,94,310,121,unknown
+avantage-target-025-01,avantage_empty_workspace.png,"The small black pencil-shaped icon in the Experiment strip, directly right of the dotted-grid icon.",153,94,186,121,unknown
+avantage-target-025-02,avantage_empty_workspace.png,the eyedropper-shaped Source toolbar button,153,94,186,121,unknown
+avantage-target-026-01,avantage_empty_workspace.png,"The dark gear-shaped icon in the Experiment strip, immediately left of the green play button.",221,94,255,121,unknown
+avantage-target-026-02,avantage_empty_workspace.png,the black gear-shaped Miscellaneous toolbar button,221,94,255,121,unknown
+avantage-target-027-01,avantage_empty_workspace.png,"The black curved-arrow icon in the Experiment strip, between the pencil-shaped icon and the dark gear.",188,94,221,121,unknown
+avantage-target-027-02,avantage_empty_workspace.png,the black-and-blue Processing toolbar button immediately left of the gear button,188,94,221,121,unknown
+avantage-target-028-01,avantage_empty_workspace.png,"The pause/resume-style button with narrow vertical bars in the Experiment toolbar, right of the green double-triangle icon.",339,94,366,121,unknown
+avantage-target-028-02,avantage_empty_workspace.png,the yellow striped Pause or Resume Experiment Run button,339,94,366,121,unknown
+avantage-target-029-01,avantage_empty_workspace.png,"The  small white-page icon at the far right of the Experiment toolbar, after the red abort icon.",431,94,459,121,unknown
+avantage-target-029-02,avantage_empty_workspace.png,"The  document-shaped button at the right edge of the Experiment strip, separated from the run controls by a divider.",431,94,459,121,unknown
+avantage-target-029-03,avantage_empty_workspace.png,the New Experiment Library toolbar button to the right of the abort button,431,94,459,121,unknown
+avantage-target-030-01,avantage_empty_workspace.png,"The red square stop icon in the Experiment toolbar, between the pause-bars and the red abort icon.",368,94,395,121,unknown
+avantage-target-030-02,avantage_empty_workspace.png,the red square Stop Experiment Run button,368,94,395,121,unknown
+avantage-target-031-01,avantage_empty_workspace.png,"The Area text command in the Experiment strip, between Line and Source.",119,94,153,121,unknown
+avantage-target-031-02,avantage_empty_workspace.png,the black-and-blue Area toolbar icon immediately to the left of the gear icon in the Experiment pane,119,94,153,121,unknown
+avantage-target-032-01,avantage_empty_workspace.png,"The  green double-right-triangle button in the Experiment toolbar, immediately to the right of the green play icon.",311,94,339,121,unknown
+avantage-target-032-02,avantage_empty_workspace.png,"The  green two-triangle icon in the Experiment strip, located before the pause control.",311,94,339,121,unknown
+avantage-target-032-03,avantage_empty_workspace.png,the green double right-pointing Experiment Step button in the Experiment toolbar,311,94,339,121,unknown
+avantage-target-034-01,avantage_empty_workspace.png,The Apply button in the bottom action row of the left properties pane.,289,1061,369,1085,unknown
+avantage-target-034-02,avantage_empty_workspace.png,the Apply button at the bottom of the Experiment Root Object pane,289,1061,369,1085,unknown
+avantage-target-035-01,avantage_empty_workspace.png,The selected Experiment tab at the bottom edge of the upper-left tree pane.,51,622,155,650,unknown
+avantage-target-035-02,avantage_empty_workspace.png,the selected Experiment tab above the Experiment Root Object pane,51,622,155,650,unknown
+avantage-target-036-01,avantage_empty_workspace.png,The Experiment tree row with the small cyan-and-red square icon in the upper-left navigation pane.,103,129,181,151,unknown
+avantage-target-036-02,avantage_empty_workspace.png,the Experiment item in the upper-left experiment tree,103,129,181,151,unknown
+avantage-target-037-01,avantage_empty_workspace.png,"The Image tab in the top ribbon row, located between Arithmetic and Utilities.",871,62,938,90,unknown
+avantage-target-037-02,avantage_empty_workspace.png,the Image toolbar menu labeled Image near the top center,871,62,938,90,unknown
+avantage-target-038-01,avantage_empty_workspace.png,"The toolbar icon with the visible letters TFA near the right end of the Analysis tools row, just left of PCA.",798,92,840,135,unknown
+avantage-target-038-02,avantage_empty_workspace.png,the TFA button in the lower Analysis toolbar,798,92,840,135,unknown
+avantage-target-039-01,avantage_empty_workspace.png,"The pale multicolored peak graphic in the Analysis toolbar, sixth small button from the left.",714,92,756,135,unknown
+avantage-target-039-02,avantage_empty_workspace.png,the blue downward-arrow toolbar button at the far right end of the Analysis toolbar,714,92,756,135,unknown
+avantage-target-040-01,avantage_empty_workspace.png,"The red-and-blue peak icon, second small button from the left in the Analysis toolbar.",504,92,546,135,unknown
+avantage-target-040-02,avantage_empty_workspace.png,the ID button in the lower Analysis toolbar,504,92,546,135,unknown
+avantage-target-041-01,avantage_empty_workspace.png,"The pale curve-and-table-style icon, fifth small button from the left in the Analysis toolbar.",630,92,673,135,unknown
+avantage-target-041-02,avantage_empty_workspace.png,the Peak Table Profile toolbar icon with a turquoise table graphic in the lower Analysis toolbar,630,92,673,135,unknown
+avantage-target-042-01,avantage_empty_workspace.png,"The red peak-and-curve icon, fourth small button from the left in the Analysis toolbar.",588,92,630,135,unknown
+avantage-target-042-02,avantage_empty_workspace.png,the Peak Fitting toolbar button in the Analysis tools row,588,92,630,135,unknown
+avantage-target-043-01,avantage_empty_workspace.png,"The icon with a red horizontal peak shape, third small button from the left in the Analysis toolbar.",546,92,589,135,unknown
+avantage-target-043-02,avantage_empty_workspace.png,the Peak Add toolbar button in the Analysis tools row,546,92,589,135,unknown
+avantage-target-044-01,avantage_empty_workspace.png,"The first ID-marked icon in the Analysis toolbar, directly right of the small yellow question-mark symbol.",463,92,505,135,unknown
+avantage-target-044-02,avantage_empty_workspace.png,the Survey ID toolbar button in the Analysis tools row,463,92,505,135,unknown
+avantage-target-045-01,avantage_empty_workspace.png,"The NLS-labeled icon near the right end of the Analysis toolbar, directly left of TFA.",756,92,799,135,unknown
+avantage-target-045-02,avantage_empty_workspace.png,the Non-Linear Least-Squares Fit (NLS) toolbar button,756,92,799,135,unknown
+avantage-target-046-01,avantage_empty_workspace.png,"The blue curve-and-plus icon, sixth small button from the left in the Analysis toolbar.",673,92,715,135,unknown
+avantage-target-046-02,avantage_empty_workspace.png,the Charge Shift toolbar button in the Modify tools row,673,92,715,135,unknown
+avantage-target-047-01,avantage_empty_workspace.png,The small downward chevron menu button at the far right of the Analysis toolbar.,1107,92,1129,119,unknown
+avantage-target-047-02,avantage_empty_workspace.png,the small Toolbar Options drop-down button at the far right of the Display Modes toolbar,1107,92,1129,119,unknown
+avantage-target-048-01,avantage_empty_workspace.png,The PCA-labeled icon at the far right of the Analysis tools row.,840,92,883,135,unknown
+avantage-target-048-02,avantage_empty_workspace.png,the Principal Component Analysis (PCA) toolbar button,840,92,883,135,unknown
+avantage-target-049-01,avantage_empty_workspace.png,The selected Analysis tab at the left end of the top processing-ribbon tab row.,453,62,535,90,unknown
+avantage-target-049-02,avantage_empty_workspace.png,the Analysis tab in the top ribbon,453,62,535,90,unknown
+avantage-target-050-01,avantage_empty_workspace.png,"The Arithmetic tab in the top processing-ribbon row, between Profile and Image.",779,62,870,90,unknown
+avantage-target-050-02,avantage_empty_workspace.png,the Arithmetic tab in the top ribbon,779,62,870,90,unknown
+avantage-target-051-01,avantage_empty_workspace.png,"The Modify tab in the top processing-ribbon row, between Compare/Overlay and Profile.",640,62,711,90,unknown
+avantage-target-051-02,avantage_empty_workspace.png,the Modify tab in the top ribbon,640,62,711,90,unknown
+avantage-target-052-01,avantage_empty_workspace.png,"The Utilities tab in the top processing-ribbon row, directly right of Image.",938,62,1010,90,unknown
+avantage-target-052-02,avantage_empty_workspace.png,"the Utilities command in the top ribbon, to the right of Image",938,62,1010,90,unknown
+avantage-target-053-01,avantage_empty_workspace.png,"The Profile tab in the top processing-ribbon row, between Modify and Arithmetic.",713,62,779,90,unknown
+avantage-target-053-02,avantage_empty_workspace.png,"the Profile command in the top ribbon, immediately to the right of Modify",713,62,779,90,unknown
+avantage-target-054-01,avantage_empty_workspace.png,"The Angle Resolved XPS tab at the right end of the processing-ribbon tab row, after Utilities.",1013,62,1117,90,unknown
+avantage-target-054-02,avantage_empty_workspace.png,the Angle Resolved XPS command in the top ribbon,1013,62,1117,90,unknown
+avantage-target-055-01,avantage_empty_workspace.png,"The Compare/Overlay tab in the top processing-ribbon row, immediately right of Analysis and left of Modify.",535,62,639,90,unknown
+avantage-target-055-02,avantage_empty_workspace.png,"the Compare/Overlay command in the top ribbon, to the right of Analysis",535,62,639,90,unknown
+avantage-target-056-01,avantage_empty_workspace.png,"The twelfth small display-mode icon from the left, a pale line-profile graphic near the far right.",1620,92,1663,135,unknown
+avantage-target-056-02,avantage_empty_workspace.png,the Profile display-mode button with the blue stepped-line icon near the right end of the Display Modes toolbar,1620,92,1663,135,unknown
+avantage-target-057-01,avantage_empty_workspace.png,"The eleventh small display-mode icon from the left, with crossed pale plot lines.",1578,92,1620,135,unknown
+avantage-target-057-02,avantage_empty_workspace.png,the X-Y Image display-mode button with the gold image-like icon immediately left of the Profile button,1578,92,1620,135,unknown
+avantage-target-058-01,avantage_empty_workspace.png,"The fifth small display-mode icon from the left, a pale picture-like graphic.",1318,92,1360,135,unknown
+avantage-target-058-02,avantage_empty_workspace.png,the Image display-mode button with the gold image-like icon in the Display Modes toolbar,1318,92,1360,135,unknown
+avantage-target-059-01,avantage_empty_workspace.png,"The fourth small display-mode icon from the left, a pale perspective-chart graphic.",1277,92,1319,135,unknown
+avantage-target-059-02,avantage_empty_workspace.png,the 3D Chart display-mode button immediately left of the Image button,1277,92,1319,135,unknown
+avantage-target-060-01,avantage_empty_workspace.png,"The eighth small display-mode icon from the left, showing pale vertical bars.",1444,92,1487,135,unknown
+avantage-target-060-02,avantage_empty_workspace.png,the Bar Chart display-mode button with multicolored vertical bars,1444,92,1487,135,unknown
+avantage-target-061-01,avantage_empty_workspace.png,"The tenth small display-mode icon from the left, a pale spectrum-curve graphic.",1537,92,1579,135,unknown
+avantage-target-061-02,avantage_empty_workspace.png,the Energy Spectrum display-mode button with the red spectrum-curve icon,1537,92,1579,135,unknown
+avantage-target-062-01,avantage_empty_workspace.png,"The sixth small display-mode icon from the left, a pale circular map-like graphic.",1360,92,1403,135,unknown
+avantage-target-062-02,avantage_empty_workspace.png,the multicolored circular wafer-map icon in the top toolbar,1360,92,1403,135,unknown
+avantage-target-063-01,avantage_empty_workspace.png,The small down-arrow menu button at the far right edge of the Display Modes toolbar.,1790,92,1813,119,unknown
+avantage-target-063-02,avantage_empty_workspace.png,the small toolbar-options drop-down button at the far right end of the top toolbar,1790,92,1813,119,unknown
+avantage-target-064-01,avantage_empty_workspace.png,"The seventh small display-mode icon from the left, a pale depth-style plot.",1403,92,1445,135,unknown
+avantage-target-064-02,avantage_empty_workspace.png,"the toolbar button with the pale graph and red-dot relative-depth icon, immediately to the right of the wafer-map icon",1403,92,1445,135,unknown
+avantage-target-065-01,avantage_empty_workspace.png,"The ninth small display-mode icon from the left, a pale document-like graphic.",1487,92,1529,135,unknown
+avantage-target-065-02,avantage_empty_workspace.png,the toolbar button with the green vertical bar and document-style data-file-information icon,1487,92,1529,135,unknown
+avantage-target-066-01,avantage_empty_workspace.png,"The first small display-mode icon from the left, showing a pale single red trace.",1150,92,1193,135,unknown
+avantage-target-066-02,avantage_empty_workspace.png,the red single-trace curve button in the Display Modes toolbar,1150,92,1193,135,unknown
+avantage-target-067-01,avantage_empty_workspace.png,"The thirteenth and rightmost small display-mode icon, a pale chart-and-settings graphic.",1670,92,1713,135,unknown
+avantage-target-067-02,avantage_empty_workspace.png,the chart-properties toolbar button with the small chart-and-settings icon,1670,92,1713,135,unknown
+avantage-target-068-01,avantage_empty_workspace.png,"The third small display-mode icon from the left, showing layered pale plot lines.",1234,92,1277,135,unknown
+avantage-target-068-02,avantage_empty_workspace.png,the stacked-chart button showing several overlapping colored trace lines,1234,92,1277,135,unknown
+avantage-target-069-01,avantage_empty_workspace.png,"The second small display-mode icon from the left, a pale flat-plot graphic.",1193,92,1235,135,unknown
+avantage-target-069-02,avantage_empty_workspace.png,the 2D-chart button showing a green peaked line graph,1193,92,1235,135,unknown
+avantage-target-070-01,avantage_empty_workspace.png,"The Reporting tab in the top-right ribbon row, immediately right of Display Options.",1393,62,1480,90,unknown
+avantage-target-070-02,avantage_empty_workspace.png,"the Reporting tab in the top ribbon, marked with a blue W icon",1393,62,1480,90,unknown
+avantage-target-071-01,avantage_empty_workspace.png,"The Display Options tab in the top-right ribbon row, between Display Modes and Reporting.",1268,62,1393,90,unknown
+avantage-target-071-02,avantage_empty_workspace.png,"the Display Options tab in the top ribbon, immediately left of Reporting",1268,62,1393,90,unknown
+avantage-target-072-01,avantage_empty_workspace.png,The selected Display Modes tab at the left of the top-right ribbon group.,1140,62,1267,90,unknown
+avantage-target-072-02,avantage_empty_workspace.png,the Display Modes toolbar section label at the top of the window,1140,62,1267,90,unknown
+avantage-target-073-01,avantage_empty_workspace.png,"The Main Folder text field in the lower-left Data Folders pane, showing the path C:\Avantage\Projects.",168,732,449,750,unknown
+avantage-target-073-02,avantage_empty_workspace.png,the Main Folder path text field in the Data Folders tab,168,732,449,750,unknown
+avantage-target-076-01,avantage_empty_workspace.png,"The Project Folder text field in the lower-left Data Folders pane, displaying Misc.",168,765,516,782,unknown
+avantage-target-076-02,avantage_empty_workspace.png,"the Project Folder text field containing ""Misc"" in the Data Folders tab",168,765,516,782,unknown
+avantage-target-077-01,avantage_empty_workspace.png,"The General tab in the lower-left Experiment Root Object pane, to the right of Settings.",203,692,263,713,unknown
+avantage-target-077-02,avantage_empty_workspace.png,the General tab in the Experiment Root Object pane,203,692,263,713,unknown
+avantage-target-078-01,avantage_empty_workspace.png,The selected Data Folders tab in the lower-left Experiment Root Object pane.,53,692,143,713,unknown
+avantage-target-078-02,avantage_empty_workspace.png,the Data Folders tab in the Experiment Root Object pane,53,692,143,713,unknown
+avantage-target-079-01,avantage_empty_workspace.png,"The Settings tab in the lower-left Experiment Root Object pane, between Data Folders and General.",143,692,203,713,unknown
+avantage-target-079-02,avantage_empty_workspace.png,the Settings tab between Data Folders and General,143,692,203,713,unknown
+avantage-target-080-01,avantage_empty_workspace.png,"The large editable Project Description text box in the lower-left pane, containing the visible text Miscellaneous project.",165,793,541,843,unknown
+avantage-target-080-02,avantage_empty_workspace.png,"the Project Description multiline text box containing ""Miscellaneous project""",165,793,541,843,unknown
+avantage-target-082-01,avantage_peak_table.png,The scroll thumb near the top of the far-right vertical scrollbar beside the chart grid.,1760,339,1778,394,unknown
+avantage-target-082-02,avantage_peak_table.png,The tall pale handle directly below the upper arrow on the scrollbar at the right edge of the plotted-cell pane.,1760,339,1778,394,unknown
+avantage-target-082-03,avantage_peak_table.png,the vertical scrollbar thumb on the far right side of the peak-table pane,1760,339,1778,394,unknown
+avantage-target-083-01,avantage_peak_table.png,The small down-arrow button at the bottom of the far-right scrollbar beside the chart grid.,1760,972,1778,993,unknown
+avantage-target-083-02,avantage_peak_table.png,"The lower triangular scroll arrow on the right edge of the plotted-cell area, beneath the long scrollbar track.",1760,972,1778,993,unknown
+avantage-target-083-03,avantage_peak_table.png,the down-arrow button at the bottom of the peak-table pane's vertical scrollbar,1760,972,1778,993,unknown
+avantage-target-084-01,avantage_peak_table.png,The small up-arrow button at the top of the far-right scrollbar next to the chart grid.,1760,317,1778,339,unknown
+avantage-target-084-02,avantage_peak_table.png,"The upper triangular scroll arrow on the right side of the plotted-cell pane, immediately above the pale scrollbar handle.",1760,317,1778,339,unknown
+avantage-target-084-03,avantage_peak_table.png,the up-arrow button at the top of the peak-table pane's vertical scrollbar,1760,317,1778,339,unknown
+avantage-target-085-01,avantage_peak_table.png,"The Peak Fit tab in the row beneath the blank peak-table area, between Peaks and Chemical State.",553,280,618,307,unknown
+avantage-target-085-02,avantage_peak_table.png,"the ""Peak Fit"" tab above the plot grid",553,280,618,307,unknown
+avantage-target-086-01,avantage_peak_table.png,The leftmost Data tab below the empty peak-table columns and immediately left of Peaks.,458,280,500,307,unknown
+avantage-target-086-02,avantage_peak_table.png,"the leftmost ""Data"" tab above the plot grid",458,280,500,307,unknown
+avantage-target-087-01,avantage_peak_table.png,"The Chemical State tab in the row above the chart grid, to the right of Peak Fit.",619,280,730,307,unknown
+avantage-target-087-02,avantage_peak_table.png,"the ""Chemical State"" tab to the right of the ""Peak Fit"" tab",619,280,730,307,unknown
+avantage-target-088-01,avantage_peak_table.png,"The Peaks tab beneath the upper table, positioned between Data and Peak Fit.",501,280,553,307,unknown
+avantage-target-088-02,avantage_peak_table.png,"the ""Peaks"" tab between the ""Data"" and ""Peak Fit"" tabs",501,280,553,307,unknown
+avantage-target-089-01,avantage_peak_table.png,"The pale square in the right-edge tool column, directly below the bright green rectangular icon and directly above another muted square.",1787,530,1814,557,unknown
+avantage-target-089-02,avantage_peak_table.png,the green insert-cells toolbar button on the right side of the plot grid,1787,530,1814,557,unknown
+avantage-target-090-01,avantage_peak_table.png,"The  yellow table-style icon near the top of the right-hand Peak Table toolbar, directly below a icon.",1787,194,1814,221,unknown
+avantage-target-090-02,avantage_peak_table.png,"The  square tool at the far right of the upper empty table, second button from the top of that vertical tool strip.",1787,194,1814,221,unknown
+avantage-target-090-03,avantage_peak_table.png,the yellow folder Load Peak Table button near the top of the right-side toolbar,1787,194,1814,221,unknown
+avantage-target-091-01,avantage_peak_table.png,"The  square icon in the right-side Peak Table toolbar, immediately above the blue-corner expand-style icon.",1787,390,1814,417,unknown
+avantage-target-091-02,avantage_peak_table.png,"The  tool aligned with the first chart row on the far-right vertical strip, below several buttons.",1787,390,1814,417,unknown
+avantage-target-091-03,avantage_peak_table.png,the blue-and-yellow Cells Resizable button on the right-side toolbar,1787,390,1814,417,unknown
+avantage-target-092-01,avantage_peak_table.png,The  small square with blue Gr letters in the right-edge tool column beside the lower chart rows.,1787,586,1814,613,unknown
+avantage-target-092-02,avantage_peak_table.png,"The colored Gr-marked icon in the far-right vertical strip, directly above the square marked Ax.",1787,586,1814,613,unknown
+avantage-target-092-03,avantage_peak_table.png,the yellow-and-black “Gr” grid properties icon in the right-side vertical toolbar,1787,586,1814,613,unknown
+avantage-target-093-01,avantage_peak_table.png,"The  four-cell grid icon in the right-side Peak Table toolbar, below the blue-corner expand icon.",1787,446,1814,474,unknown
+avantage-target-093-02,avantage_peak_table.png,"The  tiling-style button at the right of the chart grid, between the maximise-style icon above and a resize-style icon below.",1787,446,1814,474,unknown
+avantage-target-093-03,avantage_peak_table.png,the blue four-cell grid icon for tiling cells in the right-side vertical toolbar,1787,446,1814,474,unknown
+avantage-target-094-01,avantage_peak_table.png,"The  bright green square in the right-edge tool column, immediately below the blue-and-yellow four-cell icon.",1787,502,1814,530,unknown
+avantage-target-094-02,avantage_peak_table.png,The colored icon in the far-right strip between the small yellow-and-green square above and the pale square below.,1787,502,1814,530,unknown
+avantage-target-094-03,avantage_peak_table.png,the green cell-size icon in the right-side vertical toolbar,1787,502,1814,530,unknown
+avantage-target-095-01,avantage_peak_table.png,"The topmost square icon in the right-hand Peak Table toolbar, immediately above the yellow  table icon.",1787,166,1814,194,unknown
+avantage-target-095-02,avantage_peak_table.png,the floppy-disk save icon at the top of the right-side vertical toolbar beside the peak table,1787,166,1814,194,unknown
+avantage-target-096-01,avantage_peak_table.png,"The pale square in the right-edge tool column, directly below another muted square and directly above the blue Gr icon.",1787,557,1814,585,unknown
+avantage-target-096-02,avantage_peak_table.png,the small grid icon with a yellow delete mark in the right-side vertical toolbar,1787,557,1814,585,unknown
+avantage-target-097-01,avantage_peak_table.png,"The  blue-corner expand-style icon in the right-side Peak Table toolbar, directly below the upper  tool.",1787,417,1814,445,unknown
+avantage-target-097-02,avantage_peak_table.png,"The  square button beside the first chart row, between the resizable-style icon above and the four-cell grid icon below.",1787,417,1814,445,unknown
+avantage-target-097-03,avantage_peak_table.png,the square maximize-cell icon with a diagonal arrow at the top of the right-side vertical toolbar,1787,417,1814,445,unknown
+avantage-target-098-01,avantage_peak_table.png,"The  small yellow-and-green square in the right-edge tool column, directly below the blue-and-yellow four-cell icon.",1787,474,1814,501,unknown
+avantage-target-098-02,avantage_peak_table.png,The colored icon in the far-right strip between the four-cell square above and the bright green square below.,1787,474,1814,501,unknown
+avantage-target-098-03,avantage_peak_table.png,the blue grid icon with a horizontal resize bar in the right-side vertical toolbar,1787,474,1814,501,unknown
+avantage-target-099-01,avantage_peak_table.png,The Ax-style icon at the bottom of the right-hand Peak Table toolbar.,1787,613,1814,641,unknown
+avantage-target-099-02,avantage_peak_table.png,the yellow-and-black “Ax” axis properties icon below the grid properties icon,1787,613,1814,641,unknown
+avantage-target-100-01,avantage_peak_table.png,"The plus sign in the bottom chart toolbar, directly right of the red trace icon and left of the dotted-square icon.",641,997,684,1040,unknown
+avantage-target-100-02,avantage_peak_table.png,the gray plus-sign Select Point tool in the bottom chart toolbar,641,997,684,1040,unknown
+avantage-target-101-01,avantage_peak_table.png,"The magnifying-glass icon in the bottom chart toolbar, immediately left of the magnifier with a red X.",952,997,994,1040,unknown
+avantage-target-101-02,avantage_peak_table.png,the magnifying-glass-with-plus Zoom In button in the bottom chart toolbar,952,997,994,1040,unknown
+avantage-target-102-01,avantage_peak_table.png,"The diagonal-line icon in the bottom chart toolbar, directly right of the rectangle icon.",725,997,768,1040,unknown
+avantage-target-102-02,avantage_peak_table.png,the black diagonal line icon in the bottom chart toolbar,725,997,768,1040,unknown
+avantage-target-103-01,avantage_peak_table.png,The  white button with a black mouse-pointer icon at the far left of the bottom chart toolbar.,473,997,515,1040,unknown
+avantage-target-103-02,avantage_peak_table.png,The  arrow-cursor tool immediately to the right of the chart-grid border and left of the selection icons.,473,997,515,1040,unknown
+avantage-target-103-03,avantage_peak_table.png,the highlighted arrow-pointer button at the far left of the bottom chart toolbar,473,997,515,1040,unknown
+avantage-target-105-01,avantage_peak_table.png,"The capital A icon in the bottom chart toolbar, directly right of the small eye symbol and left of the A-plus symbol.",818,997,860,1040,unknown
+avantage-target-105-02,avantage_peak_table.png,the gray capital A icon in the bottom chart toolbar,818,997,860,1040,unknown
+avantage-target-106-01,avantage_peak_table.png,"The rectangle-selection icon in the bottom chart toolbar, between the point tool and the diagonal-line tool.",683,997,725,1040,unknown
+avantage-target-106-02,avantage_peak_table.png,the dotted rectangular selection icon immediately left of the diagonal line icon,683,997,725,1040,unknown
+avantage-target-107-01,avantage_peak_table.png,"The red peak-shaped trace with dotted vertical guides in the bottom chart toolbar, immediately left of the plus sign.",599,997,641,1040,unknown
+avantage-target-107-02,avantage_peak_table.png,the dotted peak-shaped selection icon in the bottom chart toolbar,599,997,641,1040,unknown
+avantage-target-108-01,avantage_peak_table.png,The small red curved trace immediately right of the  black mouse-pointer icon in the bottom toolbar.,515,997,558,1040,unknown
+avantage-target-108-02,avantage_peak_table.png,the curved-line selection icon immediately right of the arrow-pointer button,515,997,558,1040,unknown
+avantage-target-109-01,avantage_peak_table.png,The second red curve icon to the right of the  mouse-pointer button in the bottom chart toolbar.,558,997,600,1040,unknown
+avantage-target-109-02,avantage_peak_table.png,the dotted curved-range selection icon immediately right of the curved-line icon,558,997,600,1040,unknown
+avantage-target-110-01,avantage_peak_table.png,"The magnifying glass overlaid by a red X, immediately left of the long white field in the bottom chart toolbar.",993,997,1035,1040,unknown
+avantage-target-110-02,avantage_peak_table.png,the magnifying-glass icon with a red X in the bottom chart toolbar,993,997,1035,1040,unknown
+avantage-target-111-01,avantage_peak_table.png,"The A-plus-style icon in the bottom chart toolbar, directly left of the  four-arrow icon.",859,997,901,1040,unknown
+avantage-target-111-02,avantage_peak_table.png,the capital A with a small plus sign icon in the bottom chart toolbar,859,997,901,1040,unknown
+avantage-target-112-01,avantage_peak_table.png,"The  black four-direction arrow icon in the bottom chart toolbar, between the A-plus icon and the magnifier.",909,997,952,1040,unknown
+avantage-target-112-02,avantage_peak_table.png,"The  move-style button near the right end of the lower toolbar, immediately left of the zoom magnifier.",909,997,952,1040,unknown
+avantage-target-112-03,avantage_peak_table.png,the four-direction arrow icon immediately left of the magnifying-glass controls,909,997,952,1040,unknown
+avantage-target-113-01,avantage_peak_table.png,The navigation button with a right-pointing arrow and end bar in the NavBar row at the bottom.,673,1045,715,1087,unknown
+avantage-target-113-02,avantage_peak_table.png,the End navigation button with a right-pointing arrow and vertical bar in the bottom NavBar,673,1045,715,1087,unknown
+avantage-target-114-01,avantage_peak_table.png,"The single left-arrow button in the bottom NavBar row, between the leftmost double-arrow control and the next control to its right.",578,1045,620,1087,unknown
+avantage-target-114-02,avantage_peak_table.png,the Previous navigation button with a left-pointing arrow in the bottom NavBar,578,1045,620,1087,unknown
+avantage-target-115-01,avantage_peak_table.png,"The leftmost NavBar control, marked by a vertical bar and double left-pointing chevrons.",535,1045,578,1087,unknown
+avantage-target-115-02,avantage_peak_table.png,the Start navigation button with a vertical bar and left-pointing arrow in the bottom NavBar,535,1045,578,1087,unknown
+avantage-target-116-01,avantage_peak_table.png,"The single right-arrow button in the bottom NavBar row, between the next field and the double-right end control.",630,1045,673,1087,unknown
+avantage-target-116-02,avantage_peak_table.png,the Next navigation button with a right-pointing arrow in the bottom NavBar,630,1045,673,1087,unknown
+avantage-target-117-01,avantage_peak_table.png,The small dark downward chevron at the extreme right end of the pale-blue document-tab strip.,1798,132,1815,150,unknown
+avantage-target-117-02,avantage_peak_table.png,The tiny black drop-down arrow opposite the quant_by_xps tab on the row above the peak table.,1798,132,1815,150,unknown
+avantage-target-117-03,avantage_peak_table.png,"The compact menu chevron at the far right of the tab bar, above the right-hand Peak Table toolbar.",1798,132,1815,150,unknown
+avantage-target-117-04,avantage_peak_table.png,the small downward-pointing dropdown arrow at the far right end of the top toolbar,1798,132,1815,150,unknown
+avantage-target-118-01,avantage_peak_table.png,"The  quant_by_xps document tab at the upper left of the main work area, directly above the empty peak table.",453,129,609,155,unknown
+avantage-target-118-02,avantage_peak_table.png,"the active ""quant_by_xps"" document tab",453,129,609,155,unknown
+avantage-target-119-01,avantage_data_list.png,"The selected radio button labeled ""Level 0"" inside the Diagnostics box in the lower-left pane.",115,872,203,896,unknown
+avantage-target-119-02,avantage_data_list.png,"The leftmost Diagnostics radio option, shown with a filled blue center above the ""(Normal)"" text.",115,872,203,896,unknown
+avantage-target-119-03,avantage_data_list.png,selected Level 0 radio button in the Diagnostics section,115,872,203,896,unknown
+avantage-target-120-01,avantage_data_list.png,"The unselected radio button labeled ""Level 1"" in the Diagnostics box, immediately to the right of Level 0.",215,872,303,896,unknown
+avantage-target-120-02,avantage_data_list.png,The second circular radio option along the Diagnostics row in the lower-left pane.,215,872,303,896,unknown
+avantage-target-120-03,avantage_data_list.png,Level 1 radio button in the Diagnostics section,215,872,303,896,unknown
+avantage-target-121-01,avantage_data_list.png,"The unselected radio button labeled ""Level 2"" in the Diagnostics box, immediately to the right of Level 1.",315,872,403,896,unknown
+avantage-target-121-02,avantage_data_list.png,"The third circular option on the Diagnostics row, before the partially clipped option at the right.",315,872,403,896,unknown
+avantage-target-121-03,avantage_data_list.png,Level 2 radio button in the Diagnostics section,315,872,403,896,unknown
+avantage-target-123-01,avantage_data_list.png,"The  multicolored round icon, third from the left in the Compare/Overlay toolbar.",546,92,589,135,unknown
+avantage-target-123-02,avantage_data_list.png,The colorful circular button between the red-and-black icon and the green-and-yellow overlapping-shapes icon below Compare/Overlay.,546,92,589,135,unknown
+avantage-target-123-03,avantage_data_list.png,black-and-red crossed overlay-manager toolbar icon under the Compare tab,546,92,589,135,unknown
+avantage-target-124-01,avantage_data_list.png,"The red-and-black icon, second from the left in the Compare/Overlay toolbar.",504,92,546,135,unknown
+avantage-target-124-02,avantage_data_list.png,pink line-chart overlay toolbar icon under the Compare tab,504,92,546,135,unknown
+avantage-target-125-01,avantage_data_list.png,"The pale-blue icon, fifth from the left in the Compare/Overlay toolbar.",630,92,673,135,unknown
+avantage-target-125-02,avantage_data_list.png,multicolored image-map toolbar icon under the Compare tab,630,92,673,135,unknown
+avantage-target-126-01,avantage_data_list.png,The leftmost square icon in the toolbar directly below the Compare/Overlay tab.,463,92,505,135,unknown
+avantage-target-126-02,avantage_data_list.png,yellow-and-pink chart toolbar icon under the Compare tab,463,92,505,135,unknown
+avantage-target-127-01,avantage_data_list.png,The rightmost square icon in the six-button Compare/Overlay toolbar.,673,92,715,135,unknown
+avantage-target-127-02,avantage_data_list.png,blue combine toolbar icon under the Compare tab,673,92,715,135,unknown
+avantage-target-128-01,avantage_data_list.png,"The icon made of overlapping yellow, green, and blue rounded shapes in the Compare/Overlay toolbar.",588,92,630,135,unknown
+avantage-target-128-02,avantage_data_list.png,multicolored circular image-overlay toolbar icon under the Compare tab,588,92,630,135,unknown
+avantage-target-129-01,avantage_data_list.png,"The ""Reporting"" tab at the top right, immediately to the right of the selected Display Options tab.",1402,62,1489,90,unknown
+avantage-target-129-02,avantage_data_list.png,Reporting tab in the top ribbon,1402,62,1489,90,unknown
+avantage-target-130-01,avantage_data_list.png,"The bold selected ""Display Options"" tab in the top ribbon, between Display Modes and Reporting.",1268,62,1400,90,unknown
+avantage-target-130-02,avantage_data_list.png,the highlighted Display Options tab in the top ribbon,1268,62,1400,90,unknown
+avantage-target-131-01,avantage_data_list.png,"The rightmost square icon in the Display Options toolbar, immediately to the right of the black ""C/s"" symbol.",1537,92,1579,135,unknown
+avantage-target-131-02,avantage_data_list.png,the Reverse Energy toolbar button at the far right of the Display Options toolbar,1537,92,1579,135,unknown
+avantage-target-132-01,avantage_data_list.png,"The first square icon in the Display Options toolbar, with a peak-like mark and a green check.",1150,92,1193,135,unknown
+avantage-target-132-02,avantage_data_list.png,the User Annotations toolbar button in the Display Options toolbar,1150,92,1193,135,unknown
+avantage-target-133-01,avantage_data_list.png,"The Display Options icon with a blue sloping trace and green mark, immediately to the right of the green ""0.5"" icon.",1234,92,1277,135,unknown
+avantage-target-133-02,avantage_data_list.png,the Fitted Peaks toolbar button in the Display Options toolbar,1234,92,1277,135,unknown
+avantage-target-134-01,avantage_data_list.png,"The square icon just to the left of the large ""BE"" letters in the Display Options toolbar.",1410,92,1453,135,unknown
+avantage-target-134-02,avantage_data_list.png,the Sum data series toolbar button in the Display Options toolbar,1410,92,1453,135,unknown
+avantage-target-135-01,avantage_data_list.png,"The Display Options icon with a green angled line, immediately to the right of the purple-and-green icon.",1318,92,1360,135,unknown
+avantage-target-135-02,avantage_data_list.png,the Peak Backgrounds toolbar button in the Display Options toolbar,1318,92,1360,135,unknown
+avantage-target-136-01,avantage_data_list.png,"The  black ""C/s"" button in the Display Options toolbar, immediately to the right of the ""BE"" button.",1494,92,1537,135,unknown
+avantage-target-136-02,avantage_data_list.png,"The  Display Options control marked ""C/s"", just left of the rightmost chart-like icon.",1494,92,1537,135,unknown
+avantage-target-136-03,avantage_data_list.png,the Counts/s toolbar button in the Display Options toolbar,1494,92,1537,135,unknown
+avantage-target-137-01,avantage_data_list.png,The green-line icon at the right end of the left Display Options button cluster.,1360,92,1403,135,unknown
+avantage-target-137-02,avantage_data_list.png,the User Backgrounds toolbar button in the Display Options toolbar,1360,92,1403,135,unknown
+avantage-target-138-01,avantage_data_list.png,"The Display Options icon with green ""0.5"" lettering, immediately to the right of the first peak-and-check icon.",1193,92,1235,135,unknown
+avantage-target-138-02,avantage_data_list.png,the Peak Annotations toolbar button in the Display Options toolbar,1193,92,1235,135,unknown
+avantage-target-139-01,avantage_data_list.png,"The button marked ""BE"" in the right half of the Display Options toolbar.",1453,92,1495,135,unknown
+avantage-target-139-02,avantage_data_list.png,the Binding Energy toolbar button in the Display Options toolbar,1453,92,1495,135,unknown
+avantage-target-140-01,avantage_data_list.png,"The purple-and-green icon in the Display Options toolbar, immediately to the right of the blue-trace icon.",1277,92,1319,135,unknown
+avantage-target-140-02,avantage_data_list.png,the Residuals toolbar button with the green plotted-line icon near the top-right ribbon,1277,92,1319,135,unknown
+avantage-target-141-01,avantage_data_list.png,"The data-list row whose visible File Name ends with ""Mg2s_5.VGD"".",458,260,1258,284,unknown
+avantage-target-141-02,avantage_data_list.png,"the table row for file ""Not Specified. Pt #001-2 Mg2s_5.VGD"" with comment beginning ""Exp Variable 1:14""",458,260,1258,284,unknown
+avantage-target-142-01,avantage_data_list.png,"The ""Title"" column header at the left of the upper data list, immediately before ""File Name"".",458,162,658,189,unknown
+avantage-target-142-02,avantage_data_list.png,"the ""Title"" column header in the quant_by_xps table",458,162,658,189,unknown
+avantage-target-143-01,avantage_data_list.png,"The ""File Name"" column header in the upper data list, between ""Title"" and ""Comment"".",658,162,1058,189,unknown
+avantage-target-143-02,avantage_data_list.png,"the ""File Name"" column header in the quant_by_xps table",658,162,1058,189,unknown
+avantage-target-144-01,avantage_data_list.png,"The ""Comment"" column header in the upper data list, immediately to the right of ""File Name"".",1058,162,1258,189,unknown
+avantage-target-144-02,avantage_data_list.png,"the ""Comment"" column header in the quant_by_xps table",1058,162,1258,189,unknown
+avantage-target-145-01,avantage_data_list.png,"The data-list row whose visible File Name ends with ""Mg2s_2.VGD"".",458,332,1258,356,unknown
+avantage-target-145-02,avantage_data_list.png,"the table row for file ""Not Specified. Pt #001-2 Mg2s_3.VGD"" with comment beginning ""Exp Variable 1:16""",458,332,1258,356,unknown
+avantage-target-147-01,avantage_data_list.png,"The data-list row whose visible File Name ends with ""Mg2s_8.VGD"".",458,187,1258,211,unknown
+avantage-target-147-02,avantage_data_list.png,"the first visible table row for file ""Not Specified. Pt #001-2 Mg2s_8.VGD"" with comment beginning ""Exp Variable 1:11""",458,187,1258,211,unknown
+avantage-target-148-01,avantage_data_list.png,"The data-list row whose visible File Name ends with ""Mg2s_7.VGD"".",458,212,1258,236,unknown
+avantage-target-148-02,avantage_data_list.png,"the table row for file ""Not Specified. Pt #001-2 Mg2s_7.VGD"" with comment beginning ""Exp Variable 1:12""",458,212,1258,236,unknown
+avantage-target-149-01,avantage_data_list.png,"The data-list row whose visible File Name ends with ""Mg2s_3.VGD"".",458,307,1258,331,unknown
+avantage-target-149-02,avantage_data_list.png,"the table row for file ""Not Specified. Pt #001-2 Mg2s_4.VGD"" with comment beginning ""Exp Variable 1:15""",458,307,1258,331,unknown
+avantage-target-150-01,avantage_data_list.png,"The data-list row whose visible File Name ends with ""Mg2s_6.VGD"".",458,236,1258,260,unknown
+avantage-target-150-02,avantage_data_list.png,"the table row for file ""Not Specified. Pt #001-2 Mg2s_6.VGD"" with comment beginning ""Exp Variable 1:13""",458,236,1258,260,unknown
+avantage-target-151-01,avantage_data_list.png,"The data-list row whose visible File Name ends with ""Mg2s_4.VGD"".",458,284,1258,307,unknown
+avantage-target-151-02,avantage_data_list.png,"the results-table row with comment beginning ""Exp Variable 1:14. d.Exp Vari...""",458,284,1258,307,unknown
+avantage-target-152-01,avantage_data_list.png,"The data-list row whose visible File Name ends with ""Mg2s_0.VGD"".",458,380,1258,404,unknown
+avantage-target-152-02,avantage_data_list.png,"the selected results-table row with comment beginning ""Exp Variable 1:18. d.Exp Vari...""",458,380,1258,404,unknown
+avantage-target-153-01,avantage_data_list.png,"The data-list row whose visible File Name ends with ""Mg2s_1.VGD"".",458,356,1258,380,unknown
+avantage-target-153-02,avantage_data_list.png,"the results-table row with comment beginning ""Exp Variable 1:17. d.Exp Vari...""",458,356,1258,380,unknown
