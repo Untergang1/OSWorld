@@ -2,7 +2,7 @@
 
 Run from the repository root after manually opening the target UI in a VM::
 
-    python train_data/capture_uia.py --vm-ip 192.168.1.20
+    python train_data/capture_uia.py --vm-ip 192.168.1.20 --app-name avantage
 """
 
 from __future__ import annotations
@@ -524,11 +524,21 @@ def capture(vm_ip: str, server_port: int, timeout: float, output_root: Path) -> 
     return capture_dir
 
 
+def app_name(value: str) -> str:
+    """Accept one application directory name below the capture root."""
+    name = value.strip()
+    path = Path(name)
+    if not name or name in {".", ".."} or path.is_absolute() or path.parent != Path(".") or path.name != name:
+        raise argparse.ArgumentTypeError("--app-name must be one non-empty directory name")
+    return name
+
+
 def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Capture the current OSWorld VM screenshot and Windows UIA tree.")
     parser.add_argument("--vm-ip", required=True, help="VM service address, for example 192.168.1.20 or localhost")
     parser.add_argument("--server-port", type=int, default=5000, help="OSWorld VM service port (default: 5000)")
     parser.add_argument("--timeout", type=float, default=20.0, help="HTTP timeout in seconds (default: 20)")
+    parser.add_argument("--app-name", required=True, type=app_name, help="Application name used as the capture subdirectory")
     parser.add_argument("--output-root", type=Path, default=Path(__file__).parent / "captures", help=argparse.SUPPRESS)
     return parser.parse_args(argv)
 
@@ -536,7 +546,7 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
 def main(argv: Optional[list[str]] = None) -> int:
     args = parse_args(argv)
     try:
-        capture_dir = capture(args.vm_ip, args.server_port, args.timeout, args.output_root)
+        capture_dir = capture(args.vm_ip, args.server_port, args.timeout, args.output_root / args.app_name)
     except CaptureError as error:
         print(f"Capture failed: {error}", file=sys.stderr)
         return 1

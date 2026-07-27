@@ -110,6 +110,31 @@ class CaptureUiaTests(unittest.TestCase):
                     self.capture_uia.capture("127.0.0.1", 5000, 1, output_root)
             self.assertFalse(output_root.exists())
 
+    def test_cli_requires_a_single_application_directory_name(self):
+        with self.assertRaises(SystemExit):
+            self.capture_uia.parse_args(["--vm-ip", "127.0.0.1"])
+
+        args = self.capture_uia.parse_args(["--vm-ip", "127.0.0.1", "--app-name", "avantage"])
+        self.assertEqual(args.app_name, "avantage")
+
+        for invalid_name in (".", "..", "nested/app", r"nested\app", r"C:\captures"):
+            with self.subTest(invalid_name=invalid_name), self.assertRaises(SystemExit):
+                self.capture_uia.parse_args(["--vm-ip", "127.0.0.1", "--app-name", invalid_name])
+
+    def test_cli_places_capture_under_the_application_directory(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output_root = Path(temporary_directory) / "captures"
+            expected_capture = output_root / "avantage" / "0717_111935"
+            with patch.object(self.capture_uia, "capture", return_value=expected_capture) as capture:
+                self.assertEqual(
+                    self.capture_uia.main(
+                        ["--vm-ip", "127.0.0.1", "--app-name", "avantage", "--output-root", str(output_root)]
+                    ),
+                    0,
+                )
+
+            capture.assert_called_once_with("127.0.0.1", 5000, 20.0, output_root / "avantage")
+
     def test_mdi_child_focus_promotes_its_parent_window(self):
         xml = """\
 <desktop xmlns:state="https://accessibility.windows.example.org/ns/state"
