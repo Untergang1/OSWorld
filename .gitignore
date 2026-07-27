@@ -154,6 +154,7 @@ tmp.*
 
 ## Server logging
 **/.logging/**/*
+logs/
 
 # DB cache
 **/.db_cache/**/*
