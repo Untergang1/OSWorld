@@ -39,9 +39,9 @@ DEFAULT_CAPTURES_DIR = Path("train_data/captures/avantage")
 DEFAULT_OUTPUT_DIR = Path("train_data/avantage/v3")
 MAX_DESCRIPTION_LENGTH = 420
 MIN_DESCRIPTION_LENGTH = 12
-MAX_BATCH_SIZE = 15
+MAX_BATCH_SIZE = 10
 CHECKPOINT_SCHEMA_VERSION = 1
-CONTEXT_CROP_MARGIN = 20
+CONTEXT_CROP_MARGIN = 12
 PROMPT_VERSION = "full-image-batched-target-context-crops-v5-relative-references"
 
 
@@ -109,8 +109,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--base-url", help="OpenAI-compatible API base URL.")
     parser.add_argument("--api-key", help="OpenAI-compatible API key.")
     parser.add_argument("--model", default="qwen3.7-plus", help="Chat-completions model name.")
-    parser.add_argument("--timeout", type=float, default=120.0, help="Per-request timeout in seconds.")
-    parser.add_argument("--max-retries", type=int, default=3, help="Attempts per target, including the first.")
+    parser.add_argument("--timeout", type=float, default=200.0, help="Per-request timeout in seconds.")
+    parser.add_argument("--max-retries", type=int, default=2, help="Attempts per target, including the first.")
     parser.add_argument("--resume", action="store_true", help="Continue from the incomplete checkpoint in output-dir.")
     parser.add_argument("--overwrite", action="store_true", help="Replace a completed annotations.csv in output-dir.")
     parser.add_argument("--dry-run", action="store_true", help="Validate all inputs without API calls or writes.")
